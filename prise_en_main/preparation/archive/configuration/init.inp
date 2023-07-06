@@ -1,7 +1,0 @@
-tolerance 1.5
-output init.xyz
-filetype xyz
-structure water.xyz
-	number 7
-	inside box 0.75 0.75 0.75 5.25 5.25 5.25
-end structure
