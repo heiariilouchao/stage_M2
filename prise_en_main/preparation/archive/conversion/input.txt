@@ -1,0 +1,9 @@
+configuration_file: init.xyz
+output_file: data.lammps
+atom_types: O H
+    masses: 15.9994 1.008
+    charges: -0.8476 0.4238
+bond_types: 1
+    thresholds: 0.90 1.00
+angle_types: 1
+space_boundaries: 0.0 0.0 0.0 6.0 6.0 6.0

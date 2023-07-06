@@ -1,0 +1,108 @@
+\documentclass[11pt, a4paper]{article}
+
+% Modules essentiels
+\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[hmargin=2.5cm, vmargin=2.5cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[skip=10pt]{parskip}
+
+% Modules complémentaires
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+%\usepackage{caption}
+
+\usepackage{enumitem}
+\setlist[itemize]{noitemsep, left=11pt}
+
+%\usepackage{graphicx}
+%\graphicspath{{.}}
+
+\usepackage{hyperref}
+\addto\extrasfrench%
+{%
+	\def\equationautorefname{\textsc{Éq.}}
+	\def\figureautorefname{\textsc{Fig.}}
+	\def\sectionautorefname{\textsc{Sec.}}
+	\def\subsectionautorefname{\textsc{Sec.}}
+	\def\subsubsectionautorefname{\textsc{Sec.}}
+	\def\tableautorefname{\textsc{Tab.}}%
+}
+
+\usepackage[space-before-unit]{siunitx}
+
+%\usepackage{subcaption}
+
+%\usepackage{tabularx}
+
+
+\author{Heiarii Lou Chao}
+\title{Tâches confiées}
+%\date{}
+
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\clearpage
+\section{Prise en main}
+
+Pour la prise en main il a fallu :
+\begin{itemize}
+	\item Installer LAMMPS et lire la documentation concernant les fichiers d'entrée (01/02/23)
+	\item Effectuer des simulations de systèmes simples avec LAMMPS (01/02/23):
+	\begin{itemize}[label={$\rightarrow$}]
+		\item Systèmes de tailles différentes : $N = \num{100}$, $N = \num{1000}$ par exemple
+		\item Ensembles thermodynamiques différents : NVE, NVT
+		\item Visualisation de grandeurs intéressantes : $E$, $E_{k}$, $E_{p}$, $T$ et $P$
+		\item Visualisation de trajectoires
+	\end{itemize}
+	\item Effectuer la simulation de la fusion d'un solide cristallin dans les ensembles NVE et NVT (03/02/23):
+	\begin{itemize}[label={$\rightarrow$}]
+		\item Faire varier la température : une température basse, une montée de température et une température haute
+		\item Visualiser la fonction de corrélation de paires
+	\end{itemize}
+	\item Préparation d'un système de molécules d'eau
+\end{itemize}
+
+\section{Construction de structures cristallines}
+
+Pour construire les structures, il a fallu :
+\begin{itemize}
+	\item Récupérer les mailles primitives des structures cristallines type graphène/graphite : fichiers CIF dans des bases de données comme AMCS et COD
+	\item Dupliquer le réseau de graphite en une super-cellule (VESTA)
+	\item Récupérer la structure de la molécule d'eau
+	\item Étudier les fonctions de corrélation de paires de la molécule d'eau
+	\item Optimiser la disposition des plaques de graphite et des molécules d'eau dans la boîte (PACKMOL)
+\end{itemize}
+
+\section{Dynamique Moléculaire}
+
+Pour rattraper les lacunes en dynamique moléculaire :
+\begin{itemize}
+	\item Lire et ficher \emph{Computer Simulation of Liquids} de \textsc{M. P. Allen} et \textsc{D. J. Tildesley}
+\end{itemize}
+
+\section{Traitement de données}
+
+Pour s'initier au traitement de données, il a fallu :
+\begin{itemize}
+	\item Extraire du log de LAMMPS les données et les écrire dans un fichier à part (06/02/23)
+	\item Convertir un fichier de configuration XYZ au format de LAMMPS (27/02/23)
+	\item Lire le fichier des trajectoires pour calculer la RDF et la MSD (08/03/23)
+\end{itemize}
+
+\section{Systèmes complexes}
+
+Pour effectuer des simulations de systèmes plus complexes, il a fallu :
+\begin{itemize}
+	\item Lire des articles sur les champs de force réactifs (09/03/23, )
+	\item Compiler LAMMPS sur le cluster MUSE
+	\item Lancer des simulations pour deux modèles de la molécule d'eau (SPCE et ReaxFF) (14/03/23)
+	\item
+\end{itemize}
+
+\end{document}

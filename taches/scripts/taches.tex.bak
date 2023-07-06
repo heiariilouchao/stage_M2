@@ -1,0 +1,81 @@
+\documentclass[11pt, a4paper]{article}
+
+% Modules essentiels
+\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[hmargin=2.5cm, vmargin=2.5cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[skip=10pt]{parskip}
+
+% Modules complémentaires
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+%\usepackage{caption}
+
+\usepackage{enumitem}
+\setlist[itemize]{noitemsep, left=11pt}
+
+%\usepackage{graphicx}
+%\graphicspath{{.}}
+
+\usepackage{hyperref}
+\addto\extrasfrench%
+{%
+	\def\equationautorefname{\textsc{Éq.}}
+	\def\figureautorefname{\textsc{Fig.}}
+	\def\sectionautorefname{\textsc{Sec.}}
+	\def\subsectionautorefname{\textsc{Sec.}}
+	\def\subsubsectionautorefname{\textsc{Sec.}}
+	\def\tableautorefname{\textsc{Tab.}}%
+}
+
+\usepackage[space-before-unit]{siunitx}
+
+%\usepackage{subcaption}
+
+%\usepackage{tabularx}
+
+
+\author{Heiarii Lou Chao}
+\title{Tâches confiées}
+%\date{}
+
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\clearpage
+\section{Prise en main}
+
+Pour la prise en main il a fallu :
+\begin{itemize}
+	\item Installer LAMMPS et lire la documentation concernant les fichiers d'entrée (01/02/23)
+	\item Effectuer des simulations de systèmes simples avec LAMMPS (01/02/23):
+	\begin{itemize}[label={$\rightarrow$}]
+		\item Systèmes de tailles différentes : $N = \num{100}$, $N = \num{1000}$ par exemple
+		\item Ensembles thermodynamiques différents : NVE, NVT
+		\item Visualisation de grandeurs intéressantes : $E$, $E_{k}$, $E_{p}$, $T$ et $P$
+		\item Visualisation de trajectoires
+	\end{itemize}
+	\item Effectuer la simulation de la fusion d'un solide cristallin dans les ensembles NVE et NVT (03/02/23):
+		\begin{itemize}[label={$\rightarrow$}]
+			\item Faire varier la température : une température basse, une montée de température et une température haute
+			\item Visualiser la fonction de corrélation de paires
+		\end{itemize}
+\end{itemize}
+
+\section{Construction de structures cristallines}
+
+Pour construire les structures, il a fallu :
+\begin{itemize}
+	\item Récupérer les mailles primitives des structures cristallines type graphène/graphite :
+	\begin{itemize}[label={$\rightarrow$}]
+		\item Trouver des fichiers CIF dans des bases de données comme AMCS et COD
+		
+	\end{itemize}
+\end{itemize}
+
+\end{document}

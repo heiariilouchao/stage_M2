@@ -1,0 +1,36 @@
+
+# -- Default styles (for solo "SPCE" water) --
+units        real
+atom_style   full
+boundary     p p p
+
+
+# ----------------- Atom Definition Section -----------------
+read_data "data.test"
+
+pair_style   reax/c NULL
+pair_coeff   * * test.reax O H
+fix Qeq all qeq/reax 1 0.0 10 1e-06 reax/c
+
+
+# ----------------- Run Section -----------------
+dump 		positions all custom 100 data/test.lammpstrj id element x y z xu yu zu
+dump_modify     positions element O H 
+
+#  -- minimize --
+# minimize 1.0e-06 1.0e-08 1000 10000
+
+#  -- declare time step for normal MD --
+timestep 0.5
+
+#  -- dump positions and thermodynamic quantities --
+thermo          1000
+thermo_style    custom step temp pe ke press
+thermo_modify	line yaml
+
+#  -- run at constant volume and temperature
+fix   ensemble all nvt temp 300.0 300.0 100
+
+#  -- Now, finally run the simulation --
+run   50000
+

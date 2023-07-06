@@ -1,0 +1,11 @@
+
+
+Préparation d'une simulation plus complexe.
+
+Le dossier configuration contient les fichiers utilisés pour créer le fichier de configuration au format XYZ.
+Le dossier conversion contient les fichiers utilisés pour convertir le fichier XYZ en fichier de données LAMMPS.
+Le dossier test contient les fichiers utilisés et obtenus en lançant une simulation simple à partir de fichier de données LAMMPS. Attention : cette simulation n'a pas été travaillée, aucune minimisation ou aucun fix (à part pour l'ensemble) n'a été fait avant de lancer la simulation.
+
+La démarche adoptée est expliqué dans le compte-rendu demarche.pdf
+
+

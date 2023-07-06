@@ -1,0 +1,33 @@
+
+# ----------------- Init Section -----------------
+include "in.init.test"
+
+
+# ----------------- Atom Definition Section -----------------
+read_data "data.test"
+
+
+# ----------------- Settings Section -----------------
+include "in.settings.test"
+
+
+# ----------------- Run Section -----------------
+#  -- minimize --
+minimize 1.0e-06 1.0e-08 1000 10000
+
+#  -- declare time step for normal MD --
+timestep 0.5
+
+#  -- dump positions and thermodynamic quantities --
+dump 		positions all custom 100 data/test.lammpstrj id element x y z xu yu zu
+dump_modify     positions element O H 
+thermo          1000
+thermo_style    custom step temp pe ke press
+thermo_modify	line yaml
+
+#  -- run at constant volume and temperature
+fix   ensemble all nvt temp 300.0 300.0 100
+
+#  -- Now, finally run the simulation --
+run   50000
+

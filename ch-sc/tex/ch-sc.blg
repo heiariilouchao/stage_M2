@@ -1,0 +1,15 @@
+[0] Config.pm:307> INFO - This is Biber 2.17
+[0] Config.pm:310> INFO - Logfile is 'ch-sc.blg'
+[49] biber:340> INFO - === lun. juin 26, 2023, 13:29:57
+[59] Biber.pm:418> INFO - Reading 'ch-sc.bcf'
+[106] Biber.pm:972> INFO - Found 1 citekeys in bib section 0
+[123] Biber.pm:4383> INFO - Processing section 0
+[133] Biber.pm:4574> INFO - Looking for bibtex file 'ch-sc.bib' for section 0
+[134] bibtex.pm:1713> INFO - LaTeX decoding ...
+[138] bibtex.pm:1518> INFO - Found BibTeX data source 'ch-sc.bib'
+[175] UCollate.pm:68> INFO - Overriding locale 'fr-FR' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[175] UCollate.pm:68> INFO - Overriding locale 'fr-FR' defaults 'variable = shifted' with 'variable = non-ignorable'
+[175] Biber.pm:4203> INFO - Sorting list 'nty/global//global/global' of type 'entry' with template 'nty' and locale 'fr-FR'
+[175] Biber.pm:4209> INFO - No sort tailoring available for locale 'fr-FR'
+[180] bbl.pm:654> INFO - Writing 'ch-sc.bbl' with encoding 'UTF-8'
+[181] bbl.pm:757> INFO - Output to ch-sc.bbl

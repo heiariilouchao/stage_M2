@@ -1,0 +1,25 @@
+tolerance 1.5
+output structure.xyz
+filetype xyz
+structure water.xyz
+	number 56
+	inside box 0.750 0.750 0.750 9.074 16.266 10.0
+end structure
+structure graphite.xyz
+	number 1
+	center
+	fixed 4.912 8.508 13.348 0.0 0.0 0.0
+end structure
+structure water.xyz
+	number 112
+	inside box 0.750 0.750 16.696 9.074 16.266 36.696
+end structure
+structure graphite.xyz
+	number 1
+	center
+	fixed 4.912 8.508 40.044 0.0 0.0 0.0
+end structure
+structure water.xyz
+	number 56
+	inside box 0.750 0.750 43.392 9.074 16.266 52.642
+end structure

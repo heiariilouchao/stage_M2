@@ -1,0 +1,5 @@
+    
+    # (Hybrid force fields were not necessary but are used for portability.)
+    pair_style   reax/c NULL
+    pair_coeff   * * test.reax O H
+    #pair_modify  mix arithmetic  # LEAVE THIS UNSPECIFIED!

@@ -1,0 +1,41 @@
+
+# -- Default styles
+units        real
+atom_style   full
+boundary     p p p
+
+
+# ----------------- Atom Definition Section -----------------
+read_data "data.reax"
+
+# ----------------- Interactions Section --------------------
+pair_style   reax/c NULL
+pair_coeff   * * reax.reax O H
+fix Qeq all qeq/reax 1 0.0 10 1e-06 reax/c
+
+
+#  -- minimize --
+thermo  	1
+minimize 1.0e-03 1.0e-05 100 1000
+
+## ----------------- Run Section -----------------------------
+dump 		positions all custom 1000 data/reax.lammpstrj id element x y z xu yu zu
+dump_modify     positions element O H 
+
+##  -- dump positions and thermodynamic quantities --
+thermo          1000
+thermo_style    custom step temp pe ke press
+
+
+#  -- Initializing the velocities
+velocity	all create 300.0 98715
+
+#  -- declare time step for normal MD --
+timestep 0.1
+
+#  -- run at constant volume and temperature
+fix   ensemble all nvt temp 300.0 300.0 $(100.0*dt)
+
+#  -- Now, finally run the simulation --
+run   20000000
+

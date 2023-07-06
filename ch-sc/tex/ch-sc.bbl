@@ -1,0 +1,89 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.2 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nty/global//global/global}
+    \entry{martinez_packmol_2009}{article}{}
+      \name{author}{4}{}{%
+        {{hash=f626a1a50f257666603efa4a232cb384}{%
+           family={Martínez},
+           familyi={M\bibinitperiod},
+           given={L.},
+           giveni={L\bibinitperiod}}}%
+        {{hash=e740c1d72f4c7f560fe57cb15881a907}{%
+           family={Andrade},
+           familyi={A\bibinitperiod},
+           given={R.},
+           giveni={R\bibinitperiod}}}%
+        {{hash=a318d18e5240f43e74748ff51ac13bf6}{%
+           family={Birgin},
+           familyi={B\bibinitperiod},
+           given={E.\bibnamedelimi G.},
+           giveni={E\bibinitperiod\bibinitdelim G\bibinitperiod}}}%
+        {{hash=66a47c548889cb360069fd38711533b4}{%
+           family={Martínez},
+           familyi={M\bibinitperiod},
+           given={J.\bibnamedelimi M.},
+           giveni={J\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
+      }
+      \strng{namehash}{71dd5e5e28ba0d28b19bed628af3bab5}
+      \strng{fullhash}{8c2550010ddf29f22bb4b9db4367d315}
+      \strng{bibnamehash}{71dd5e5e28ba0d28b19bed628af3bab5}
+      \strng{authorbibnamehash}{71dd5e5e28ba0d28b19bed628af3bab5}
+      \strng{authornamehash}{71dd5e5e28ba0d28b19bed628af3bab5}
+      \strng{authorfullhash}{8c2550010ddf29f22bb4b9db4367d315}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{shorttitle}
+      \field{abstract}{Adequate initial conﬁgurations for molecular dynamics simulations consist of arrangements of molecules distributed in space in such a way to approximately represent the system’s overall structure. In order that the simulations are not disrupted by large van der Waals repulsive interactions, atoms from different molecules must keep safe pairwise distances. Obtaining such a molecular arrangement can be considered a packing problem: Each type molecule must satisfy spatial constraints related to the geometry of the system, and the distance between atoms of different molecules must be greater than some speciﬁed tolerance. We have developed a code able to pack millions of atoms, grouped in arbitrarily complex molecules, inside a variety of three-dimensional regions. The regions may be intersections of spheres, ellipses, cylinders, planes, or boxes. The user must provide only the structure of one molecule of each type and the geometrical constraints that each type of molecule must satisfy. Building complex mixtures, interfaces, solvating biomolecules in water, other solvents, or mixtures of solvents, is straightforward. In addition, different atoms belonging to the same molecule may also be restricted to different spatial regions, in such a way that more ordered molecular arrangements can be built, as micelles, lipid double-layers, etc. The packing time for state-of-the-art molecular dynamics systems varies from a few seconds to a few minutes in a personal computer. The input ﬁles are simple and currently compatible with {PDB}, Tinker, Molden, or Moldy coordinate ﬁles. The package is distributed as free software and can be downloaded from http://www.ime.unicamp.br/∼martinez/packmol/.}
+      \field{issn}{01928651, 1096987X}
+      \field{journaltitle}{Journal of Computational Chemistry}
+      \field{langid}{english}
+      \field{month}{10}
+      \field{number}{13}
+      \field{shortjournal}{J. Comput. Chem.}
+      \field{shorttitle}{{PACKMOL}}
+      \field{title}{{PACKMOL}: A package for building initial configurations for molecular dynamics simulations}
+      \field{urlday}{23}
+      \field{urlmonth}{6}
+      \field{urlyear}{2023}
+      \field{volume}{30}
+      \field{year}{2009}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \field{pages}{2157\bibrangedash 2164}
+      \range{pages}{8}
+      \verb{doi}
+      \verb 10.1002/jcc.21224
+      \endverb
+      \verb{file}
+      \verb Martínez et al. - 2009 - PACKMOL A package for building initial configurat.pdf:/home/heiarii/Zotero/storage/KKKPLK2M/Martínez et al. - 2009 - PACKMOL A package for building initial configurat.pdf:application/pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://onlinelibrary.wiley.com/doi/10.1002/jcc.21224
+      \endverb
+      \verb{url}
+      \verb https://onlinelibrary.wiley.com/doi/10.1002/jcc.21224
+      \endverb
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+
