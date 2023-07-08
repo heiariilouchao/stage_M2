@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.alg": "plaintext",
+        "read.h": "c"
+    }
+}

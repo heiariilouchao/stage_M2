@@ -1,12 +1,15 @@
 # LAMMPS trajectory files
 *.lammpstrj
 
-# ReaxFF bonds files
-*.bonds
 
 # LAMMPS log files
 *.log
 log.*
+
+
+# ReaxFF bonds files
+*.bonds
+
 
 # Custom file formats
 *.dat

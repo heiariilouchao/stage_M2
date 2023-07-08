@@ -1,5 +1,8 @@
-#ifndef UTILS_H
-#define UTILS_H
+# ifndef UTILS_H
+# define UTILS_H
+
+
+# define STR_GROUP_DESC_LIMIT 256
 
 typedef struct Atom
 {
@@ -9,6 +12,15 @@ typedef struct Atom
 
     int N_bonds;
     int *bonded;
+    
+    int group;
 } Atom;
 
-#endif
+
+typedef struct Group
+{
+    int N;
+    double average;
+} Group;
+
+# endif

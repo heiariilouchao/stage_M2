@@ -1,74 +1,124 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
-#include <errno.h>
-#include <argp.h>
-#include <math.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <stdbool.h>
+# include <string.h>
+# include <errno.h>
+# include <argp.h>
+# include <math.h>
+
+# include "parse.h"
+# include "read.h"
+# include "bonds.h"
+
+// static char doc[] = "Computing the MSDs of a .lammpstrj configurations file.";
+
+// static char args_doc[] = "CONF_FILE";
+
+// static struct argp_option options[] =
+// {
+// 	{
+// 		"start",
+// 		's',
+// 		"START",
+// 		OPTION_ARG_OPTIONAL,
+// 		"The step to start from. Default is 0."
+// 	},
+// 	{0}
+// };
+
+// struct arguments
+// {
+// 	char *args[1];
+// 	int start;
+// };
+
+// static error_t parse(int key, char *arg, struct argp_state *state)
+// {
+// 	struct arguments *args = state->input;
+
+// 	switch (key)
+// 	{
+// 	case 's':
+// 		args->start = atoi(arg);
+// 		if (args->start < 0)
+// 			return EINVAL;
+// 		break;
+// 	case ARGP_KEY_ARG:
+// 		if (state->arg_num >= 1)
+// 			argp_usage(state);
+// 		args->args[state->arg_num] = arg;
+// 		break;
+// 	case ARGP_KEY_END:
+// 		if (state->arg_num < 1)
+// 			argp_usage(state);
+// 		break;
+// 	default:
+// 		return ARGP_ERR_UNKNOWN;
+// 	}
+// 	return 0;
+// }
+
+// static struct argp parser =
+// {
+// 	options,
+// 	parse,
+// 	args_doc,
+// 	doc
+// };
 
 
-// #define STR_BUFF_LIMIT 256
-#include "read.h"
+// int write(char *file_name, int N_conf, int *N_selection, int *steps, double **bounds, int **indices, double ***pos, double **charges, int **N_bonds, int ***bonds, bool **layers, bool **electrodes)
+// {
+// 	printf("Writing output...\n");
+
+// 	/* Opening the output file */
+// 	FILE *output = fopen(file_name, "w");
+// 	if (output == NULL)
+// 	{
+// 		perror("Opening the output file");
+// 		return EIO;
+// 	}
 
 
-static char doc[] = "Computing the MSDs of a .lammpstrj configurations file.";
+// 	/* Writing */
+// 	for (int c = 0 ; c < N_conf ; c++)
+// 	{
+// 		printf("conf: %d / %d\r", c + 1, N_conf);
 
-static char args_doc[] = "CONF_FILE";
+// 		fprintf(output, "ITEM: TIMESTEP\n%d\n", steps[c]);
 
-static struct argp_option options[] =
-{
-	{
-		"start",
-		's',
-		"START",
-		OPTION_ARG_OPTIONAL,
-		"The step to start from. Default is 0."
-	},
-	{0}
-};
+// 		fprintf(output, "ITEM: NUMBER OF ATOMS\n%d\n", N_selection[c]);
 
-struct arguments
-{
-	char *args[1];
-	int start;
-};
-
-static error_t parse(int key, char *arg, struct argp_state *state)
-{
-	struct arguments *args = state->input;
-
-	switch (key)
-	{
-	case 's':
-		args->start = atoi(arg);
-		if (args->start < 0)
-			return EINVAL;
-		break;
-	case ARGP_KEY_ARG:
-		if (state->arg_num >= 1)
-			argp_usage(state);
-		args->args[state->arg_num] = arg;
-		break;
-	case ARGP_KEY_END:
-		if (state->arg_num < 1)
-			argp_usage(state);
-		break;
-	default:
-		return ARGP_ERR_UNKNOWN;
-	}
-	return 0;
-}
-
-static struct argp parser =
-{
-	options,
-	parse,
-	args_doc,
-	doc
-};
+// 		fprintf(output, "ITEM: BOX BOUNDS pp pp pp\n");
+// 		for (int d = 0 ; d < 3 ; d++)
+// 			fprintf(output, "%lf %lf\n", bounds[c][2 * d], bounds[c][2 * d + 1]);
+		
+// 		fprintf(output, "ITEM: ATOMS id element x y z q nb id1 id2 id3 id4 in electrode\n");
+// 		for (int a = 0 ; a < N_selection[c] ; a++)
+// 		{
+// 			fprintf(output, "%d %s", indices[c][a], "C");
+// 			for (int d = 0 ; d < 3 ; d++)
+// 				fprintf(output, " %lf", pos[c][a][d]);
+// 			fprintf(output, " %lf %d", charges[c][a], N_bonds[c][a]);
+// 			for (int b = 0 ; b < N_bonds[c][a] ; b++)
+// 				fprintf(output, " %d", indices[c][bonds[c][a][b]]);
+// 			for (int b = N_bonds[c][a] ; b < 4 ; b++)
+// 				fprintf(output, " N/A");
+// 			fprintf(output, " %d %d\n", layers[c][a], electrodes[c][a]);
+// 		}
+// 	}
 
 
-error_t write(char *file_name, int N_conf, int *N_selection, int *steps, double **bounds, int **indices, double ***pos, double **charges, int **N_bonds, int ***bonds, bool **layers, bool **electrodes)
+// 	/* Exiting successfully */
+// 	// Closing the file
+// 	fclose(output);
+
+// 	// Exiting
+// 	return 0;
+// }
+
+
+int write(char *file_name, int N_conf, int *N_selection, int *steps, double **bounds, Atom **atoms, bool **layers, bool **electrodes)
 {
 	printf("Writing output...\n");
 
@@ -97,13 +147,12 @@ error_t write(char *file_name, int N_conf, int *N_selection, int *steps, double 
 		fprintf(output, "ITEM: ATOMS id element x y z q nb id1 id2 id3 id4 in electrode\n");
 		for (int a = 0 ; a < N_selection[c] ; a++)
 		{
-			fprintf(output, "%d %s", indices[c][a], "C");
-			for (int d = 0 ; d < 3 ; d++)
-				fprintf(output, " %lf", pos[c][a][d]);
-			fprintf(output, " %lf %d", charges[c][a], N_bonds[c][a]);
-			for (int b = 0 ; b < N_bonds[c][a] ; b++)
-				fprintf(output, " %d", indices[c][bonds[c][a][b]]);
-			for (int b = N_bonds[c][a] ; b < 4 ; b++)
+			fprintf(output, "%d %s", atoms[c][a].serial, "C");
+			fprintf(output, " %lf %lf %lf", atoms[c][a].x, atoms[c][a].y, atoms[c][a].z);
+			fprintf(output, " %lf %d", atoms[c][a].q, atoms[c][a].N_bonds);
+			for (int b = 0 ; b < atoms[c][a].N_bonds ; b++)
+				fprintf(output, " %d", atoms[c][atoms[c][a].bonded[b]].serial);
+			for (int b = atoms[c][a].N_bonds ; b < 4 ; b++)
 				fprintf(output, " N/A");
 			fprintf(output, " %d %d\n", layers[c][a], electrodes[c][a]);
 		}
@@ -119,104 +168,164 @@ error_t write(char *file_name, int N_conf, int *N_selection, int *steps, double 
 }
 
 
-error_t compute_bonds(int N_conf, int *N_selection, double **bounds, int **indices, double ***pos, double **charges, int ***N_bonds, int ****bonds, const double R, const double delta)
-{
-	printf("Computing the bonds...\n");
+// error_t compute_bonds(int N_conf, int *N_selection, double **bounds, int **indices, double ***pos, double **charges, int ***N_bonds, int ****bonds, const double R, const double delta)
+// {
+// 	printf("Computing the bonds...\n");
 
 
-	/* Allocating the arrays */
-	if ((*N_bonds = malloc(N_conf * sizeof(int *))) == NULL)
-	{
-		perror("Allocating an array (N_bonds)");
-		return ENOMEM;
-	}
+// 	/* Allocating the arrays */
+// 	if ((*N_bonds = malloc(N_conf * sizeof(int *))) == NULL)
+// 	{
+// 		perror("Allocating an array (N_bonds)");
+// 		return ENOMEM;
+// 	}
 	
-	if ((*bonds = malloc(N_conf * sizeof(int **))) == NULL)
-	{
-		perror("Allocating an array (bonds)");
-		goto NBONDS;
-	}
+// 	if ((*bonds = malloc(N_conf * sizeof(int **))) == NULL)
+// 	{
+// 		perror("Allocating an array (bonds)");
+// 		goto NBONDS;
+// 	}
 
-	for (int c = 0; c < N_conf; c++)
-	{
-		if (((*N_bonds)[c] = calloc(N_selection[c], sizeof(int))) == NULL)
-		{
-			perror("Allocating an array slot (N_bonds[])");
-			goto BONDS;
-		}
+// 	for (int c = 0; c < N_conf; c++)
+// 	{
+// 		if (((*N_bonds)[c] = calloc(N_selection[c], sizeof(int))) == NULL)
+// 		{
+// 			perror("Allocating an array slot (N_bonds[])");
+// 			goto BONDS;
+// 		}
 
-		if (((*bonds)[c] = malloc(N_selection[c] * sizeof(int *))) == NULL)
-		{
-			perror("Allocating an array slot (bonds[])");
-			goto BONDS;
-		}
+// 		if (((*bonds)[c] = malloc(N_selection[c] * sizeof(int *))) == NULL)
+// 		{
+// 			perror("Allocating an array slot (bonds[])");
+// 			goto BONDS;
+// 		}
 
-		for (int a = 0; a < N_selection[c]; a++)
-			if (((*bonds)[c][a] = malloc(4 * sizeof(int))) == NULL)
-			{
-				perror("Allocating an array slot (bonds[][])");
-				goto BONDS;
-			}
-	}
+// 		for (int a = 0; a < N_selection[c]; a++)
+// 			if (((*bonds)[c][a] = malloc(4 * sizeof(int))) == NULL)
+// 			{
+// 				perror("Allocating an array slot (bonds[][])");
+// 				goto BONDS;
+// 			}
+// 	}
 
-	/* Actually computing the bonds */
-	for (int c = 0 ; c < N_conf ; c++)
-	{
-		printf("conf: %d / %d\r", c + 1, N_conf);
-		for (int i = 0 ; i < N_selection[c] ; i++)
-		{
-			for (int j = i + 1 ; j < N_selection[c] ; j++)
-			{
-				double r2 = 0.;
+// 	/* Actually computing the bonds */
+// 	for (int c = 0 ; c < N_conf ; c++)
+// 	{
+// 		printf("conf: %d / %d\r", c + 1, N_conf);
+// 		for (int i = 0 ; i < N_selection[c] ; i++)
+// 		{
+// 			for (int j = i + 1 ; j < N_selection[c] ; j++)
+// 			{
+// 				double r2 = 0.;
 
-				// Applying the PBC
-				for (int d = 0 ; d < 3 ; d++)
-				{
-					double length = bounds[c][2 * d + 1] - bounds[c][2 * d];
-					double diff = pos[c][j][d] - pos[c][i][d];
+// 				// Applying the PBC
+// 				for (int d = 0 ; d < 3 ; d++)
+// 				{
+// 					double length = bounds[c][2 * d + 1] - bounds[c][2 * d];
+// 					double diff = pos[c][j][d] - pos[c][i][d];
 
-					if (diff < - length / 2.)
-						diff += length;
-					else if (length / 2. < diff)
-						diff -= length;
+// 					if (diff < - length / 2.)
+// 						diff += length;
+// 					else if (length / 2. < diff)
+// 						diff -= length;
 					
-					r2 += diff * diff;
-				}
+// 					r2 += diff * diff;
+// 				}
 
-				// if ((R - delta) * (R - delta) <= r2 && r2 <= (R + delta) * (R + delta))
-				if (r2 <= (R * R)) // The bond condition
-				{
-					(*N_bonds)[c][i]++;
-					(*bonds)[c][i][(*N_bonds)[c][i] - 1] = j;
+// 				// if ((R - delta) * (R - delta) <= r2 && r2 <= (R + delta) * (R + delta))
+// 				if (r2 <= (R * R)) // The bond condition
+// 				{
+// 					(*N_bonds)[c][i]++;
+// 					(*bonds)[c][i][(*N_bonds)[c][i] - 1] = j;
 
-					(*N_bonds)[c][j]++;
-					(*bonds)[c][j][(*N_bonds)[c][j] - 1] = i;
-				}
-			}
+// 					(*N_bonds)[c][j]++;
+// 					(*bonds)[c][j][(*N_bonds)[c][j] - 1] = i;
+// 				}
+// 			}
 
-			// Resizing the array to the actual number of bonds
-			if (((*bonds)[c][i] = realloc((*bonds)[c][i], (*N_bonds)[c][i] * sizeof(int))) == NULL)
-			{
-				perror("Resizing an array slot (bonds[][])");
-				goto BONDS;
-			}
-		}
-	}
-
-
-	/* Success */
-	// Exiting normally
-	return 0;
+// 			// Resizing the array to the actual number of bonds
+// 			if (((*bonds)[c][i] = realloc((*bonds)[c][i], (*N_bonds)[c][i] * sizeof(int))) == NULL)
+// 			{
+// 				perror("Resizing an array slot (bonds[][])");
+// 				goto BONDS;
+// 			}
+// 		}
+// 	}
 
 
-	/* Errors */
-	BONDS: free(bonds);
-	NBONDS: free(N_bonds);
-	return ENOMEM;
-}
+// 	/* Success */
+// 	// Exiting normally
+// 	return 0;
 
 
-error_t compute_layers(int N_conf, int *N_selection, double **bounds, double ***pos, bool ***layers, const double sep, const double delta)
+// 	/* Errors */
+// 	BONDS: free(bonds);
+// 	NBONDS: free(N_bonds);
+// 	return ENOMEM;
+// }
+
+
+// error_t compute_layers(int N_conf, int *N_selection, double **bounds, double ***pos, bool ***layers, const double sep, const double delta)
+// {
+// 	printf("Computing the layers...\n");
+
+// 	/* Allocating the arrays*/
+// 	if ((*layers = malloc(N_conf * sizeof(bool *))) == NULL)
+// 	{
+// 		perror("Allocating the array (layers)");
+// 		return ENOMEM;
+// 	}
+
+// 	for (int c = 0; c < N_conf; c++)
+// 		if (((*layers)[c] = calloc(N_selection[c], sizeof(bool))) == NULL)
+// 		{
+// 			perror("Allocating the array slot (layers[c])");
+// 			goto LAYERS;
+// 		}
+	
+
+// 	/* Actually computing the layers */
+// 	for (int c = 0 ; c < N_conf ; c++)
+// 	{
+// 		printf("conf: %d / %d\r", c + 1, N_conf);
+// 		for (int i = 0 ; i < N_selection[c] ; i++)
+// 		{
+// 			bool above = false, under = false;
+
+// 			for (int j = 0; j < N_selection[c] && !(above && under); j++)
+// 			{
+// 				double diff = pos[c][j][2] - pos[c][i][2];
+
+// 				// Applying the PBC
+// 				double length = bounds[c][2 * 2 + 1] - bounds[c][2 * 2];
+// 				if (diff < - length / 2.)
+// 					diff += length;
+// 				else if (length / 2. < diff)
+// 					diff -= length;
+
+// 				if (!above)
+// 					above = (bool) (sep - delta <= diff) && (diff <= sep + delta);
+// 				if (!under)
+// 					under = (bool) (-sep - delta <= diff) && (diff <= -sep + delta);
+// 			}
+
+// 			(*layers)[c][i] = above && under;
+// 		}
+// 	}
+	
+	
+// 	/* Success */
+// 	// Exiting normally
+// 	return 0;
+
+
+// 	/* Errors */
+// 	LAYERS: free(layers);
+// 	return ENOMEM;
+// }
+
+
+int compute_layers(int N_conf, int *N_selection, double **bounds, Atom **atoms, bool ***layers, const double sep)
 {
 	printf("Computing the layers...\n");
 
@@ -245,19 +354,23 @@ error_t compute_layers(int N_conf, int *N_selection, double **bounds, double ***
 
 			for (int j = 0; j < N_selection[c] && !(above && under); j++)
 			{
-				double diff = pos[c][j][2] - pos[c][i][2];
+				// double diff = pos[c][j][2] - pos[c][i][2];
+				double diff = atoms[c][j].z - atoms[c][i].z;
 
 				// Applying the PBC
-				double length = bounds[c][2 * 2 + 1] - bounds[c][2 * 2];
+				double length = bounds[c][5] - bounds[c][4];
 				if (diff < - length / 2.)
 					diff += length;
 				else if (length / 2. < diff)
 					diff -= length;
 
+				// TODO: check the conditions !!!
 				if (!above)
-					above = (bool) (sep - delta <= diff) && (diff <= sep + delta);
+					// above = (bool) (sep - delta <= diff) && (diff <= sep + delta);
+					above = (bool) (0. <= diff && diff <= sep);
 				if (!under)
-					under = (bool) (-sep - delta <= diff) && (diff <= -sep + delta);
+					// under = (bool) (-sep - delta <= diff) && (diff <= -sep + delta);
+					under = (bool) (- sep <= diff && diff <= 0.);
 			}
 
 			(*layers)[c][i] = above && under;
@@ -276,7 +389,48 @@ error_t compute_layers(int N_conf, int *N_selection, double **bounds, double ***
 }
 
 
-error_t compute_electrodes(int N_conf, int *N_selection, double **bounds, double ***pos, bool ***electrodes, const double limits[2])
+// error_t compute_electrodes(int N_conf, int *N_selection, double **bounds, double ***pos, bool ***electrodes, const double limits[2])
+// {
+// 	printf("Computing the bonds...\n");
+
+
+// 	/* Allocating the electrodes array */
+// 	if ((*electrodes = malloc(N_conf * sizeof(bool *))) == NULL)
+// 	{
+// 		perror("Allocating an array (electrodes)");
+// 		return ENOMEM;
+// 	}
+
+// 	for (int c = 0 ; c < N_conf ; c++)
+// 		if (((*electrodes)[c] = malloc(N_selection[c] * sizeof(bool))) == NULL)
+// 		{
+// 			perror("Allocating an array slot (electrodes[])");
+// 			goto ELECTRODES;
+// 		}
+	
+
+
+// 	/* Computing the electrodes */
+// 	for (int c = 0 ; c < N_conf ; c++)
+// 	{
+// 		printf("conf: %d / %d\r", c + 1, N_conf);
+// 		for (int a = 0 ; a < N_selection[c] ; a++)
+// 			(*electrodes)[c][a] = (limits[0] <= pos[c][a][2] && pos[c][a][2] <= limits[1]);
+// 	}
+	
+	
+// 	/* Success */
+// 	// Exiting normally
+// 	return 0;
+
+
+// 	/* Errors */
+// 	ELECTRODES: free(electrodes);
+// 	return ENOMEM;
+// }
+
+
+int compute_electrodes(int N_conf, int *N_selection, double **bounds, Atom **atoms, bool ***electrodes, const double limits[2])
 {
 	printf("Computing the bonds...\n");
 
@@ -302,7 +456,7 @@ error_t compute_electrodes(int N_conf, int *N_selection, double **bounds, double
 	{
 		printf("conf: %d / %d\r", c + 1, N_conf);
 		for (int a = 0 ; a < N_selection[c] ; a++)
-			(*electrodes)[c][a] = (limits[0] <= pos[c][a][2] && pos[c][a][2] <= limits[1]);
+			(*electrodes)[c][a] = (limits[0] <= atoms[c][a].z && atoms[c][a].z <= limits[1]);
 	}
 	
 	
@@ -317,41 +471,145 @@ error_t compute_electrodes(int N_conf, int *N_selection, double **bounds, double
 }
 
 
-error_t compute_histograms(int N_conf, int *N_selection, bool **layers, bool **electrodes, double **charges, int **N_bonds, double ***histograms, int ***N_types)
+// error_t compute_histograms(int N_conf, int *N_selection, bool **layers, bool **electrodes, double **charges, int **N_bonds, double ***histograms, int ***N_types)
+// {
+// 	printf("Computing the histograms...\n");
+
+
+// 	/* Allocating the arrays */
+// 	if ((*histograms = malloc(N_conf * sizeof(double *))) == NULL)
+// 	{
+// 		perror("Allocating an array (histograms)");
+// 		return ENOMEM;
+// 	}
+
+// 	if ((*N_types = malloc(N_conf * sizeof(int *))) == NULL)
+// 	{
+// 		perror("Allocating an array (N_types)");
+// 		goto HIST;
+// 	}
+
+// 	for (int c = 0 ; c < N_conf ; c++)
+// 	{
+// 		if (((*histograms)[c] = calloc(5, sizeof(double))) == NULL)	// TODO: number of categories
+// 		{
+// 			perror("Allocating an array slot (histograms[])");
+// 			goto TYPES;
+// 		}
+
+// 		if (((*N_types)[c] = malloc(5 * sizeof(int))) == NULL)	// TODO: number of categories
+// 		{
+// 			perror("Allocating an array slot (N_types)");
+// 			goto TYPES;
+// 		}
+// 	}
+
+
+// 	/* Computing the histograms */
+// 	for (int c = 0 ; c < N_conf ; c++)
+// 	{
+// 		printf("conf: %d / %d\r", c + 1, N_conf);
+// 		for (int a = 0 ; a < N_selection[c] ; a++)
+// 		{
+// 			int t;
+
+// 			// TODO: define classification
+// 			if (N_bonds[c][a] == 2)
+// 				t = 4;
+// 			else if (layers[c][a] == 0 && electrodes[c][a] == 0)
+// 				t = 0;
+// 			else if (layers[c][a] == 0 && electrodes[c][a] == 1)
+// 				t = 1;
+// 			else if (layers[c][a] == 1 && electrodes[c][a] == 0)
+// 				t = 2;
+// 			else if (layers[c][a] == 1 && electrodes[c][a] == 1)
+// 				t = 3;
+			
+// 			(*histograms)[c][t] += charges[c][a];
+// 			(*N_types)[c][t]++;
+// 		}
+
+// 		for (int t = 0 ; t < 5 ; t++)	// TODO: number of categories
+// 			(*histograms)[c][t] /= (*N_types)[c][t];
+// 	}
+
+
+// 	/* Success */
+// 	// Exiting normally
+// 	return 0;
+
+
+// 	/* Errors */
+// 	TYPES: free(N_types);
+// 	HIST: free(histograms);
+// 	return ENOMEM;
+// }
+
+
+int compute_classification(int N_conf, int *N_selection, bool **layers, bool **electrodes, Atom ***atoms, int *N_groups, Group ***groups, char ***group_descriptions)
 {
-	printf("Computing the histograms...\n");
+	printf("Computing the groups...\n");
 
 
-	/* Allocating the arrays */
-	if ((*histograms = malloc(N_conf * sizeof(double *))) == NULL)
+	/* Initializing the groups */
+	// TODO: input the number of groups
+	*N_groups = 5;
+
+	// Initializing the array
+	if ((*groups = malloc(N_conf * sizeof(Group *))) == NULL)
 	{
-		perror("Allocating an array (histograms)");
+		perror("Allocating an array (groups)");
 		return ENOMEM;
-	}
-
-	if ((*N_types = malloc(N_conf * sizeof(int *))) == NULL)
-	{
-		perror("Allocating an array (N_types)");
-		goto HIST;
 	}
 
 	for (int c = 0 ; c < N_conf ; c++)
 	{
-		if (((*histograms)[c] = calloc(5, sizeof(double))) == NULL)	// TODO: number of categories
+		if (((*groups)[c] = malloc(*N_groups * sizeof(Group))) == NULL)
 		{
-			perror("Allocating an array slot (histograms[])");
-			goto TYPES;
+			perror("Allocating an array slot (groups[])");
+			goto GROUPS;
 		}
 
-		if (((*N_types)[c] = malloc(5 * sizeof(int))) == NULL)	// TODO: number of categories
+		for (int g = 0 ; g < *N_groups ; g++)
 		{
-			perror("Allocating an array slot (N_types)");
-			goto TYPES;
+			(*groups)[c][g].N = 0;
+			(*groups)[c][g].average = 0.;
+		}
+	}
+
+	// TODO: input group descriptions
+	const char * descriptions[] =
+	{
+		"Outer layer of negative electrode",
+		"Outer layer of positive electrode",
+		"Inner layer of negative electrode",
+		"Inner layer of positive electrode",
+		"Bonded to two atoms"
+	};
+
+	if ((*group_descriptions = malloc(*N_groups * sizeof(char *))) == NULL)
+	{
+		perror("Allocating an array (group_descriptions)");
+		goto GROUPS;
+	}
+
+	for (int g = 0 ; g < *N_groups ; g++)
+	{
+		if (((*group_descriptions)[g] = malloc(STR_GROUP_DESC_LIMIT * sizeof(char))) == NULL)
+		{
+			perror("Allocating an array slot (group_descriptions[])");
+			goto DESCRIPTIONS;
+		}
+
+		if (strcmp(strncpy((*group_descriptions)[g], descriptions[g], STR_GROUP_DESC_LIMIT - 1), descriptions[g]) != 0)
+		{
+			printf("strings:\n%s\n%s\n", descriptions[g], (*group_descriptions)[g]);
+			perror("Copying a string (group_descriptions[])");
+			goto DESCRIPTIONS;
 		}
 	}
 
 
-	/* Computing the histograms */
 	for (int c = 0 ; c < N_conf ; c++)
 	{
 		printf("conf: %d / %d\r", c + 1, N_conf);
@@ -359,24 +617,24 @@ error_t compute_histograms(int N_conf, int *N_selection, bool **layers, bool **e
 		{
 			int t;
 
-			// TODO: define classification
-			if (N_bonds[c][a] == 2)
+			// TODO: define the classification
+			if ((*atoms)[c][a].N_bonds == 2)
 				t = 4;
-			else if (layers[c][a] == 0 && electrodes[c][a] == 0)
-				t = 0;
-			else if (layers[c][a] == 0 && electrodes[c][a] == 1)
-				t = 1;
-			else if (layers[c][a] == 1 && electrodes[c][a] == 0)
-				t = 2;
-			else if (layers[c][a] == 1 && electrodes[c][a] == 1)
-				t = 3;
+			else
+			{
+				if (layers[c][a] == 0 && electrodes[c][a] == 0)
+					t = 0;
+				else if (layers[c][a] == 0 && electrodes[c][a] == 1)
+					t = 1;
+				else if (layers[c][a] == 1 && electrodes[c][a] == 0)
+					t = 2;
+				else if (layers[c][a] == 1 && electrodes[c][a] == 1)
+					t = 3;
+			}
 			
-			(*histograms)[c][t] += charges[c][a];
-			(*N_types)[c][t]++;
+			(*atoms)[c][a].group = t;
+			(*groups)[c][t].N++;
 		}
-
-		for (int t = 0 ; t < 5 ; t++)	// TODO: number of categories
-			(*histograms)[c][t] /= (*N_types)[c][t];
 	}
 
 
@@ -386,13 +644,36 @@ error_t compute_histograms(int N_conf, int *N_selection, bool **layers, bool **e
 
 
 	/* Errors */
-	TYPES: free(N_types);
-	HIST: free(histograms);
+	DESCRIPTIONS: free(group_descriptions);
+	GROUPS: free(groups);
 	return ENOMEM;
 }
 
 
-error_t write_hist(char *file_name, int N_conf, int **N_types, int *timestep, double **histograms)
+int compute_histograms(int N_conf, int *N_selection, Atom **atoms, bool **layers, bool **electrodes, int N_groups, Group ***groups)
+{
+	printf("Computing the histograms...\n");
+
+	
+	/* Computing the histograms */
+	for (int c = 0 ; c < N_conf ; c++)
+	{
+		printf("conf: %d / %d\r", c + 1, N_conf);
+		for (int a = 0 ; a < N_selection[c] ; a++)
+			(*groups)[c][atoms[c][a].group].average += atoms[c][a].q;
+
+		for (int t = 0 ; t < N_groups ; t++)
+			(*groups)[c][t].average /= (*groups)[c][t].N;
+	}
+
+
+	/* Success */
+	// Exiting normally
+	return 0;
+}
+
+
+int write_hist(char *file_name, int N_conf, int *timestep, int N_groups, char **group_descriptions, Group **groups)
 {
 	printf("Writing the histograms...\n");
 	/* Opening the file */
@@ -406,17 +687,24 @@ error_t write_hist(char *file_name, int N_conf, int **N_types, int *timestep, do
 
 
 	/* Writing the output */
+	// Groups informations
+	fprintf(output, "# Groups informations:\n");
+	for (int g = 0 ; g < N_groups ; g++)
+		fprintf(output, "#   %d: %s\n", g + 1, group_descriptions[g]);
+	
+	// Header
 	fprintf(output, "# step");
 	for (int t = 0 ; t < 5 ; t++)
 		fprintf(output, " q%d N%d", t + 1, t + 1);
 	fprintf(output, "\n");
 
+	// Data
 	for (int c = 0 ; c < N_conf ; c++)
 	{
 		printf("conf: %d / %d\r", c + 1, N_conf);
 		fprintf(output, " %d", timestep[c]);
-		for (int t = 0 ; t < 5 ; t++)	// TODO: number of categories
-			fprintf(output, " %lf %d", histograms[c][t], N_types[c][t]);
+		for (int t = 0 ; t < N_groups ; t++)
+			fprintf(output, " %lf %d", groups[c][t].average, groups[c][t].N);
 		fprintf(output, "\n");
 	}
 
@@ -430,18 +718,28 @@ error_t write_hist(char *file_name, int N_conf, int **N_types, int *timestep, do
 }
 
 
-error_t compute_samples(int N_conf, int *N_selection, double **charges, int **N_bonds, bool **layers, bool **electrodes, double ***samples)
+int compute_samples(int N_conf, int *N_selection, Atom **atoms, int N_groups, Atom ***samples)
 {
 	/* Allocating the array */
-	if ((*samples = malloc(N_conf * sizeof(double *))) == NULL)
+	int *indices;
+	if ((indices = malloc(N_groups * sizeof(int))) == NULL)
+	{
+		perror("Allocating an array (indices)");
+		return ENOMEM;
+	}
+
+	for (int t = 0 ; t < N_groups ; t++)
+		indices[t] = -1;
+
+	if ((*samples = malloc(N_conf * sizeof(Atom *))) == NULL)
 	{
 		perror("Allocating an array (samples)");
-		return ENOMEM;
+		goto INDICES;
 	}
 	
 	for (int c = 0 ; c < N_conf ; c++)
 	{
-		if (((*samples)[c] = malloc(5 * sizeof(double))) == NULL)
+		if (((*samples)[c] = malloc(N_groups * sizeof(Atom))) == NULL)
 		{
 			perror("Allocating an array slot (samples[])");
 			goto SAMPLES;
@@ -451,42 +749,47 @@ error_t compute_samples(int N_conf, int *N_selection, double **charges, int **N_
 
 	/* Extracting the atoms indices */
 	// We assume the groups are static
-	int indices[5] = {-1, -1, -1, -1, -1};
-	for (int a = 0 ; a < N_selection[0] && (indices[0] == -1 || indices[1] == -1 || indices[2] == -1 || indices[3] == -1 || indices[4] == -1) ; a++)
+	bool done = false;
+	for (int a = 0 ; a < N_selection[0]; a++)
 	{
-		if (indices[4] == -1 && N_bonds[0][a] == 2)
-			indices[4] = a;
-		else if (indices[0] == -1 && (layers[0][a] == 0 && electrodes[0][a] == 0))
-			indices[0] = a;
-		else if (indices[1] == -1 && (layers[0][a] == 0 && electrodes[0][a] == 1))
-			indices[1] = a;
-		else if (indices[2] == -1 && (layers[0][a] == 1 && electrodes[0][a] == 0))
-			indices[2] = a;
-		else if (indices[3] == -1 && (layers[0][a] == 1 && electrodes[0][a] == 1))
-			indices[3] = a;
+		done = true;
+		for (int t = 0 ; t < N_groups ; t++)
+			done = done && (indices[t] != -1);
+		
+		if (done)
+			break;
+
+		int t = atoms[0][a].group;
+		if (indices[t] == -1)
+			indices[t] = a;
 	}
 
 
 	/* Extracting the charges from the samples */
 	for (int c = 0 ; c < N_conf ; c++)
-		for (int g = 0 ; g < 5 ; g++)
-			(*samples)[c][g] = charges[c][indices[g]];
+		for (int t = 0 ; t < N_groups ; t++)
+			(*samples)[c][t] = atoms[c][indices[t]];
 
 
 	/* Success */
+	free(indices);
+
 	// Exiting normally
 	return 0;
 
 
 	/* Errors */
+	INDICES: free(indices);
 	SAMPLES: free(samples);
 	return ENOMEM;
 }
 
 
-error_t write_samples(char *file_name, int N_conf, int *timestep, double **samples)
+error_t write_samples(char *file_name, int N_conf, int *timestep, int N_groups, Atom **samples)
 {
 	printf("Writing the samples...\n");
+
+
 	/* Opening the file */
 	FILE* output;
 
@@ -498,8 +801,12 @@ error_t write_samples(char *file_name, int N_conf, int *timestep, double **sampl
 
 
 	/* Writing the output */
+	fprintf(output, "# Samples serial indices:\n");
+	for (int t = 0 ; t < N_groups ; t++)
+		fprintf(output, "#   %d: %d\n", t + 1, samples[0][t].serial);
+
 	fprintf(output, "# step");
-	for (int t = 0 ; t < 5 ; t++)
+	for (int t = 0 ; t < N_groups ; t++)
 		fprintf(output, " q%d", t + 1);
 	fprintf(output, "\n");
 
@@ -507,8 +814,8 @@ error_t write_samples(char *file_name, int N_conf, int *timestep, double **sampl
 	{
 		printf("conf: %d / %d\r", c + 1, N_conf);
 		fprintf(output, " %d", timestep[c]);
-		for (int t = 0 ; t < 5 ; t++)	// TODO: number of categories
-			fprintf(output, " %lf", samples[c][t]);
+		for (int t = 0 ; t < N_groups ; t++)
+			fprintf(output, " %lf", samples[c][t].q);
 		fprintf(output, "\n");
 	}
 
@@ -524,10 +831,6 @@ error_t write_samples(char *file_name, int N_conf, int *timestep, double **sampl
 
 int main(int argc, char **argv)
 {
-	/* Error code */
-	error_t err;
-
-
 	/* Parsing the arguments */
 	struct arguments arguments;
 
@@ -545,40 +848,38 @@ int main(int argc, char **argv)
 	/* Reading the configurations */
 	// Declaring the arrays
 	int N_conf, *steps, *N_selection;
-	// int **indices;
-	// double ***pos, **charges;
 	Atom **atoms;
 	double **bounds;
 
 	// Reading the file
-	// if ((errno = read(arguments.args[0], arguments.start, &N_conf, &steps, &N_selection, &bounds, &indices, &pos, &charges)) != 0)
-	// 	goto READ;
 	if ((errno = read_trajectory(arguments.args[0], arguments.start, &N_conf, &steps, &N_selection, &bounds, &atoms)) != 0)
 		goto READ;
 
 
 	/* Computing the bonds */
 	// The bonds parameters
-	const double R = 1.7, delta = .5;
+	const double R = 1.7;
 
 	// Declaring the arrays
-	int **N_bonds, ***bonds;
+	// int **N_bonds, ***bonds;
 
 	// Computing the bonds
-	if ((errno = compute_bonds(N_conf, N_selection, bounds, indices, pos, charges, &N_bonds, &bonds, R, delta)) != 0)
+	// if ((errno = compute_bonds(N_conf, N_selection, bounds, indices, pos, charges, &N_bonds, &bonds, R, delta)) != 0)
+	// 	goto READ;
+	if ((errno = compute_cutoff_bonds(N_conf, N_selection, bounds, &atoms, R)) != 0)
 		goto READ;
 
 
 	/* Computing the layers */
 	// The plates separation parameters
-	const double sep = 3.2, dz = .5;
+	const double sep = 3.5;
 
 	// Declaring the array
 	bool **layers;
 
 	// Computing the layers
-	if ((errno = compute_layers(N_conf, N_selection, bounds, pos, &layers, sep, dz)) != 0)
-		goto BONDS;
+	if ((errno = compute_layers(N_conf, N_selection, bounds, atoms, &layers, sep)) != 0)
+		goto READ;
 
 
 	/* Computing the charges histogram */
@@ -590,39 +891,43 @@ int main(int argc, char **argv)
 	bool **electrodes;
 
 	// Computing the electrodes
-	if ((errno = compute_electrodes(N_conf, N_selection, bounds, pos, &electrodes, limits)) != 0)
+	if ((errno = compute_electrodes(N_conf, N_selection, bounds, atoms, &electrodes, limits)) != 0)
 		goto LAYERS;
 
 	
 	/* Computing the histograms */
 	// Declaring the arrays
-	double **histograms;
-	int **N_types;
+	int N_groups;
+	Group **groups;
+	char **group_descriptions;
 
 	// Computing the histograms
-	if ((errno = compute_histograms(N_conf, N_selection, layers, electrodes, charges, N_bonds, &histograms, &N_types)) != 0)
+	if ((errno = compute_classification(N_conf, N_selection, layers, electrodes, &atoms, &N_groups, &groups, &group_descriptions)) != 0)
 		goto ELECTRODES;
+
+	if ((errno = compute_histograms(N_conf, N_selection, atoms, layers, electrodes, N_groups, &groups)) != 0)
+		goto GROUPS;
 	
 	// Writing the histograms
-	if ((errno = write_hist("graphite.hist", N_conf, N_types, steps, histograms)) != 0)
-		goto HIST;
+	if ((errno = write_hist("graphite.hist", N_conf, steps, N_groups, group_descriptions, groups)) != 0)
+		goto GROUPS;
 	
 
 	/* Computing the samples */
 	// Declaring the array
-	double **samples;
+	Atom **samples;
 
 	// Computing the samples
-	if ((errno = compute_samples(N_conf, N_selection, charges, N_bonds, layers, electrodes, &samples)) != 0)
-		goto HIST;
+	if ((errno = compute_samples(N_conf, N_selection, atoms, N_groups, &samples)) != 0)
+		goto GROUPS;
 	
 	// Writing the samples
-	if ((errno = write_samples("samples.log", N_conf, steps, samples)) != 0)
+	if ((errno = write_samples("samples.log", N_conf, steps, N_groups, samples)) != 0)
 		goto SAMPLES;
 
 
 	/* Writing the output */
-	if ((errno = write("graphite.lammpstrj", N_conf, N_selection, steps, bounds, indices, pos, charges, N_bonds, bonds, layers, electrodes)) != 0)
+	if ((errno = write("graphite.lammpstrj", N_conf, N_selection, steps, bounds, atoms, layers, electrodes)) != 0)
 		goto SAMPLES;
 
 
@@ -632,10 +937,9 @@ int main(int argc, char **argv)
 
 	/* Error handling */
 	SAMPLES: free(samples);
-	HIST: free(histograms), free(N_types);
+	GROUPS: free(group_descriptions), free(groups);
 	ELECTRODES: free(electrodes);
 	LAYERS: free(layers);
-	BONDS: free(N_bonds), free(bonds);
-	READ: free(select), free(pos);
+	READ: free(bounds), free(atoms), free(N_selection), free(steps);
 	exit(EXIT_FAILURE);
 }

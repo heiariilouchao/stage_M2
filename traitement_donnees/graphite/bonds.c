@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <math.h>
 
 
 #include "bonds.h"
@@ -94,27 +93,3 @@ int compute_cutoff_bonds(int N_conf, int *N_selection, double **bounds, Atom ***
 			free((*atoms)[c][a].bonded);
 	return ENOMEM;
 }
-
-
-// int main (int argc, char **argv)
-// {
-// 	/* Reading the configurations */
-// 	// Declaring the arrays
-// 	int N_conf, *steps, *N_selection;
-// 	Atom **atoms;
-// 	double **bounds;
-
-// 	// Reading the file
-// 	if ((errno = read_trajectory("data/defected.lammpstrj", 0, &N_conf, &steps, &N_selection, &bounds, &atoms)) != 0)
-// 		exit(EXIT_FAILURE);
-
-
-// 	/* Computing the bonds */
-// 	double R = 1.7;
-// 	if ((errno = compute_cutoff_bonds(N_conf, N_selection, bounds, &atoms, R)) != 0)
-// 		exit(EXIT_FAILURE);
-	
-
-// 	/* Success */
-// 	return 0;
-// }
