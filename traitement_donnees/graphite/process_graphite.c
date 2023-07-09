@@ -194,6 +194,8 @@ int compute_classification(int N_conf, int *N_selection, bool **layers, bool **e
 		}
 	}
 
+
+	/* Initializing the group descriptions */
 	// TODO: input group descriptions
 	const char * descriptions[] =
 	{
@@ -204,6 +206,7 @@ int compute_classification(int N_conf, int *N_selection, bool **layers, bool **e
 		"Bonded to two atoms"
 	};
 
+	// Copying the descriptions
 	if ((*group_descriptions = malloc(*N_groups * sizeof(char *))) == NULL)
 	{
 		perror("Allocating an array (group_descriptions)");
@@ -227,6 +230,7 @@ int compute_classification(int N_conf, int *N_selection, bool **layers, bool **e
 	}
 
 
+	/* Computing the classification */
 	for (int c = 0 ; c < N_conf ; c++)
 	{
 		printf("conf: %d / %d\r", c + 1, N_conf);
@@ -293,6 +297,8 @@ int compute_histograms(int N_conf, int *N_selection, Atom **atoms, bool **layers
 int write_hist(char *file_name, int N_conf, int *timestep, int N_groups, char **group_descriptions, Group **groups)
 {
 	printf("Writing the histograms...\n");
+
+
 	/* Opening the file */
 	FILE* output;
 
@@ -520,7 +526,7 @@ int main(int argc, char **argv)
 		goto GROUPS;
 	
 	// Writing the histograms
-	if ((errno = write_hist("graphite.hist", N_conf, steps, N_groups, group_descriptions, groups)) != 0)
+	if ((errno = write_hist("output/graphite.hist", N_conf, steps, N_groups, group_descriptions, groups)) != 0)
 		goto GROUPS;
 	
 
@@ -533,12 +539,12 @@ int main(int argc, char **argv)
 		goto GROUPS;
 	
 	// Writing the samples
-	if ((errno = write_samples("samples.log", N_conf, steps, N_groups, samples)) != 0)
+	if ((errno = write_samples("output/samples.log", N_conf, steps, N_groups, samples)) != 0)
 		goto SAMPLES;
 
 
 	/* Writing the output */
-	if ((errno = write("graphite.lammpstrj", N_conf, N_selection, steps, bounds, atoms, layers, electrodes)) != 0)
+	if ((errno = write("output/graphite.lammpstrj", N_conf, N_selection, steps, bounds, atoms, layers, electrodes)) != 0)
 		goto SAMPLES;
 
 
