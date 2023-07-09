@@ -1,14 +1,18 @@
 log         	data/log.setup
-# -------------------- Init Section --------------------
-include     	"in.init.spce"
+# -------------------- Parameters --------------------
+units       	real
+atom_style  	full
+boundary    	p p p
 
 
-# -------------------- Atom Definition Section --------------------
-read_data   	"data.spce"
+# -------------------- System definition --------------------
+read_data   	"data.reax"
 
 
-# -------------------- Settings Section --------------------
-include     	"in.settings.spce"
+# -------------------- Interactions --------------------
+pair_style  	reax/c NULL safezone 2.0 mincap 200 minhbonds 100
+pair_coeff  	* * ffield.reax.reax H O
+fix         	Qeq all qeq/reax 1 0.0 10.0 1e-06 reax/c
 
 
 log         	data/log.minimize
@@ -16,7 +20,7 @@ log         	data/log.minimize
 thermo      	10
 thermo_style 	custom step pe press
 
-minimize    	1.0e-03 1.0e-05 100 1000
+minimize    	1.0e-05 1.0e-06 100 1000
 
 
 log         	data/log.relaxation
@@ -25,7 +29,7 @@ timestep    	0.1
 
 velocity    	all create 300.0 98715
 
-fix         	relaxation_ensemble all npt temp 300.0 300.0 $(100.0*dt) aniso 0.0 0.0 $(1000*dt)
+fix         	relaxation_ensemble all npt temp 300.0 300.0 $(100*dt) aniso 0.0 0.0 $(1000*dt)
 
 dump        	relaxation_positions all custom 1000 data/relaxation.lammpstrj id element x y z
 dump_modify 	relaxation_positions element H O pbc yes
@@ -39,14 +43,14 @@ undump      	relaxation_positions
 unfix       	relaxation_ensemble
 
 
-log         	data/log.spce
-# -------------------- Main simulation --------------------
+log         	data/log.reax
+# -------------------- Main simulation --------------------
 timestep    	0.1
 
 fix         	ensemble all nvt temp 300.0 300.0 $(100*dt)
 
-dump        	positions all custom 1000 data/spce.lammpstrj id element x y z xu yu zu q
-dump_modify 	positions element H O pbc yes
+dump        	positions all custom 1000 data/reax.lammpstrj id element x y z xu yu zu q
+dump_modify		positions element H O pbc yes
 
 thermo      	1000
 thermo_style 	custom step temp pe ke press

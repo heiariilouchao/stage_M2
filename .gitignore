@@ -1,15 +1,12 @@
-# LAMMPS trajectory files
+# LAMMPS
 *.lammpstrj
-
-
-# LAMMPS log files
 *.log
 log.*
+*.bonds
 
 
 # Data-related and custom file formats
 data/
-*.bonds
 *.dat
 *.msd
 *.rdf

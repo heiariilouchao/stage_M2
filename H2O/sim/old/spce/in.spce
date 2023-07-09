@@ -1,0 +1,38 @@
+
+# ----------------- Init Section -----------------
+include "in.init.spce"
+
+
+# ----------------- Atom Definition Section -----------------
+read_data "data.spce"
+
+
+# ----------------- Settings Section -----------------
+include "in.settings.spce"
+
+
+# ----------------- Run Section -----------------
+#  -- minimize --
+thermo  	1
+minimize 1.0e-03 1.0e-05 100 1000
+
+#  -- declare time step for normal MD --
+timestep 0.1
+
+#  -- dump positions and thermodynamic quantities --
+dump 		positions all custom 1000 data/spce.lammpstrj id element x y z xu yu zu
+dump_modify     positions element O H 
+thermo          1000
+thermo_style    custom step temp pe ke press
+
+
+#  -- Initializing the velocities
+velocity	all create 300.0 98715
+
+
+#  -- run at constant volume and temperature
+fix   ensemble all nvt temp 300.0 300.0 $(100.0*dt)
+
+#  -- Now, finally run the simulation --
+run   20000000
+
