@@ -7,16 +7,19 @@
 log.*
 
 
-# ReaxFF bonds files
+# Data-related and custom file formats
+data/
 *.bonds
-
-
-# Custom file formats
 *.dat
 *.msd
 *.rdf
 *.hist
 
 
-# C files
-*.o
+# Build and binary directories
+build/
+bin/
+
+
+# VSCode specific directories
+.vscode
