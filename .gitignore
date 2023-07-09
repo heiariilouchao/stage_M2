@@ -16,3 +16,7 @@ log.*
 *.msd
 *.rdf
 *.hist
+
+
+# C files
+*.o
