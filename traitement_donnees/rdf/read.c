@@ -164,16 +164,22 @@ int read_trajectory(char *file_name, int timestep, int N_elements, char *labels,
 					goto IO;
 				}
 
-				if (strstr(labels, element) == NULL)
-				{
-					if (fgets(element, STR_BUFF_LIMIT, input) == NULL)
-					{
-						perror("Dumping a line");
-						goto IO;
-					}
+				// if (strstr(labels, element) == NULL)
+				// {
+				// 	if (fgets(element, STR_BUFF_LIMIT, input) == NULL)
+				// 	{
+				// 		perror("Dumping a line");
+				// 		goto IO;
+				// 	}
 
+				// 	continue;
+				// }
+
+				int error;
+				if ((error = select_atom(input, labels, element)) == -1)
+					goto IO;
+				else if (error == 1)
 					continue;
-				}
 
 				(*N_selection)[*N_conf - 1]++;
                 (*atoms)[*N_conf - 1][(*N_selection)[*N_conf - 1] - 1].serial = index;
@@ -222,4 +228,21 @@ int read_trajectory(char *file_name, int timestep, int N_elements, char *labels,
 	/* Errors */
 	IO: return EIO;
 	NOMEM: return ENOMEM;
+}
+
+
+int select_atom(FILE *file, char *labels, char *element)
+{
+	if (strstr(labels, element) == NULL)
+	{
+		if (fgets(element, STR_BUFF_LIMIT, file) == NULL)
+		{
+			perror("Dumping a line");
+			return -1;
+		}
+
+		return 1;
+	}
+
+	return 0;
 }

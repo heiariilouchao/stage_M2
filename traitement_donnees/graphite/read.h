@@ -1,6 +1,9 @@
 # ifndef READ_H
 # define READ_H
 
+
+# include <stdio.h>
+
 # include "utils.h"
 
 
@@ -10,5 +13,8 @@
 
 
 int read_trajectory(char *file_name, int timestep, int *N_conf, int **steps, int **N_selection, double ***bounds, Atom ***atoms);
+
+int select_atom(FILE *file, char *labels, char *element);
+
 
 # endif
