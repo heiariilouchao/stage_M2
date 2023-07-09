@@ -252,13 +252,7 @@ int main(int argc, char **argv)
 	/* Computing the pairs */
 	int **pair_map;
 	if ((errno = compute_pairs(arguments.N_elements, &pair_map)) != 0)
-		goto READ;
-	
-	for (int i = 0 ; i < arguments.N_elements ; i++)
-		for (int j = 0 ; j < arguments.N_elements ; j++)
-			printf("%d %d %d\n", i, j, pair_map[i][j]);
-	printf("\n");
-	
+		goto READ;	
 
 	/* Computing the RDFs */
 	double *r, **RDF;
