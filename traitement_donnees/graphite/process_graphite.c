@@ -10,113 +10,6 @@
 # include "read.h"
 # include "bonds.h"
 
-// static char doc[] = "Computing the MSDs of a .lammpstrj configurations file.";
-
-// static char args_doc[] = "CONF_FILE";
-
-// static struct argp_option options[] =
-// {
-// 	{
-// 		"start",
-// 		's',
-// 		"START",
-// 		OPTION_ARG_OPTIONAL,
-// 		"The step to start from. Default is 0."
-// 	},
-// 	{0}
-// };
-
-// struct arguments
-// {
-// 	char *args[1];
-// 	int start;
-// };
-
-// static error_t parse(int key, char *arg, struct argp_state *state)
-// {
-// 	struct arguments *args = state->input;
-
-// 	switch (key)
-// 	{
-// 	case 's':
-// 		args->start = atoi(arg);
-// 		if (args->start < 0)
-// 			return EINVAL;
-// 		break;
-// 	case ARGP_KEY_ARG:
-// 		if (state->arg_num >= 1)
-// 			argp_usage(state);
-// 		args->args[state->arg_num] = arg;
-// 		break;
-// 	case ARGP_KEY_END:
-// 		if (state->arg_num < 1)
-// 			argp_usage(state);
-// 		break;
-// 	default:
-// 		return ARGP_ERR_UNKNOWN;
-// 	}
-// 	return 0;
-// }
-
-// static struct argp parser =
-// {
-// 	options,
-// 	parse,
-// 	args_doc,
-// 	doc
-// };
-
-
-// int write(char *file_name, int N_conf, int *N_selection, int *steps, double **bounds, int **indices, double ***pos, double **charges, int **N_bonds, int ***bonds, bool **layers, bool **electrodes)
-// {
-// 	printf("Writing output...\n");
-
-// 	/* Opening the output file */
-// 	FILE *output = fopen(file_name, "w");
-// 	if (output == NULL)
-// 	{
-// 		perror("Opening the output file");
-// 		return EIO;
-// 	}
-
-
-// 	/* Writing */
-// 	for (int c = 0 ; c < N_conf ; c++)
-// 	{
-// 		printf("conf: %d / %d\r", c + 1, N_conf);
-
-// 		fprintf(output, "ITEM: TIMESTEP\n%d\n", steps[c]);
-
-// 		fprintf(output, "ITEM: NUMBER OF ATOMS\n%d\n", N_selection[c]);
-
-// 		fprintf(output, "ITEM: BOX BOUNDS pp pp pp\n");
-// 		for (int d = 0 ; d < 3 ; d++)
-// 			fprintf(output, "%lf %lf\n", bounds[c][2 * d], bounds[c][2 * d + 1]);
-		
-// 		fprintf(output, "ITEM: ATOMS id element x y z q nb id1 id2 id3 id4 in electrode\n");
-// 		for (int a = 0 ; a < N_selection[c] ; a++)
-// 		{
-// 			fprintf(output, "%d %s", indices[c][a], "C");
-// 			for (int d = 0 ; d < 3 ; d++)
-// 				fprintf(output, " %lf", pos[c][a][d]);
-// 			fprintf(output, " %lf %d", charges[c][a], N_bonds[c][a]);
-// 			for (int b = 0 ; b < N_bonds[c][a] ; b++)
-// 				fprintf(output, " %d", indices[c][bonds[c][a][b]]);
-// 			for (int b = N_bonds[c][a] ; b < 4 ; b++)
-// 				fprintf(output, " N/A");
-// 			fprintf(output, " %d %d\n", layers[c][a], electrodes[c][a]);
-// 		}
-// 	}
-
-
-// 	/* Exiting successfully */
-// 	// Closing the file
-// 	fclose(output);
-
-// 	// Exiting
-// 	return 0;
-// }
-
 
 int write(char *file_name, int N_conf, int *N_selection, int *steps, double **bounds, Atom **atoms, bool **layers, bool **electrodes)
 {
@@ -168,163 +61,6 @@ int write(char *file_name, int N_conf, int *N_selection, int *steps, double **bo
 }
 
 
-// error_t compute_bonds(int N_conf, int *N_selection, double **bounds, int **indices, double ***pos, double **charges, int ***N_bonds, int ****bonds, const double R, const double delta)
-// {
-// 	printf("Computing the bonds...\n");
-
-
-// 	/* Allocating the arrays */
-// 	if ((*N_bonds = malloc(N_conf * sizeof(int *))) == NULL)
-// 	{
-// 		perror("Allocating an array (N_bonds)");
-// 		return ENOMEM;
-// 	}
-	
-// 	if ((*bonds = malloc(N_conf * sizeof(int **))) == NULL)
-// 	{
-// 		perror("Allocating an array (bonds)");
-// 		goto NBONDS;
-// 	}
-
-// 	for (int c = 0; c < N_conf; c++)
-// 	{
-// 		if (((*N_bonds)[c] = calloc(N_selection[c], sizeof(int))) == NULL)
-// 		{
-// 			perror("Allocating an array slot (N_bonds[])");
-// 			goto BONDS;
-// 		}
-
-// 		if (((*bonds)[c] = malloc(N_selection[c] * sizeof(int *))) == NULL)
-// 		{
-// 			perror("Allocating an array slot (bonds[])");
-// 			goto BONDS;
-// 		}
-
-// 		for (int a = 0; a < N_selection[c]; a++)
-// 			if (((*bonds)[c][a] = malloc(4 * sizeof(int))) == NULL)
-// 			{
-// 				perror("Allocating an array slot (bonds[][])");
-// 				goto BONDS;
-// 			}
-// 	}
-
-// 	/* Actually computing the bonds */
-// 	for (int c = 0 ; c < N_conf ; c++)
-// 	{
-// 		printf("conf: %d / %d\r", c + 1, N_conf);
-// 		for (int i = 0 ; i < N_selection[c] ; i++)
-// 		{
-// 			for (int j = i + 1 ; j < N_selection[c] ; j++)
-// 			{
-// 				double r2 = 0.;
-
-// 				// Applying the PBC
-// 				for (int d = 0 ; d < 3 ; d++)
-// 				{
-// 					double length = bounds[c][2 * d + 1] - bounds[c][2 * d];
-// 					double diff = pos[c][j][d] - pos[c][i][d];
-
-// 					if (diff < - length / 2.)
-// 						diff += length;
-// 					else if (length / 2. < diff)
-// 						diff -= length;
-					
-// 					r2 += diff * diff;
-// 				}
-
-// 				// if ((R - delta) * (R - delta) <= r2 && r2 <= (R + delta) * (R + delta))
-// 				if (r2 <= (R * R)) // The bond condition
-// 				{
-// 					(*N_bonds)[c][i]++;
-// 					(*bonds)[c][i][(*N_bonds)[c][i] - 1] = j;
-
-// 					(*N_bonds)[c][j]++;
-// 					(*bonds)[c][j][(*N_bonds)[c][j] - 1] = i;
-// 				}
-// 			}
-
-// 			// Resizing the array to the actual number of bonds
-// 			if (((*bonds)[c][i] = realloc((*bonds)[c][i], (*N_bonds)[c][i] * sizeof(int))) == NULL)
-// 			{
-// 				perror("Resizing an array slot (bonds[][])");
-// 				goto BONDS;
-// 			}
-// 		}
-// 	}
-
-
-// 	/* Success */
-// 	// Exiting normally
-// 	return 0;
-
-
-// 	/* Errors */
-// 	BONDS: free(bonds);
-// 	NBONDS: free(N_bonds);
-// 	return ENOMEM;
-// }
-
-
-// error_t compute_layers(int N_conf, int *N_selection, double **bounds, double ***pos, bool ***layers, const double sep, const double delta)
-// {
-// 	printf("Computing the layers...\n");
-
-// 	/* Allocating the arrays*/
-// 	if ((*layers = malloc(N_conf * sizeof(bool *))) == NULL)
-// 	{
-// 		perror("Allocating the array (layers)");
-// 		return ENOMEM;
-// 	}
-
-// 	for (int c = 0; c < N_conf; c++)
-// 		if (((*layers)[c] = calloc(N_selection[c], sizeof(bool))) == NULL)
-// 		{
-// 			perror("Allocating the array slot (layers[c])");
-// 			goto LAYERS;
-// 		}
-	
-
-// 	/* Actually computing the layers */
-// 	for (int c = 0 ; c < N_conf ; c++)
-// 	{
-// 		printf("conf: %d / %d\r", c + 1, N_conf);
-// 		for (int i = 0 ; i < N_selection[c] ; i++)
-// 		{
-// 			bool above = false, under = false;
-
-// 			for (int j = 0; j < N_selection[c] && !(above && under); j++)
-// 			{
-// 				double diff = pos[c][j][2] - pos[c][i][2];
-
-// 				// Applying the PBC
-// 				double length = bounds[c][2 * 2 + 1] - bounds[c][2 * 2];
-// 				if (diff < - length / 2.)
-// 					diff += length;
-// 				else if (length / 2. < diff)
-// 					diff -= length;
-
-// 				if (!above)
-// 					above = (bool) (sep - delta <= diff) && (diff <= sep + delta);
-// 				if (!under)
-// 					under = (bool) (-sep - delta <= diff) && (diff <= -sep + delta);
-// 			}
-
-// 			(*layers)[c][i] = above && under;
-// 		}
-// 	}
-	
-	
-// 	/* Success */
-// 	// Exiting normally
-// 	return 0;
-
-
-// 	/* Errors */
-// 	LAYERS: free(layers);
-// 	return ENOMEM;
-// }
-
-
 int compute_layers(int N_conf, int *N_selection, double **bounds, Atom **atoms, bool ***layers, const double sep)
 {
 	printf("Computing the layers...\n");
@@ -354,7 +90,6 @@ int compute_layers(int N_conf, int *N_selection, double **bounds, Atom **atoms, 
 
 			for (int j = 0; j < N_selection[c] && !(above && under); j++)
 			{
-				// double diff = pos[c][j][2] - pos[c][i][2];
 				double diff = atoms[c][j].z - atoms[c][i].z;
 
 				// Applying the PBC
@@ -366,11 +101,9 @@ int compute_layers(int N_conf, int *N_selection, double **bounds, Atom **atoms, 
 
 				// TODO: check the conditions !!!
 				if (!above)
-					// above = (bool) (sep - delta <= diff) && (diff <= sep + delta);
-					above = (bool) (0. <= diff && diff <= sep);
+					above = (bool) (sep / 2. <= diff && diff <= sep);
 				if (!under)
-					// under = (bool) (-sep - delta <= diff) && (diff <= -sep + delta);
-					under = (bool) (- sep <= diff && diff <= 0.);
+					under = (bool) (- sep <= diff && diff <= - sep / 2.);
 			}
 
 			(*layers)[c][i] = above && under;
@@ -387,47 +120,6 @@ int compute_layers(int N_conf, int *N_selection, double **bounds, Atom **atoms, 
 	LAYERS: free(layers);
 	return ENOMEM;
 }
-
-
-// error_t compute_electrodes(int N_conf, int *N_selection, double **bounds, double ***pos, bool ***electrodes, const double limits[2])
-// {
-// 	printf("Computing the bonds...\n");
-
-
-// 	/* Allocating the electrodes array */
-// 	if ((*electrodes = malloc(N_conf * sizeof(bool *))) == NULL)
-// 	{
-// 		perror("Allocating an array (electrodes)");
-// 		return ENOMEM;
-// 	}
-
-// 	for (int c = 0 ; c < N_conf ; c++)
-// 		if (((*electrodes)[c] = malloc(N_selection[c] * sizeof(bool))) == NULL)
-// 		{
-// 			perror("Allocating an array slot (electrodes[])");
-// 			goto ELECTRODES;
-// 		}
-	
-
-
-// 	/* Computing the electrodes */
-// 	for (int c = 0 ; c < N_conf ; c++)
-// 	{
-// 		printf("conf: %d / %d\r", c + 1, N_conf);
-// 		for (int a = 0 ; a < N_selection[c] ; a++)
-// 			(*electrodes)[c][a] = (limits[0] <= pos[c][a][2] && pos[c][a][2] <= limits[1]);
-// 	}
-	
-	
-// 	/* Success */
-// 	// Exiting normally
-// 	return 0;
-
-
-// 	/* Errors */
-// 	ELECTRODES: free(electrodes);
-// 	return ENOMEM;
-// }
 
 
 int compute_electrodes(int N_conf, int *N_selection, double **bounds, Atom **atoms, bool ***electrodes, const double limits[2])
@@ -469,81 +161,6 @@ int compute_electrodes(int N_conf, int *N_selection, double **bounds, Atom **ato
 	ELECTRODES: free(electrodes);
 	return ENOMEM;
 }
-
-
-// error_t compute_histograms(int N_conf, int *N_selection, bool **layers, bool **electrodes, double **charges, int **N_bonds, double ***histograms, int ***N_types)
-// {
-// 	printf("Computing the histograms...\n");
-
-
-// 	/* Allocating the arrays */
-// 	if ((*histograms = malloc(N_conf * sizeof(double *))) == NULL)
-// 	{
-// 		perror("Allocating an array (histograms)");
-// 		return ENOMEM;
-// 	}
-
-// 	if ((*N_types = malloc(N_conf * sizeof(int *))) == NULL)
-// 	{
-// 		perror("Allocating an array (N_types)");
-// 		goto HIST;
-// 	}
-
-// 	for (int c = 0 ; c < N_conf ; c++)
-// 	{
-// 		if (((*histograms)[c] = calloc(5, sizeof(double))) == NULL)	// TODO: number of categories
-// 		{
-// 			perror("Allocating an array slot (histograms[])");
-// 			goto TYPES;
-// 		}
-
-// 		if (((*N_types)[c] = malloc(5 * sizeof(int))) == NULL)	// TODO: number of categories
-// 		{
-// 			perror("Allocating an array slot (N_types)");
-// 			goto TYPES;
-// 		}
-// 	}
-
-
-// 	/* Computing the histograms */
-// 	for (int c = 0 ; c < N_conf ; c++)
-// 	{
-// 		printf("conf: %d / %d\r", c + 1, N_conf);
-// 		for (int a = 0 ; a < N_selection[c] ; a++)
-// 		{
-// 			int t;
-
-// 			// TODO: define classification
-// 			if (N_bonds[c][a] == 2)
-// 				t = 4;
-// 			else if (layers[c][a] == 0 && electrodes[c][a] == 0)
-// 				t = 0;
-// 			else if (layers[c][a] == 0 && electrodes[c][a] == 1)
-// 				t = 1;
-// 			else if (layers[c][a] == 1 && electrodes[c][a] == 0)
-// 				t = 2;
-// 			else if (layers[c][a] == 1 && electrodes[c][a] == 1)
-// 				t = 3;
-			
-// 			(*histograms)[c][t] += charges[c][a];
-// 			(*N_types)[c][t]++;
-// 		}
-
-// 		for (int t = 0 ; t < 5 ; t++)	// TODO: number of categories
-// 			(*histograms)[c][t] /= (*N_types)[c][t];
-// 	}
-
-
-// 	/* Success */
-// 	// Exiting normally
-// 	return 0;
-
-
-// 	/* Errors */
-// 	TYPES: free(N_types);
-// 	HIST: free(histograms);
-// 	return ENOMEM;
-// }
 
 
 int compute_classification(int N_conf, int *N_selection, bool **layers, bool **electrodes, Atom ***atoms, int *N_groups, Group ***groups, char ***group_descriptions)
@@ -860,12 +477,7 @@ int main(int argc, char **argv)
 	// The bonds parameters
 	const double R = 1.7;
 
-	// Declaring the arrays
-	// int **N_bonds, ***bonds;
-
 	// Computing the bonds
-	// if ((errno = compute_bonds(N_conf, N_selection, bounds, indices, pos, charges, &N_bonds, &bonds, R, delta)) != 0)
-	// 	goto READ;
 	if ((errno = compute_cutoff_bonds(N_conf, N_selection, bounds, &atoms, R)) != 0)
 		goto READ;
 
@@ -884,7 +496,6 @@ int main(int argc, char **argv)
 
 	/* Computing the charges histogram */
 	// The electrodes parameter
-	// const double limit = (bounds[0][5] - bounds[0][4]) / 2.;
 	const double limits[2] = {26.0, 35.0};
 
 	// Declaring the array
