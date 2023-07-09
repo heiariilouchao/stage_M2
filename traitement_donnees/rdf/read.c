@@ -7,7 +7,7 @@
 # include "read.h"
 
 
-int read_trajectory(char *file_name, int timestep, int *N_conf, int **steps, int **N_selection, double ***bounds, Atom ***atoms)
+int read_trajectory(char *file_name, int timestep, int N_elements, char *labels, char **elements, int *N_conf, int **steps, int **N_selection, double ***bounds, Atom ***atoms)
 {
 	printf("Reading configuration file...\n");
 
@@ -156,16 +156,17 @@ int read_trajectory(char *file_name, int timestep, int *N_conf, int **steps, int
 			for (int a = 0 ; a < N_atoms ; a++)
 			{
 				int index;
+                char element[STR_BUFF_LIMIT];
 				
-				if (fscanf(input, "%d %s", &index, str) != 2)
+				if (fscanf(input, "%d %s", &index, element) != 2)
 				{
 					perror("Reading an atom index and element");
 					goto IO;
 				}
 
-				if (strncmp(str, "C", 1) != 0)
+				if (strstr(labels, element) == NULL)
 				{
-					if (fgets(str, STR_BUFF_LIMIT, input) == NULL)
+					if (fgets(element, STR_BUFF_LIMIT, input) == NULL)
 					{
 						perror("Dumping a line");
 						goto IO;
@@ -177,7 +178,14 @@ int read_trajectory(char *file_name, int timestep, int *N_conf, int **steps, int
 				(*N_selection)[*N_conf - 1]++;
                 (*atoms)[*N_conf - 1][(*N_selection)[*N_conf - 1] - 1].serial = index;
 
-				if (fscanf(input, "%lf %lf %lf %*f %*f %*f %lf",
+				for (int e = 0 ; e < N_elements ; e++)
+					if (strcmp(element, elements[e]) == 0)
+					{
+						(*atoms)[*N_conf - 1][(*N_selection)[*N_conf - 1] - 1].element_ID = e;
+						break;
+					}
+
+				if (fscanf(input, "%lf %lf %lf %*f %*f %*f %lf\n",
                     &((*atoms)[*N_conf - 1][(*N_selection)[*N_conf - 1] - 1].x),
                     &((*atoms)[*N_conf - 1][(*N_selection)[*N_conf - 1] - 1].y),
                     &((*atoms)[*N_conf - 1][(*N_selection)[*N_conf - 1] - 1].z),
