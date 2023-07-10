@@ -4,7 +4,7 @@ include     	"in.init.spce"
 
 
 # -------------------- Atom Definition Section --------------------
-read_data   	"data.spce"
+read_data   	data.spce
 
 
 # -------------------- Settings Section --------------------
@@ -13,10 +13,14 @@ include     	"in.settings.spce"
 
 log         	data/log.minimize
 # -------------------- Minimize --------------------
+fix         	relax all box/relax iso 1.0
+
 thermo      	10
 thermo_style 	custom step pe press
 
-minimize    	1.0e-03 1.0e-05 100 1000
+minimize    	1.0e-03 1.0e-05 1000 10000
+
+unfix       	relax
 
 
 log         	data/log.relaxation
@@ -25,7 +29,7 @@ timestep    	0.1
 
 velocity    	all create 300.0 98715
 
-fix         	relaxation_ensemble all npt temp 300.0 300.0 $(100.0*dt) aniso 0.0 0.0 $(1000*dt)
+fix         	relaxation_ensemble all npt temp 300.0 300.0 $(100.0*dt) aniso $(press) 1.0 $(1000.0*dt)
 
 dump        	relaxation_positions all custom 1000 data/relaxation.lammpstrj id element x y z
 dump_modify 	relaxation_positions element H O pbc yes
@@ -35,15 +39,18 @@ thermo_style 	custom step temp pe ke press vol density
 
 run         	100000
 
+if "$(abs(press)) > 10.0" then &
+	"unfix       	relaxation_ensemble" &
+	"fix         	relaxation_ensemble all npt temp 300.0 300.0 $(100.0*dt) aniso $(press) 1.0 $(1000.0*dt)" &
+	"run         	100000"
+
 undump      	relaxation_positions
 unfix       	relaxation_ensemble
 
 
 log         	data/log.spce
 # -------------------- Main simulation --------------------
-timestep    	0.1
-
-fix         	ensemble all nvt temp 300.0 300.0 $(100*dt)
+fix         	ensemble all nvt temp 300.0 300.0 $(100.0*dt)
 
 dump        	positions all custom 1000 data/spce.lammpstrj id element x y z xu yu zu q
 dump_modify 	positions element H O pbc yes
