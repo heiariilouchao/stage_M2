@@ -26,7 +26,7 @@ group   	positive variable upper_carbons
 
 
 # -------------------- Defining the interactions --------------------
-pair_style 	reax/c NULL
+pair_style 	reax/c NULL safezone 2.0 mincap 200 minhbonds 100
 pair_coeff 	* * ffield.reax.ch-sc H O Na C
 fix     	Qeq all qeq/shielded  1 10.0 1.0e-6 1000 reax/c
 
