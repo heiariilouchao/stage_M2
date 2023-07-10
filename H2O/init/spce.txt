@@ -1,0 +1,9 @@
+configuration_file: init.xyz
+output_file: ../sim/spce/data.spce
+atom_types: H O
+    masses: 1.008 15.9994
+    charges: 0.4238 -0.8476
+bond_types: 1
+    thresholds: 0.95 1.05
+angle_types: 1
+space_boundaries: 0.0 0.0 0.0 20.0 20.0 20.0
