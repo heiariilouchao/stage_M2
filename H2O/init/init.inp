@@ -3,5 +3,5 @@ output init.xyz
 filetype xyz
 structure water.xyz
 	number 267
-	inside box 0.75 0.75 0.75 19.25 19.25 19.25
+	inside box 1.25 1.25 1.25 18.75 18.75 18.75
 end structure
