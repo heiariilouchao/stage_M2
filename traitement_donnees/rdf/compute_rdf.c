@@ -50,12 +50,27 @@ int compute_pairs(int N_elements, int ***map)
 }
 
 
-int compute_rdf(int N_conf, int N_elements, int *N_selection, double **bounds, int N_bins, double cutoff, int N_pairs, int **map, Atom **atoms, double **r, double ***RDF)
+double compute_cutoff(double **bounds)
 {
+	double cutoff = bounds[0][1] - bounds[0][0];
+	if (bounds[0][3] - bounds[0][2] < cutoff)
+		cutoff = bounds[0][3] - bounds[0][2];
+	if (bounds[0][5] - bounds[0][4] < cutoff)
+		cutoff = bounds[0][5] - bounds[0][4];
+	return floor(cutoff / 2.);
+}
+
+
+int compute_rdf(int N_conf, int N_elements, int *N_selection, double **bounds, int N_bins, int N_pairs, Atom **atoms, double **r, double ***RDF)
+{
+	double cutoff = compute_cutoff(bounds);
 	double delta = cutoff / N_bins;
 
+	printf("Cutoff informations:\n\tcutoff: %lf\n\tbins: %d\n\tdelta: %lf\n", cutoff, N_bins, delta);
+
+
 	/* Allocating the arrays */
-	int **hist;
+	int *N, **map, **hist;
 
 	if (((*r) = malloc(N_bins * sizeof(double))) == NULL)
 	{
@@ -63,10 +78,19 @@ int compute_rdf(int N_conf, int N_elements, int *N_selection, double **bounds, i
 		return ENOMEM;
 	}
 
-	if (((hist = malloc(N_pairs * sizeof(double *)))) == NULL)
+	if ((N = calloc(N_pairs, sizeof(int))) == NULL)
+	{
+		perror("Allocating an array (N)");
+		goto R;
+	}
+
+	if (compute_pairs(N_elements, &map) != 0)
+		goto N;
+
+	if (((hist = malloc(N_pairs * sizeof(int *)))) == NULL)
 	{
 		perror("Allocating an array (hist)");
-		goto R;
+		goto MAP;
 	}
 
 	if (((*RDF) = malloc(N_pairs * sizeof(double *))) == NULL)
@@ -77,7 +101,7 @@ int compute_rdf(int N_conf, int N_elements, int *N_selection, double **bounds, i
 
 	for (int p = 0 ; p < N_pairs ; p++)
 	{
-		if ((hist[p] = calloc(N_bins, sizeof(double))) == NULL)
+		if ((hist[p] = calloc(N_bins, sizeof(int))) == NULL)
 		{
 			perror("Allocating an array slot (hist[])");
 			goto RDF;
@@ -99,10 +123,14 @@ int compute_rdf(int N_conf, int N_elements, int *N_selection, double **bounds, i
 	printf("Incrementing the histograms...\n");
 
 	for (int c = 0 ; c < N_conf ; c++)
+	{
+		printf("conf: %d / %d\r", c + 1, N_conf);
 		for (int i = 0 ; i < N_selection[c] ; i++)
 			for (int j = i + 1 ; j < N_selection[c] ; j++)
 			{
 				int p = map[atoms[c][i].element_ID][atoms[c][j].element_ID];
+				if (c == 0)
+					N[p] += 2;
 
 				double r2 = 0.;
 
@@ -133,8 +161,9 @@ int compute_rdf(int N_conf, int N_elements, int *N_selection, double **bounds, i
 
 				int bin = (int) (sqrt(r2) / delta);
 				if (bin < N_bins)
-					hist[p][bin] += (atoms[c][i].element_ID == atoms[c][j].element_ID) ? 2 : 1;
+					hist[p][bin] += 2;
 			}
+	}
 	
 
 	/* Computing the RDFs */
@@ -142,44 +171,32 @@ int compute_rdf(int N_conf, int N_elements, int *N_selection, double **bounds, i
 
 	double V = 1.;
 	for (int d = 0 ; d < 3 ; d++)
-		V *= bounds[0][2 *d + 1] - bounds[0][2 * d];
+		V *= bounds[0][2 * d + 1] - bounds[0][2 * d];
 	double coeff = 1. / (4. / 3. * M_PI / V);
+	
+	for (int p = 0 ; p < N_pairs ; p++)
+		for (int b = 0 ; b < N_bins ; b++)
+			(*RDF)[p][b] = (double) coeff * hist[p][b] / N_conf / (N[p] * (pow((*r)[b] + delta, 3) - pow((*r)[b], 3)));
 
-	for (int e1 = 0, p = 0 ; e1 < N_elements ; e1++)
-	{
-		for (int e2 = e1 ; e2 < N_elements ; e2++, p++)
-		{
-			int N1 = 0, N2 = 0, N;
-			if (e1 == e2)
-			{
-				for (int a = 0 ; a < N_selection[0] ; a++)
-					if (atoms[0][a].element_ID == e1)
-						N1++;
-				N = N1 * (N1 - 1);
-			}
-			else
-			{
-				for (int a = 0 ; a < N_selection[0] ; a++)
-					if (atoms[0][a].element_ID == e1)
-						N1++;
-					else if (atoms[0][a].element_ID == e2)
-						N2++;
-				N = N1 * N2;
-			}
-
-			for (int b = 0 ; b < N_bins ; b++)
-				(*RDF)[p][b] = (double) coeff * hist[p][b] / N_conf / (N * (pow((*r)[b] + delta, 3) - pow((*r)[b], 3)));
-		}
-	}
+	// Shifting the radial range
+	for (int b = 0 ; b < N_bins ; b++)
+		(*r)[b] += delta / 2.;
 	
 
 	/* Success */
+	free(hist);
+	free(map);
+	free(N);
+
+	// Exiting normally
 	return 0;
 
 
 	/* Errors */
 	RDF: free(RDF);
 	HIST: free(hist);
+	MAP: free(map);
+	N: free(N);
 	R: free(r);
 	return ENOMEM;
 }
@@ -249,16 +266,10 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	
 
-	/* Computing the pairs */
-	int **pair_map;
-	if ((errno = compute_pairs(arguments.N_elements, &pair_map)) != 0)
-		goto READ;	
-
 	/* Computing the RDFs */
 	double *r, **RDF;
-	double cutoff = 10.0;
-	if ((errno = compute_rdf(N_conf, arguments.N_elements, N_selection, bounds, arguments.N_bins, cutoff, arguments.N_pairs, pair_map, atoms, &r, &RDF)) != 0)
-		goto PAIRS;
+	if ((errno = compute_rdf(N_conf, arguments.N_elements, N_selection, bounds, arguments.N_bins, arguments.N_pairs, atoms, &r, &RDF)) != 0)
+		goto READ;
 	
 
 	/* Writing the output */
@@ -272,7 +283,6 @@ int main(int argc, char **argv)
 
 	/* Error handling */
 	RDF: free(RDF), free(r);
-	PAIRS: free(pair_map);
 	READ: free(atoms), free(bounds), free(steps), free(N_selection);
 	exit(EXIT_FAILURE);
 }
