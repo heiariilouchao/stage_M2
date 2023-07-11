@@ -1,7 +1,7 @@
 # -------------------- Simulation setup --------------------
 ## -------------------- Initialization --------------------
 units       	real
-atom_style  	full
+atom_style  	charge
 timestep    	0.1
 
 ## -------------------- Parametrization --------------------
@@ -12,33 +12,28 @@ variable    	target_T equal 300.0
 variable    	target_P equal 1.0
 
 ## -------------------- System definition --------------------
-read_data   	data.spce
+read_data   	data.reax
 
 ## -------------------- Settings --------------------
-## Hybrid force fields were not necessary but are used for portability
-## Also, since we are using RATTLE constraints, the bond and angle strength parameters ("600.0", "75.0") do not matter. But the equilibrium bond length ("1.0") and equilibrium angle ("109.47") do. LAMMPS obtains these numbers from the bond_coeff and angle_coeff commands under.
-pair_style  	hybrid lj/charmm/coul/long 9.0 10.0
-bond_style  	hybrid harmonic
-angle_style 	hybrid harmonic
-kspace_style 	pppm 0.0001
+pair_style  	reax/c NULL safezone 1.6 mincap 100 minhbonds 50
+pair_coeff  	* * ffield.reax.reax H O
+fix         	Qeq all qeq/reax 1 0.0 10.0 1e-06 reax/c
 
-pair_coeff  	1 1 lj/charmm/coul/long 0.0 0.0
-pair_coeff  	2 2 lj/charmm/coul/long 0.1553 3.166
-bond_coeff  	1 harmonic 600.0 1.0
-angle_coeff 	1 harmonic 75.0 109.47
+delete_atoms    overlap 0.1 all all
 
 
 log         	data/log.minimize
 # -------------------- Minimize --------------------
 ## We want to minimize the system towards the target state
-fix         	relax all box/relax aniso ${target_P}
+# fix         	relax all box/relax aniso ${target_P}
+# This fix causes an "Error: non-numeric value for pressure - simulation unstable" apparently
 
 thermo      	100
 thermo_style 	custom step pe press vol density
 
 minimize    	1.0e-03 1.0e-05 1000 10000
 
-unfix       	relax
+# unfix       	relax
 
 
 log         	data/log.relaxation
@@ -67,12 +62,12 @@ undump      	relaxation_positions
 unfix       	relaxation_ensemble
 
 
-log         	data/log.spce
-# -------------------- Main simulation --------------------
+log         	data/log.reax
+# -------------------- Main simulation --------------------
 fix         	ensemble all nvt temp ${target_T} ${target_T} $(100.0*dt)
 
-dump        	positions all custom 1000 data/spce.lammpstrj id element x y z xu yu zu q
-dump_modify 	positions element H O pbc yes
+dump        	positions all custom 1000 data/reax.lammpstrj id element x y z xu yu zu q
+dump_modify		positions element H O pbc yes
 thermo      	1000
 thermo_style 	custom step temp pe ke press
 
