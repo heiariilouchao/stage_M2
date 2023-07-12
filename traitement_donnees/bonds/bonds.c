@@ -1,10 +1,9 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <errno.h>
 
 
-#include "bonds.h"
-#include "read.h"
+# include "bonds.h"
 
 
 int compute_cutoff_bonds(int N_conf, int *N_selection, double **bounds, Atom ***atoms, const double R)
