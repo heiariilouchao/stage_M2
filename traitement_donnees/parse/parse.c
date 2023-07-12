@@ -5,24 +5,20 @@
 # include "parse.h"
 
 
-char doc[] = "Computing the MSDs of a .lammpstrj configurations file.";
-
-char args_doc[] = "CONF_FILE";
-
 struct argp_option options[] =
 {
 	{
 		"start",
 		's',
 		"START",
-		OPTION_ARG_OPTIONAL,
+		0,
 		"The step to start from. Default is 0."
 	},
 	{
 		"bins",
 		'n',
 		"NBINS",
-		OPTION_ARG_OPTIONAL,
+		0,
 		"The number of bins to compute the RDF. Default is 100."
 	},
 	{
@@ -36,8 +32,23 @@ struct argp_option options[] =
 };
 
 
-error_t parse_elements(char *arg, char sep, struct arguments **args)
+void set_default_options(Arguments *args)
 {
+	args->start = 0;
+	args->N_bins = 100;
+	args->labels = NULL;
+	args->elements = NULL;
+	args->N_elements = 0;
+	args->N_pairs = 0;
+}
+
+
+error_t parse_elements(char *arg, char sep, struct argp_state *state)
+{
+	printf("Parsing the elements...\n");
+
+
+	Arguments *args = state->input;
 	int n = strlen(arg);
 
 	/* Copying the labels */
@@ -49,7 +60,7 @@ error_t parse_elements(char *arg, char sep, struct arguments **args)
 	}
 	
 	// Actually copying the string
-	if (((*args)->labels = strndup(arg, n)) == NULL)
+	if ((args->labels = strndup(arg, n)) == NULL)
 	{
 		perror("Copying a string (args.labels)");
 		return ENOMEM;
@@ -57,9 +68,9 @@ error_t parse_elements(char *arg, char sep, struct arguments **args)
 	
 
 	/* Initializing the other variables */
-	(*args)->N_elements = 1;
+	args->N_elements = 1;
 
-	if (((*args)->elements = malloc(sizeof(char *))) == NULL)
+	if ((args->elements = malloc(sizeof(char *))) == NULL)
 	{
 		perror("Allocating an array (args.elements)");
 		return ENOMEM;
@@ -70,20 +81,20 @@ error_t parse_elements(char *arg, char sep, struct arguments **args)
 	int start = 0;
 	for (int c = 0 ; c < n ; c++)
 	{
-		if ((*args)->labels[c] == sep)
+		if (args->labels[c] == sep)
 		{
 			// Copying an element
-			if ((((*args)->elements)[(*args)->N_elements - 1] = strndup((*args)->labels + start, c - start)) == NULL)
+			if (((args->elements)[args->N_elements - 1] = strndup(args->labels + start, c - start)) == NULL)
 			{
 				perror("Copying a string (args.elements[])");
 				return ENOMEM;
 			}
 
-			((*args)->N_elements)++;
+			(args->N_elements)++;
 			start = c + 1;
 
 			// Resizing the array for the next element
-			if (((*args)->elements = realloc((*args)->elements, (*args)->N_elements * sizeof(char *))) == NULL)
+			if ((args->elements = realloc(args->elements, args->N_elements * sizeof(char *))) == NULL)
 			{
 				perror("Resizing an array (args.elements)");
 				return ENOMEM;
@@ -92,13 +103,18 @@ error_t parse_elements(char *arg, char sep, struct arguments **args)
 	}
 
 	// Copying the last element
-	if ((((*args)->elements)[(*args)->N_elements - 1] = strndup((*args)->labels + start, n - start)) == NULL)
+	if (((args->elements)[args->N_elements - 1] = strndup(args->labels + start, n - start)) == NULL)
 	{
 		perror("Copying a string (args.elements[])");
 		return ENOMEM;
 	}
 
-	((*args)->N_pairs) = (int) (*args)->N_elements * ((*args)->N_elements + 1) / 2;
+	(args->N_pairs) = (int) args->N_elements * (args->N_elements + 1) / 2;
+
+	printf("Elements informations:\n\tlabels: %s\n\telements: %d", args->labels, args->N_elements);
+	for (int e = 0 ; e < args->N_elements ; e++)
+		printf(" %s", args->elements[e]);
+	printf("\n");
 
 
 	/* Success */
@@ -108,7 +124,7 @@ error_t parse_elements(char *arg, char sep, struct arguments **args)
 
 error_t parse(int key, char *arg, struct argp_state *state)
 {
-	struct arguments *args = state->input;
+	Arguments *args = state->input;
 	error_t err = 0;
 
 	switch (key)
@@ -124,7 +140,7 @@ error_t parse(int key, char *arg, struct argp_state *state)
 		args->N_bins = atoi(arg);
 		break;
 	case 'l':
-		if ((err = parse_elements(arg, ',', &args)) != 0)
+		if ((err = parse_elements(arg, ',', state)) != 0)
 			return err;
 		break;
 	case ARGP_KEY_ARG:

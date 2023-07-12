@@ -1,283 +1,190 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
-#include <errno.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <string.h>
+# include <errno.h>
 
-#include "read.h"
-
-
-// error_t read(char *file_name, int timestep, int *N_conf, int **steps, int **N_selection, double ***bounds, int ***indices, double ****pos, double ***charges)
-// {
-// 	printf("Reading configuration file...\n");
+# include "../utils.h"
+# include "../parse/parse.h"
+# include "read.h"
 
 
-// 	/* Opening the file */
-// 	FILE *input = fopen(file_name, "r");
-// 	if (input == NULL)
-// 	{
-// 		perror("Opening the configuration file");
-// 		goto IO;
-// 	}
+int read_elements(Arguments **args)
+{
+	printf("Scanning the elements...\n");
 
 
-// 	/* Reading */
-// 	// Initializing
-// 	char str[STR_BUFF_LIMIT];
-// 	int arrays_size = 0, N_atoms;
-// 	*N_conf = 0;
+	/* Defining aliases for the read-only variables */
+	int error;
+	char *file_name = (*args)->args[0];
+	int timestep = (*args)->start;
+	
+	
+	/* Opening the file */
+	FILE *input;
+	if ((input = fopen(file_name, "r")) == NULL)
+	{
+		perror("Opening the configuration file");
+		return EIO;
+	}
 
-// 	// Allocating the arrays with the initial size as the number of configurations
-// 	if ((*steps = malloc(INITIAL_CONF * sizeof(int))) == NULL)
-// 	{
-// 		perror("Allocating an array (steps)");
-// 		goto NOMEM;
-// 	}
 
-// 	if ((*N_selection = malloc(INITIAL_CONF * sizeof(int))) == NULL)
-// 	{
-// 		perror("Allocating an array (N_selection)");
-// 		goto NOMEM;
-// 	}
+	/* Reading */
+	// Initializing
+	(*args)->N_elements = 0;
+	if (((*args)->labels = calloc(STR_BUFF_LIMIT, sizeof(char))) == NULL)
+	{
+		perror("Allocating an array (labels)");
+		goto NOMEM;
+	}
 
-// 	if ((*bounds = malloc(INITIAL_CONF * sizeof(double *))) == NULL)
-// 	{
-// 		perror("Allocating an array (bounds)");
-// 		goto NOMEM;
-// 	}
 
-// 	if ((*indices = malloc(INITIAL_CONF * sizeof(int *))) == NULL)
-// 	{
-// 		perror("Allocating an array (indices)");
-// 		goto NOMEM;
-// 	}
+	char str[STR_BUFF_LIMIT];
+	int N_atoms;
+	while (fgets(str, STR_BUFF_LIMIT, input) != NULL)
+	{
+		if (strcmp(str, "ITEM: TIMESTEP\n") == 0)
+		{
+			int step;
+			if (fscanf(input, "%d\n", &step) != 1)
+			{
+				perror("Reading the step");
+				goto IO;
+			}
 
-// 	if ((*pos = malloc(INITIAL_CONF * sizeof(double **))) == NULL)
-// 	{
-// 		perror("Allocating an array (indices)");
-// 		goto NOMEM;
-// 	}
+			while (step < timestep)
+			{
+				do
+				{
+					if (fgets(str, STR_BUFF_LIMIT, input) == NULL)
+					{
+						perror("Skipping the first configurations");
+						goto IO;
+					}
+				}
+				while (strcmp(str, "ITEM: TIMESTEP\n") != 0);
 
-// 	if ((*charges = malloc(INITIAL_CONF * sizeof(double *))) == NULL)
-// 	{
-// 		perror("Allocating an array (indices)");
-// 		goto NOMEM;
-// 	}
-
-// 	arrays_size = INITIAL_CONF;
-
-// 	// Actually reading
-// 	while (fgets(str, STR_BUFF_LIMIT, input) != NULL)
-// 	{
-// 		if (strcmp(str, "ITEM: TIMESTEP\n") == 0)
-// 		{
-// 			int step;
-// 			if (fscanf(input, "%d\n", &step) != 1)
-// 			{
-// 				perror("Reading the step");
-// 				goto IO;
-// 			}
-
-// 			while (step < timestep)
-// 			{
-// 				do
-// 				{
-// 					if (fgets(str, STR_BUFF_LIMIT, input) == NULL)
-// 					{
-// 						perror("Skipping the first configurations");
-// 						goto IO;
-// 					}
-// 				}
-// 				while (strcmp(str, "ITEM: TIMESTEP\n") != 0);
-
-// 				if (fscanf(input, "%d\n", &step) != 1)
-// 				{
-// 					perror("Verifying the timestep");
-// 					goto IO;
-// 				}
-// 			}
-
-// 			(*N_conf)++;
-
-// 			if (*N_conf > arrays_size)
-// 				if ((*steps = realloc(*steps, (arrays_size + INCREMENT_CONF) * sizeof(int))) == NULL)
-// 				{
-// 					perror("Resizing an array (steps)");
-// 					goto NOMEM;
-// 				}
-
-// 			(*steps)[*N_conf - 1] = step;
-// 		}
-// 		else if (strcmp(str, "ITEM: NUMBER OF ATOMS\n") == 0)
-// 		{
-// 			if (fscanf(input, "%d\n", &N_atoms) != 1)
-// 			{
-// 				perror("Reading the number of atoms");
-// 				goto IO;
-// 			}
-// 		}
-// 		else if (strcmp(str, "ITEM: BOX BOUNDS pp pp pp\n") == 0)
-// 		{
-// 			if (*N_conf > arrays_size)
-// 				if ((*bounds = realloc(*bounds, (arrays_size + INCREMENT_CONF) * sizeof(double *))) == NULL)
-// 				{
-// 					perror("Resizing an array (bounds)");
-// 					goto NOMEM;
-// 				}
-
-// 			if (((*bounds)[*N_conf - 1] = malloc(6 * sizeof(double))) == NULL)
-// 			{
-// 				perror("Allocating an array slot (bounds[])");
-// 				goto NOMEM;
-// 			}
-
-// 			for (int d = 0 ; d < 3 ; d++)
-// 				if (fscanf(input, "%lf %lf\n", (*bounds)[*N_conf - 1] + 2 * d, (*bounds)[*N_conf - 1] + 2 * d + 1) != 2)
-// 				{
-// 					perror("Reading the box bounds");
-// 					goto IO;
-// 				}
-// 		}
-// 		else if (strcmp(str, "ITEM: ATOMS id element x y z xu yu zu q\n") == 0)
-// 		{
-// 			if (*N_conf > arrays_size)
-// 			{
-// 				if ((*N_selection = realloc(*N_selection, (arrays_size + INCREMENT_CONF) * sizeof(int))) == NULL)
-// 				{
-// 					perror("Resizing an array (N_selection)");
-// 					goto NOMEM;
-// 				}
-
-// 				if ((*indices = realloc(*indices, (arrays_size + INCREMENT_CONF) * sizeof(int **))) == NULL)
-// 				{
-// 					perror("Resizing an array (indices)");
-// 					goto NOMEM;
-// 				}
-
-// 				if ((*pos = realloc(*pos, (arrays_size + INCREMENT_CONF) * sizeof(double ***))) == NULL)
-// 				{
-// 					perror("Resizing an array (pos)");
-// 					goto NOMEM;
-// 				}
-
-// 				if ((*charges = realloc(*charges, (arrays_size + INCREMENT_CONF) * sizeof(double **))) == NULL)
-// 				{
-// 					perror("Resizing an array (charges)");
-// 					goto NOMEM;
-// 				}
-
-// 				arrays_size += INCREMENT_CONF;
-// 			}
-
-// 			(*N_selection)[*N_conf - 1] = 0;
-
-// 			if (((*indices)[*N_conf - 1] = malloc(N_atoms * sizeof(int))) == NULL)
-// 			{
-// 				perror("Allocating an array slot (indices[])");
-// 				goto NOMEM;
-// 			}
-
-// 			if (((*pos)[*N_conf - 1] = malloc(N_atoms * sizeof(double *))) == NULL)
-// 			{
-// 				perror("Allocating an array slot (pos[])");
-// 				goto NOMEM;
-// 			}
-
-// 			if (((*charges)[*N_conf - 1] = malloc(N_atoms * sizeof(double))) == NULL)
-// 			{
-// 				perror("Allocating an array slot (charges[])");
-// 				goto NOMEM;
-// 			}
-
-// 			for (int a = 0 ; a < N_atoms ; a++)
-// 			{
-// 				int index;
+				if (fscanf(input, "%d\n", &step) != 1)
+				{
+					perror("Verifying the timestep");
+					goto IO;
+				}
+			}
+		}
+		else if (strcmp(str, "ITEM: NUMBER OF ATOMS\n") == 0)
+		{
+			if (fscanf(input, "%d\n", &N_atoms) != 1)
+			{
+				perror("Reading the number of atoms");
+				goto IO;
+			}
+		}
+		else if (strcmp(str, "ITEM: BOX BOUNDS pp pp pp\n") == 0)
+		{
+			for (int d = 0 ; d < 3 ; d++)
+				if (fgets(str, STR_BUFF_LIMIT, input) == NULL)
+				{
+					perror("Dumping a line");
+					goto IO;
+				}
+		}
+		else if (strcmp(str, "ITEM: ATOMS id element x y z xu yu zu q\n") == 0)
+		{
+			for (int a = 0 ; a < N_atoms ; a++)
+			{
+				char element[STR_BUFF_LIMIT];
 				
-// 				if (fscanf(input, "%d %s", &index, str) != 2)
-// 				{
-// 					perror("Reading an atom index and element");
-// 					goto IO;
-// 				}
+				if (fscanf(input, "%*d %s", element) != 1)
+				{
+					perror("Reading an atom index and element");
+					goto IO;
+				}
+				
+				if (strstr((*args)->labels, element) == NULL)
+				{
+					if (strlen((*args)->labels) != 0)
+						if (strcat((*args)->labels, ",") == NULL)
+						{
+							perror("Concatenating two strings (labels, element)");
+							goto LABELS;
+						}
+					if (strcat((*args)->labels, element) == NULL)
+					{
+						perror("Concatenating two strings (labels, element)");
+						goto LABELS;
+					}
 
-// 				if (strncmp(str, "C", 1) != 0)
-// 				{
-// 					if (fgets(str, STR_BUFF_LIMIT, input) == NULL)
-// 					{
-// 						perror("Dumping a line");
-// 						goto IO;
-// 					}
+					(*args)->N_elements++;
 
-// 					continue;
-// 				}
+					if (((*args)->elements = realloc((*args)->elements, (*args)->N_elements * sizeof(char *))) == NULL)
+					{
+						perror("Resizing an array (elements)");
+						goto ELEMENTS;
+					}
+					
+					if (((*args)->elements[(*args)->N_elements - 1] = strdup(element)) == NULL)
+					{
+						perror("Copying a string (elements[], element)");
+						goto ELEMENTS;
+					}
+				}
 
-// 				(*N_selection)[*N_conf - 1]++;
-// 				(*indices)[*N_conf - 1][(*N_selection)[*N_conf - 1] - 1] = index;
+				if (fgets(str, STR_BUFF_LIMIT, input) == NULL)
+				{
+					perror("Dumping a line");
+					goto IO;
+				}
+			}
 
-// 				if (((*pos)[*N_conf - 1][(*N_selection)[*N_conf - 1] - 1] = malloc(3 * sizeof(double))) == NULL)
-// 				{
-// 					perror("Allocating an array slot (pos[][])");
-// 					goto NOMEM;
-// 				}
+			break;
+		}
+		else
+		{
+			printf("%s\n", str);
+			perror("Position in file lost");
+			goto IO;
+		}
+	}
 
-// 				if (fscanf(input, "%lf %lf %lf %*f %*f %*f %lf",
-// 						   (*pos)[*N_conf - 1][(*N_selection)[*N_conf - 1] - 1],
-// 						   (*pos)[*N_conf - 1][(*N_selection)[*N_conf - 1] - 1] + 1,
-// 						   (*pos)[*N_conf - 1][(*N_selection)[*N_conf - 1] - 1] + 2,
-// 						   (*charges)[*N_conf - 1] + (*N_selection)[*N_conf - 1] - 1) != 4)
-// 				{
-// 					perror("Reading the position and charge");
-// 					goto IO;
-// 				}
-// 			}
+	(*args)->N_pairs = (*args)->N_elements * ((*args)->N_elements + 1) / 2;
 
-// 			if (((*indices)[*N_conf - 1] = realloc((*indices)[*N_conf - 1], (*N_selection)[*N_conf - 1] * sizeof(int))) == NULL)
-// 			{
-// 				perror("Resizing an array slot (indices[])");
-// 				goto NOMEM;
-// 			}
-
-// 			if (((*pos)[*N_conf - 1] = realloc((*pos)[*N_conf - 1], (*N_selection)[*N_conf - 1] * sizeof(double *))) == NULL)
-// 			{
-// 				perror("Resizing an array slot (pos[])");
-// 				goto NOMEM;
-// 			}
-
-// 			if (((*charges)[*N_conf - 1] = realloc((*charges)[*N_conf - 1], (*N_selection)[*N_conf - 1] * sizeof(double))) == NULL)
-// 			{
-// 				perror("Resizing an array slot (charges[])");
-// 			}
-// 		}
-// 		else
-// 		{
-// 			printf("%s\n", str);
-// 			perror("Position in file lost");
-// 			goto IO;
-// 		}
-// 	}
+	printf("Elements informations:\n\tlabels: %s\n\telements: %d", (*args)->labels, (*args)->N_elements);
+	for (int e = 0 ; e < (*args)->N_elements ; e++)
+		printf(" %s", (*args)->elements[e]);
+	printf("\n");
 
 
-// 	/* Success */
-// 	// Closing the file
-// 	fclose(input);
+	/* Success */
+	fclose(input);
 
-// 	// Exiting normally
-// 	return 0;
-
-
-// 	/* Errors */
-// 	IO: return EIO;
-// 	NOMEM: return ENOMEM;
-// }
+	// Exiting normally
+	return 0;
 
 
-int read_trajectory(char *file_name, int timestep, int *N_conf, int **steps, int **N_selection, double ***bounds, Atom ***atoms)
+	/* Errors */
+	IO:
+	free((*args)->elements);
+	free((*args)->labels);
+	error = EIO;
+	goto INPUT;
+
+	ELEMENTS: free((*args)->elements);
+	LABELS: free((*args)->labels);
+	NOMEM: error = ENOMEM;
+	goto INPUT;
+
+	INPUT: fclose(input);
+	return error;
+}
+
+
+int read_trajectory(Arguments *arguments, int *N_conf, int **steps, int **N_selection, double ***bounds, Atom ***atoms)
 {
 	printf("Reading configuration file...\n");
 
 
 	/* Opening the file */
 	FILE *input;
-	if ((input = fopen(file_name, "r")) == NULL)
+	if ((input = fopen(arguments->args[0], "r")) == NULL)
 	{
 		perror("Opening the configuration file");
 		goto IO;
@@ -285,6 +192,24 @@ int read_trajectory(char *file_name, int timestep, int *N_conf, int **steps, int
 
 
 	/* Reading */
+	if (arguments->labels == NULL || arguments->elements == NULL)
+	{
+		switch (read_elements(&arguments))
+		{
+			case ENOMEM:
+				goto NOMEM;
+				break;
+			case EIO:
+				goto IO;
+				break;
+		}
+	}
+
+	int timestep = arguments->start;
+	char *labels = arguments->labels;
+	char **elements = arguments->elements;
+	int N_elements = arguments->N_elements;
+
 	// Initializing
 	char str[STR_BUFF_LIMIT];
 	int arrays_size = 0, N_atoms;
@@ -419,32 +344,40 @@ int read_trajectory(char *file_name, int timestep, int *N_conf, int **steps, int
 			for (int a = 0 ; a < N_atoms ; a++)
 			{
 				int index;
+                char element[STR_BUFF_LIMIT];
 				
-				if (fscanf(input, "%d %s", &index, str) != 2)
+				if (fscanf(input, "%d %s", &index, element) != 2)
 				{
 					perror("Reading an atom index and element");
 					goto IO;
 				}
-
-				if (strncmp(str, "C", 1) != 0)
+				
+				switch (select_atom(input, labels, element))
 				{
-					if (fgets(str, STR_BUFF_LIMIT, input) == NULL)
-					{
-						perror("Dumping a line");
+					case 1:
+						continue;
+					case -1:
 						goto IO;
-					}
-
-					continue;
 				}
 
 				(*N_selection)[*N_conf - 1]++;
                 (*atoms)[*N_conf - 1][(*N_selection)[*N_conf - 1] - 1].serial = index;
 
-				if (fscanf(input, "%lf %lf %lf %*f %*f %*f %lf",
+				for (int e = 0 ; e < N_elements ; e++)
+					if (strcmp(element, elements[e]) == 0)
+					{
+						(*atoms)[*N_conf - 1][(*N_selection)[*N_conf - 1] - 1].element_ID = e;
+						break;
+					}
+
+				if (fscanf(input, "%lf %lf %lf %lf %lf %lf %lf\n",
                     &((*atoms)[*N_conf - 1][(*N_selection)[*N_conf - 1] - 1].x),
                     &((*atoms)[*N_conf - 1][(*N_selection)[*N_conf - 1] - 1].y),
                     &((*atoms)[*N_conf - 1][(*N_selection)[*N_conf - 1] - 1].z),
-                    &((*atoms)[*N_conf - 1][(*N_selection)[*N_conf - 1] - 1].q)) != 4)
+					&((*atoms)[*N_conf - 1][(*N_selection)[*N_conf - 1] - 1].xu),
+                    &((*atoms)[*N_conf - 1][(*N_selection)[*N_conf - 1] - 1].yu),
+                    &((*atoms)[*N_conf - 1][(*N_selection)[*N_conf - 1] - 1].zu),
+                    &((*atoms)[*N_conf - 1][(*N_selection)[*N_conf - 1] - 1].q)) != 7)
 				{
 					perror("Reading the position and charge");
 					goto IO;
@@ -477,4 +410,21 @@ int read_trajectory(char *file_name, int timestep, int *N_conf, int **steps, int
 	/* Errors */
 	IO: return EIO;
 	NOMEM: return ENOMEM;
+}
+
+
+int select_atom(FILE *file, char *labels, char *element)
+{
+	if (strstr(labels, element) == NULL)
+	{
+		if (fgets(element, STR_BUFF_LIMIT, file) == NULL)
+		{
+			perror("Dumping a line");
+			return -1;
+		}
+
+		return 1;
+	}
+
+	return 0;
 }

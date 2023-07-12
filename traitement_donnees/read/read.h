@@ -1,20 +1,22 @@
-#ifndef READ_H
-#define READ_H
+# ifndef READ_H
+# define READ_H
 
-#define STR_BUFF_LIMIT 256
-#define INITIAL_CONF 10
-#define INCREMENT_CONF 10
 
-typedef struct Atom
-{
-    int serial;
-    double x, y, z;
-    double q;
+# include <stdio.h>
 
-    int N_bonds;
-    int *bonded;
-} Atom;
+# include "../utils.h"
 
-int read_trajectory(char *file_name, int timestep, int *N_conf, int **steps, int **N_selection, double ***bounds, Atom ***atoms);
 
-#endif
+# define STR_BUFF_LIMIT 256
+# define INITIAL_CONF 10
+# define INCREMENT_CONF 10
+
+
+int read_elements(Arguments **args);
+
+int read_trajectory(Arguments *arguments, int *N_conf, int **steps, int **N_selection, double ***bounds, Atom ***atoms);
+
+int select_atom(FILE *file, char *labels, char *element);
+
+
+# endif
