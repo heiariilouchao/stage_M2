@@ -10,6 +10,9 @@ rdf: parse.o read.o rdf.o
 msd: parse.o read.o msd.o
 	$(CC) $(OPT) -o $(BIN_DIR)/msd $(addprefix $(BUILD_DIR)/,$?) -lm -fopenmp
 
+graphite: parse.o read.o bonds.o graphite.o
+	$(CC) $(OPT) -o $(BIN_DIR)/graphite $(addprefix $(BUILD_DIR)/,$?) -lm
+
 # %.o: %/%.c
 # 	$(CC) $(OPT) -o $(BUILD_DIR)/$@ -c $<
 
@@ -25,6 +28,12 @@ rdf.o: rdf/rdf.c
 
 msd.o: msd/msd.c
 	$(CC) $(OPT) -o $(BUILD_DIR)/msd.o -c msd/msd.c -fopenmp
+
+bonds.o: bonds/bonds.c
+	$(CC) $(OPT) -o $(BUILD_DIR)/bonds.o -c bonds/bonds.c
+
+graphite.o: graphite/graphite.c
+	$(CC) $(OPT) -o $(BUILD_DIR)/graphite.o -c graphite/graphite.c
 	
 
 reset: clean
