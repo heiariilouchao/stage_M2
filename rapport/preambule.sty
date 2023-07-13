@@ -1,0 +1,25 @@
+% Packages
+\usepackage[subpreambles = true]{standalone}
+\usepackage{import}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage[hmargin = 3cm, vmargin = 3cm]{geometry}
+\usepackage[skip = 2ex]{parskip}
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+\graphicspath{{src/}}
+\usepackage{hyperref}
+\addto\extrasfrench{%
+	\def\algorithmautorefname{\textsc{Alg.}}
+	\def\equationautorefname{\textsc{Éq.}}
+	\def\figureautorefname{\textsc{Fig.}}
+	\def\lstlistingautorefname{\textsc{List.}}
+	\def\sectionautorefname{\textsc{Sec.}}
+	\def\subsectionautorefname{\textsc{Sec.}}
+	\def\subsubsectionautorefname{\textsc{Sec.}}
+	\def\tableautorefname{\textsc{Tab.}}
+    \def\appendixautorefname{\textsc{Annexe}}%
+}
+\usepackage[group-separator = \ , inter-unit-product = \ensuremath{{}.{}}]{siunitx}
