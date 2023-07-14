@@ -1,4 +1,4 @@
-\documentclass[a4paper,11pt]{article}
+\documentclass[a4paper, 11pt]{article}
 
 
 \usepackage{preambule}
@@ -7,11 +7,59 @@
 \begin{document}
 
 % The title page
-\import{./}{title}
+    \import{./}{title}
+\clearpage
 
+
+% The table of contents
+\tableofcontents
+\thispagestyle{empty}
+\clearpage
+
+
+\setcounter{page}{1}
 % The introduction
+%% The study's challenges
+%%% The importance of energy and energy storage
+%%% The interest, usages and challenges of SCs
+%%% Describing the SCs
+%% Presenting the methods and tools
+%%% Presenting Molecular Dynamics and LAMMPS
+%%% Describing the data extracting/processing task
+%%% Enumerating the additionnal tools
+%% Presenting the plan
 \section*{Introduction}
 
-\input{introduction.tex}
+    \input{introduction.tex}
+\clearpage
+
+
+% Presenting the model system
+%% Interest of the model
+%% Description
+%% Simulations details
+\section{Présentation du système modèle}
+
+    \input{modele.tex}
+
+% Presenting the materials and methods
+%% Presenting ReaxFF
+%%% Theoretical
+%%% The LAMMPS implementation
+%% Presenting EChemDID
+%%% Presenting CC, CV and Qeq
+%%% Presenting EChemDID
+\section{Présentation des méthodes utilisées}
+
+
+% Presenting the results
+%% Comparing two water models
+%% Charge distribution
+%% Ions adsorption/displacement
+\section{Résultats et discussion}
+
+
+% Conclusion
+\section{Conclusion}
 
 \end{document}
