@@ -130,8 +130,7 @@ Ce modèle a été étendu avec le SPC/E pour prendre en compte la polarité de 
 
 	\subsection{ReaxFF}
 
-ReaxFF \cite{russo_atomistic-scale_2011}\cite{senftle_reaxff_2016} est un potentiel utilisant les ordres de liaison pour modéliser des interactions atomiques en prenant en compte les réactions chimiques. Il a été conçu de façon à obtenir des résultats dont la précision se rapproche des méthodes quantiques, même en mettant en jeu autant d'atomes que les méthodes empiriques.\\
-Cette méthode consiste à calculer les énergies atomiques et d'en déduire les forces (\autoref{fig:reaxff-interactions}).
+ReaxFF \cite{russo_atomistic-scale_2011}\cite{senftle_reaxff_2016} est un potentiel utilisant les ordres de liaison pour modéliser des interactions atomiques en prenant en compte les réactions chimiques. Il a été conçu de façon à obtenir des résultats dont la précision se rapproche des méthodes quantiques, en mettant en jeu autant d'atomes que les méthodes empiriques.
 
 \begin{figure}[hbpt]
 	\centering
@@ -141,6 +140,10 @@ Cette méthode consiste à calculer les énergies atomiques et d'en déduire les
 \end{figure}
 
 \section{Mise en place des simulations}
+
+	\subsection{Déroulement des simulations}
+
+Pour les deux systèmes, nous adoptons le même déroulement de simulation, présenté . Celui-ci a été conçu pour éviter les éventuelles instabilités du système.
 
 	\subsection{SPC/E}
 
@@ -152,17 +155,22 @@ pair_style    hybrid lj/charmm/coul/long 9.0 10.0
 bond_style    hybrid harmonic
 angle_style   hybrid harmonic
 ...
+pair_coeff    1 1 lj/charmm/coul/long 0.0 0.0
+pair_coeff    2 2 lj/charmm/coul/long 0.1553 3.166
+bond_coeff    1 harmonic 600.0 1.0
+angle_coeff   1 harmonic 75.0 109.47
+...
 \end{lstlisting}
 
 	\subsection{ReaxFF}
 
-Pour utiliser ReaxFF dans LAMMPS, il faut fournir le fichier de configuration ReaxFF correspondant au système étudié, et utiliser le potentiel ReaxFF (\autoref{lst:utilisation-reaxff}).
+Pour utiliser ReaxFF dans LAMMPS, il faut fournir le fichier de paramètres ReaxFF correspondant aux éléments du système étudié.
 
 \begin{lstlisting}[caption={Exemple d'utilisation du ReaxFF dans LAMMPS}, label={lst:utilisation-reaxff}]
 ...
 pair_style   reax/c NULL
-pair_coeff   * * test.reax O H
-fix equilibration all qeq/reax 1 0.0 10 1e-06 reax/c
+pair_coeff   * * ffield.reax.h2o O H
+fix          Qeq all qeq/reax 1 0.0 10 1e-06 reax/c
 ...
 \end{lstlisting}
 
