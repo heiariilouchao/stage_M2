@@ -275,7 +275,7 @@ int compute_classification(int N_conf, int *N_selection, bool **layers, bool **e
 }
 
 
-int compute_histograms(int N_conf, int *N_selection, Atom **atoms, bool **layers, bool **electrodes, int N_groups, Group ***groups)
+int compute_charges_histograms(int N_conf, int *N_selection, Atom **atoms, bool **layers, bool **electrodes, int N_groups, Group ***groups)
 {
 	printf("Computing the histograms...\n");
 
@@ -298,7 +298,87 @@ int compute_histograms(int N_conf, int *N_selection, Atom **atoms, bool **layers
 }
 
 
-int write_hist(char *file_name, int N_conf, int *timestep, int N_groups, char **group_descriptions, Group **groups)
+int compute_density_histograms(int N_conf, int *N_selection, Atom **atoms, double **bounds, double ***z, double ***densities, const int N_bins)
+{
+	printf("Computing the density histogram...\n");
+
+	double delta = (bounds[0][5] - bounds[0][4]) / N_bins;
+
+
+	/* Allocating the array */
+	// int *N;
+	// if ((N = calloc(N_conf, sizeof(int))) == NULL)
+	// {
+	// 	perror("Allocating an array (N)");
+	// 	return ENOMEM;
+	// }
+
+	if ((*z = malloc(N_conf * sizeof(double *))) == NULL)
+	{
+		perror("Allocating an array (z)");
+		return ENOMEM;
+	}
+
+	if ((*densities = malloc(N_conf * sizeof(double *))) == NULL)
+	{
+		perror("Allocating an array (densities)");
+		goto Z;
+	}
+
+	for (int c = 0 ; c < N_conf ; c++)
+	{
+		if (((*z)[c] = malloc(N_bins * sizeof(double))) == NULL)
+		{
+			perror("Allocating an array slot (z[])");
+			goto DENSITIES;
+		}
+
+		if (((*densities)[c] = calloc(N_bins, sizeof(double))) == NULL)
+		{
+			perror("Allocating an array slot (densities[])");
+			goto DENSITIES;
+		}
+
+		double z0 = bounds[c][4];
+		for (int b = 0 ; b < N_bins ; b++)
+			(*z)[c][b] = z0 + delta * b + delta / 2.;
+	}
+
+	
+
+
+	/* Computing the densities */
+	for (int c = 0 ; c < N_conf ; c++)
+	{
+		printf("conf: %d / %d\r", c + 1, N_conf);
+		for (int a = 0 ; a < N_selection[c] ; a++)
+		{
+			int bin = (atoms[c][a].z - bounds[c][4]) / delta;
+			if (bin < N_bins)
+			{
+				// N[c]++;
+				(*densities)[c][bin]++;
+			}
+		}
+
+		for (int b = 0 ; b < N_bins ; b++)
+			(*densities)[c][b] /= (bounds[c][1] - bounds[c][0]) * (bounds[c][3] - bounds[c][2]) * delta;
+	}
+
+
+	/* Success */
+	return 0;
+
+
+	/* Errors */
+	DENSITIES: free(densities);
+	Z: free(z);
+	// N: free(N);
+	return ENOMEM;
+}
+
+
+int write_charges_hist(char *file_name, int N_conf, int *timestep, int N_groups, char **group_descriptions, Group **groups)
 {
 	printf("Writing the histograms...\n");
 
@@ -333,6 +413,44 @@ int write_hist(char *file_name, int N_conf, int *timestep, int N_groups, char **
 		for (int t = 0 ; t < N_groups ; t++)
 			fprintf(output, " %lf %d", groups[c][t].average, groups[c][t].N);
 		fprintf(output, "\n");
+	}
+
+
+	/* Success */
+	// Closing the file
+	fclose(output);
+
+	// Exiting normally
+	return 0;
+}
+
+
+int write_densities_hist(char *file_name, int N_conf, int N_bins, int *timestep, double **z, double **densities)
+{
+	printf("Writing the densities histograms...\n");
+
+
+	/* Opening the file */
+	FILE* output;
+
+	if ((output = fopen(file_name, "w")) == NULL)
+	{
+		perror("Opening a file (output)");
+		return EIO;
+	}
+
+
+	/* Writing the output */
+	// Header
+	fprintf(output, "# step z density\n");
+
+	// Data
+	for (int c = 0 ; c < N_conf ; c++)
+	{
+		printf("conf: %d / %d\r", c + 1, N_conf);
+		for (int b = 0 ; b < N_bins ; b++)
+			fprintf(output, "  %d %lf %lf\n", timestep[c], z[c][b], densities[c][b]);
+		fprintf(output, "\n\n");
 	}
 
 
@@ -477,15 +595,15 @@ int main(int argc, char **argv)
 	}
 
 
-	/* Reading the configurations */
+	/* Reading the carbons */
 	// Declaring the arrays
-	int N_conf, *steps, *N_selection;
-	Atom **atoms;
-	double **bounds;
+	int N_conf_carbons, *steps_carbons, *N_carbons;
+	Atom **carbons;
+	double **bounds_carbons;
 
 	// Reading the file
-	if ((errno = read_trajectory(&arguments, &N_conf, &steps, &N_selection, &bounds, &atoms)) != 0)
-		goto READ;
+	if ((errno = read_trajectory(&arguments, &N_conf_carbons, &steps_carbons, &N_carbons, &bounds_carbons, &carbons)) != 0)
+		goto ERROR;
 
 
 	/* Computing the bonds */
@@ -493,8 +611,8 @@ int main(int argc, char **argv)
 	const double R = 1.7;
 
 	// Computing the bonds
-	if ((errno = compute_cutoff_bonds(N_conf, N_selection, bounds, &atoms, R)) != 0)
-		goto READ;
+	if ((errno = compute_cutoff_bonds(N_conf_carbons, N_carbons, bounds_carbons, &carbons, R)) != 0)
+		goto READ_CARBONS;
 
 
 	/* Computing the layers */
@@ -505,8 +623,8 @@ int main(int argc, char **argv)
 	bool **layers;
 
 	// Computing the layers
-	if ((errno = compute_layers(N_conf, N_selection, bounds, atoms, &layers, sep)) != 0)
-		goto READ;
+	if ((errno = compute_layers(N_conf_carbons, N_carbons, bounds_carbons, carbons, &layers, sep)) != 0)
+		goto READ_CARBONS;
 
 
 	/* Computing the charges histogram */
@@ -517,7 +635,7 @@ int main(int argc, char **argv)
 	bool **electrodes;
 
 	// Computing the electrodes
-	if ((errno = compute_electrodes(N_conf, N_selection, bounds, atoms, &electrodes, limits)) != 0)
+	if ((errno = compute_electrodes(N_conf_carbons, N_carbons, bounds_carbons, carbons, &electrodes, limits)) != 0)
 		goto LAYERS;
 
 	
@@ -528,14 +646,14 @@ int main(int argc, char **argv)
 	char **group_descriptions;
 
 	// Computing the histograms
-	if ((errno = compute_classification(N_conf, N_selection, layers, electrodes, &atoms, &N_groups, &groups, &group_descriptions)) != 0)
+	if ((errno = compute_classification(N_conf_carbons, N_carbons, layers, electrodes, &carbons, &N_groups, &groups, &group_descriptions)) != 0)
 		goto ELECTRODES;
 
-	if ((errno = compute_histograms(N_conf, N_selection, atoms, layers, electrodes, N_groups, &groups)) != 0)
+	if ((errno = compute_charges_histograms(N_conf_carbons, N_carbons, carbons, layers, electrodes, N_groups, &groups)) != 0)
 		goto GROUPS;
 	
 	// Writing the histograms
-	if ((errno = write_hist("output/graphite.hist", N_conf, steps, N_groups, group_descriptions, groups)) != 0)
+	if ((errno = write_charges_hist("output/graphite.hist", N_conf_carbons, steps_carbons, N_groups, group_descriptions, groups)) != 0)
 		goto GROUPS;
 	
 
@@ -544,17 +662,40 @@ int main(int argc, char **argv)
 	Atom **samples;
 
 	// Computing the samples
-	if ((errno = compute_samples(N_conf, N_selection, atoms, N_groups, &samples)) != 0)
+	if ((errno = compute_samples(N_conf_carbons, N_carbons, carbons, N_groups, &samples)) != 0)
 		goto GROUPS;
 	
 	// Writing the samples
-	if ((errno = write_samples("output/samples.log", N_conf, steps, N_groups, samples)) != 0)
+	if ((errno = write_samples("output/samples.log", N_conf_carbons, steps_carbons, N_groups, samples)) != 0)
 		goto SAMPLES;
 
 
 	/* Writing the output */
-	if ((errno = write("output/graphite.lammpstrj", N_conf, N_selection, steps, bounds, atoms, layers, electrodes)) != 0)
+	if ((errno = write("output/graphite.lammpstrj", N_conf_carbons, N_carbons, steps_carbons, bounds_carbons, carbons, layers, electrodes)) != 0)
 		goto SAMPLES;
+
+	
+	/* Reading the sodium */
+	int N_conf_sodium, *steps_sodium, *N_sodium;
+	Atom **sodium;
+	double **bounds_sodium;
+
+	arguments.labels = "Na";
+	arguments.elements[0] = "Na";
+	if ((errno = read_trajectory(&arguments, &N_conf_sodium, &steps_sodium, &N_sodium, &bounds_sodium, &sodium)) != 0)
+		goto SAMPLES;
+	
+
+	/* Computing the densities */
+	double **z, **densities;
+	int N_bins = 50;
+	if ((errno = compute_density_histograms(N_conf_sodium, N_sodium, sodium, bounds_sodium, &z, &densities, N_bins)) != 0)
+		goto READ_SODIUM;
+	
+
+	/* Writing the densities */
+	if ((errno = write_densities_hist("output/sodium.hist", N_conf_sodium, N_bins, steps_sodium, z, densities)) != 0)
+		goto DENSITIES;
 
 
 	/* Exiting normally */
@@ -562,10 +703,12 @@ int main(int argc, char **argv)
 
 
 	/* Error handling */
+	DENSITIES: free(densities), free(z);
+	READ_SODIUM: free(bounds_sodium), free(sodium), free(N_sodium), free(steps_sodium);
 	SAMPLES: free(samples);
 	GROUPS: free(group_descriptions), free(groups);
 	ELECTRODES: free(electrodes);
 	LAYERS: free(layers);
-	READ: free(bounds), free(atoms), free(N_selection), free(steps);
-	exit(EXIT_FAILURE);
+	READ_CARBONS: free(bounds_carbons), free(carbons), free(N_carbons), free(steps_carbons);
+	ERROR: exit(EXIT_FAILURE);
 }
