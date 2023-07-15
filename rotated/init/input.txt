@@ -1,0 +1,6 @@
+configuration_file: ch-sc.xyz
+output_file: ../sim/data.ch-sc
+atom_types: H O Na C
+    masses: 1.008 15.999 22.990 12.011
+    charges: 0.0 0.0 0.0 0.0
+space_boundaries: 0.0 0.0 0.0 12.280 12.762 93.392
