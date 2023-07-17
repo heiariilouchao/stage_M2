@@ -1,0 +1,16 @@
+
+GRAPHITE:
+    BOUNDARIES: 9*a 5*b 1*c
+    DIMENSIONS: 22.104 21.270 6.696 Å
+    ATOMS: 540
+
+ELECTROLYTE:
+    ELEMENTS: H O Na
+    DIMENSIONS: 22.104 21.270 20.000 Å
+    VOLUME: 9403.042 Å^3
+    CONCENTRATION: 1 M
+    ATOMS: 314 (H2O) 6 (NaOH)
+
+STRUCTURE:
+    BOUNDARIES: p p f
+    DIMENSIONS: 22.104 21.270 33.392 (+ 5.0 for packmol init & + 1.0 for walls in z-direction)

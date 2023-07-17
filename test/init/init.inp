@@ -1,0 +1,47 @@
+# Packmol input script to generate the super-capacitor structure
+
+# -------------------- Essential parameters --------------------
+# The minimal distance between the chemical entities is set to 
+# 2.5 Å.
+tolerance 2.5
+output test.xyz
+filetype xyz
+
+
+# -------------------- Adding the chemical entities --------------------
+# The molecules/ions/atoms are added from bottom to top starting with 
+# the lower electrolyte and ending with the upper electrolyte
+
+# -------------------- The lower electrode --------------------
+# Shifted by 1.0 in z-direction for walls
+structure graphite.xyz
+	number 1
+	center
+	fixed 11.052 10.635 4.348 0.0 0.0 0.0
+end structure
+
+
+# -------------------- The electrolyte --------------------
+structure sodium.xyz
+	number 6
+	inside box 1.250 1.250 10.196 20.854 20.020 30.196
+end structure
+
+structure hydroxyde.xyz
+	number 6
+	inside box 1.250 1.250 10.196 20.854 20.020 30.196
+end structure
+
+
+structure water.xyz
+	number 314
+	inside box 1.250 1.250 10.196 20.854 20.020 30.196
+end structure
+
+
+# -------------------- The upper electrode --------------------
+structure graphite.xyz
+	number 1
+	center
+	fixed 11.052 10.635 35.044 0.0 0.0 0.0
+end structure
