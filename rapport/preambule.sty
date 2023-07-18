@@ -26,3 +26,34 @@
     \def\appendixautorefname{\textsc{Annexe}}%
 }
 \usepackage[group-separator = \ , inter-unit-product = \ensuremath{{}.{}}]{siunitx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{color}
+\definecolor{mybordeaux}{rgb}{0.43, 0.03, 0.01}
+\definecolor{mygray}{rgb}{0.95, 0.95, 0.95}
+\definecolor{mygreen}{rgb}{0, 0.6, 0}
+\definecolor{myred}{rgb}{0.6, 0, 0}
+\definecolor{mypurple}{rgb}{0.73, 0.33, 0.83}
+\usepackage{listings}
+\lstset%
+{%
+	basicstyle=\ttfamily,
+	backgroundcolor=\color{mygray},
+	breaklines=true,
+	captionpos=b,
+	commentstyle=\color{mygreen},
+	emph={},
+	emphstyle=\color{mybordeaux},
+	extendedchars=true,
+	firstnumber=1,
+	frame=single,
+	keywordstyle=\color{myred},
+	language=Python,
+	literate= {À}{{\`A}}1 {à}{{\`a}}1 {é}{{\'e}}1 {è}{{\`e}}1,
+	numbers=left,
+	numberstyle=\tiny\color{black},
+	showstringspaces=true,
+	stepnumber=5,
+	stringstyle=\color{mypurple},
+	tabsize=4%
+}
