@@ -71,7 +71,7 @@ Puis, la structure de graphite de base a pu être étendue grâce à un logiciel
     \label{fig:electrode}
 \end{figure}
 
-Enfin, les molécules ont pu être disposées pour construire le modèle à l'aide de \emph{Packmol}\cite{martinez_packmol_2009}.\\
+Enfin, les molécules ont pu être disposées pour construire le modèle à l'aide de \emph{Packmol}\cite{martinez_packmol_2009}, \autoref{apdx:packmol}.\\
 Pour obtenir des configurations initiales suffisamment stables nous avons choisi de répartir les entités en les séparant d'au moins \qty{2.5}{\angstrom} : entre les molécules et ions de l'électrolyte, et entre les particules de l'électrolyte et les électrodes.\\
 Pour respecter les conditions aux limites périodiques, cette séparation a également été appliquée aux bords du système : nous ajoutons un retrait égal à la moitité de cette séparation à chaque bord.\\
 Finalement, nous obtenons la configuration présentée à la figure \autoref{fig:structure_finale}.
@@ -101,9 +101,53 @@ Pour la paramétrisation de la simulation :
     \item les interactions sont basés sur le potentiel réactif \emph{ReaxFF} dont nous discutons plus loin ().
     \item la polarisation du système, c'est-à-dire la mise en place de la différence de potentiel entre les électrodes, est réalisée grâce à \emph{EChemDID} que nous détaillons plus tard ().
 \end{itemize}
-Quant à l'ajout du système, ceci est effectué avec une commande \emph{LAMMPS} de lecture de données. Pour cela, il est nécessaire de convertir les données des positions des particules du système en données \emph{LAMMPS}, nous détaillons la démarche suivi à l'. % TODO: référencer l'annexe correspondante
-Ensuite, la minimisation est réalisée par \emph{LAMMPS}, elle consiste à déplacer les particules du système sans dynamique de manière à minimiser l'énergie potentielle et les forces totales du système. La minimisation suit un algorithme de gradient conjugué avec pour fonction objectif l'énergie potentielle totale :
+
+Quant à l'ajout du système, ceci est effectué avec une commande \emph{LAMMPS} de lecture de données. Pour cela, il est nécessaire de convertir les données des positions des particules du système en données \emph{LAMMPS}, nous détaillons la démarche suivie à l'\autoref{apdx:conversion_lammps}.
+
+Ensuite, la minimisation est réalisée par \emph{LAMMPS}, elle consiste à déplacer les particules du système sans dynamique de manière à minimiser l'énergie potentielle et les forces totales du système. Cette procédure suit un algorithme de gradient conjugué avec pour fonction objectif l'énergie potentielle totale :
 \begin{equation}
     E(r_1, r_2, \dots, r_N) = \sum_{i, j} E_{pair} (r_i, r_j) + \dots + \sum_{i, j} E_{fix} (r_i)
 \end{equation}
 prenant en compte l'énergie des interactions de paires, des liaisons et angles si présents, des interactions \textit{improper} ou \textit{dihedral}, et des \lstinline!fix! imposés lors de la minimisation (ex : ajout de contraintes, de forces appliquées sur les atomes, etc.).
+
+Puis, la relaxation et la stabilisation utilisent un thermostat et barostat de Nosé--Hoover -- c'est-à-dire dans l'ensemble canonique -- pour atteindre les conditions physiques recherchées puis les stabiliser. Les quantités thermodynamiques lors de ces étapes sont typiquement celles des \autoref{fig:allures_thermostat_barostat}.
+
+\begin{figure}[htp]
+    \centering
+    \begin{subfigure}[t]{.49\textwidth}
+        \includegraphics[width = \textwidth, draft]{relaxation_temp.pdf}
+        \caption{Température}
+    \end{subfigure}%
+    ~
+    \begin{subfigure}[t]{.49\textwidth}
+        \includegraphics[width = \textwidth, draft]{relaxation_press.pdf}
+        \caption{Pression}
+    \end{subfigure}
+    \begin{subfigure}[t]{.49\textwidth}
+        \includegraphics[width = \textwidth, draft]{relaxation_density.pdf}
+        \caption{Densité}
+    \end{subfigure}
+    \caption{Allures des grandeurs thermodynamiques pendant de la relaxation et la stabilisation {\tiny (chaque étape a lieu en \num{100000} \lstinline!timestep!s soit \qty{10}{\pico \second})}}
+    \label{fig:allures_thermostat_barostat}
+\end{figure}
+
+Enfin, la simulation principale se déroule avec un thermostat du même type -- sans barostat cette fois -- et avec une durée plus longue ($\geq~\qty{1}{\nano \second}$) pour permettre l'équilibration du système (\autoref{fig:allures_simulation_principale}).
+
+\begin{figure}[hbp]
+    \centering
+    \begin{subfigure}[t]{.49\textwidth}
+        \includegraphics[width = \textwidth, draft]{main_temp.pdf}
+        \caption{Température}
+    \end{subfigure}%
+    ~
+    \begin{subfigure}[t]{.49\textwidth}
+        \includegraphics[width = \textwidth, draft]{main_epot.pdf}
+        \caption{Énergie potentielle}
+    \end{subfigure}
+    \begin{subfigure}[t]{.49\textwidth}
+        \includegraphics[width = \textwidth, draft]{main_press.pdf}
+        \caption{Pression}
+    \end{subfigure}
+    \caption{Allures des grandeurs thermodynamiques pendant la simulation principale}
+    \label{fig:allures_simulation_principale}
+\end{figure}
