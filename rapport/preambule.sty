@@ -26,6 +26,8 @@
     \def\appendixautorefname{\textsc{Annexe}}%
 }
 \usepackage[group-separator = \ , inter-unit-product = \ensuremath{{}.{}}]{siunitx}
+\DeclareSIUnit\atm{\ensuremath{atm}}
+\DeclareSIUnit\cal{\ensuremath{cal}}
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{color}
@@ -57,3 +59,12 @@
 	stringstyle=\color{mypurple},
 	tabsize=4%
 }
+\usepackage{array}
+
+\newcommand{\lammps}{\emph{LAMMPS}}
+\newcommand{\reaxff}{\emph{ReaxFF}}
+\newcommand{\echemdid}{\emph{EChemDID}}
+\newcommand{\packmol}{\emph{Packmol}}
+\counterwithin{figure}{section}
+\counterwithin{table}{section}
+\AtBeginDocument{\counterwithin{lstlisting}{section}}
