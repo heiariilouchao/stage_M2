@@ -1,5 +1,5 @@
 % Packages
-\usepackage[subpreambles = true]{standalone}
+\usepackage{standalone}
 \usepackage{import}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -26,6 +26,7 @@
     \def\appendixautorefname{\textsc{Annexe}}%
 }
 \usepackage[group-separator = \ , inter-unit-product = \ensuremath{{}.{}}]{siunitx}
+\DeclareSIUnit\angstrom{\ensuremath{\textup{\AA}}}
 \DeclareSIUnit\atm{\ensuremath{atm}}
 \DeclareSIUnit\cal{\ensuremath{cal}}
 \usepackage{caption}
@@ -65,6 +66,7 @@
 \newcommand{\reaxff}{\emph{ReaxFF}}
 \newcommand{\echemdid}{\emph{EChemDID}}
 \newcommand{\packmol}{\emph{Packmol}}
+\newcommand{\spce}{\emph{SPC/E}}
 \counterwithin{figure}{section}
 \counterwithin{table}{section}
 \AtBeginDocument{\counterwithin{lstlisting}{section}}

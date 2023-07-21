@@ -91,7 +91,7 @@ La structure de graphite de base a pu être étendue grâce à un logiciel tier\
 \end{figure}
 
 \textbf{Agencement des particules}\\
-Les particules ont pu être disposées pour construire le modèle à l'aide de \packmol\cite{martinez_packmol_2009}, détails à l'\autoref{apdx:packmol}.
+Les particules ont pu être disposées pour construire le modèle à l'aide de \packmol{}\cite{martinez_packmol_2009}, détails à l'\autoref{apdx:packmol}.
 
 Pour obtenir des configurations initiales suffisamment stables nous avons choisi de répartir les entités en les séparant d'au moins \qty{2.5}{\angstrom} : entre les molécules et ions de l'électrolyte, et entre les particules de l'électrolyte et les électrodes.\\
 Et pour respecter les conditions aux limites périodiques, cette séparation a également été appliquée aux bords du système : nous ajoutons un retrait égal à la moitité de cette séparation à chaque bord.
@@ -106,7 +106,7 @@ Finalement, nous obtenons la configuration présentée à la figure \autoref{fig
 \end{figure}
 
 % Simulations details
-    \subsection{Déroulement et détails des simulations}
+    \subsection{Déroulement et détails des simulations} \label{sec:deroulement_simulations}
 
 \begin{table}[h!]
     \centering
@@ -115,7 +115,7 @@ Finalement, nous obtenons la configuration présentée à la figure \autoref{fig
         Étape &Paramètre &Valeur &\\
         \hline
         Toutes &\lstinline!timestep! &\num{0.1} &\unit{\femto \second}\\
-        &potentiel &\reaxff &\\
+        &potentiel &\reaxff{} &\\
         \hline
         Minimisation &\lstinline!maxiter! &\num{1000} &\\
         &\lstinline!maxeval! &\num{10000} &\\
@@ -128,7 +128,7 @@ Finalement, nous obtenons la configuration présentée à la figure \autoref{fig
         &\lstinline!P_target! &\num{1.0} &\unit{\atm}\\
         \hline
         Simulation &durée &\num{10000000}\\
-        &polarisation &\echemdid &\\
+        &polarisation &\echemdid{} &\\
         & &\num{1.0} &\unit{\nano \second}\\
         &\lstinline!T_target! &\num{300.0} &\unit{\kelvin}\\
         \hline
@@ -149,15 +149,15 @@ Toutes les simulations suivent le déroulement de la \autoref{fig:deroulement_si
 Elle consiste à définir les paramètres clés de la simulation. Par exemple :
 \begin{itemize}
     \item le pas de temps (\lstinline!timestep!) sélectionné pour les simulations est de \qty{0.1}{\femto \second}
-    \item les interactions sont basés sur le potentiel réactif \reaxff (détaillé à la \autoref{sec:reaxff})
-    \item la mise en place de la différence de potentiel entre les électrodes est réalisée grâce à \echemdid (détaillé à la \autoref{sec:echemdid})
+    \item les interactions sont basés sur le potentiel réactif \reaxff{} (détaillé à la \autoref{sec:reaxff})
+    \item la mise en place de la différence de potentiel entre les électrodes est réalisée grâce à \echemdid{} (détaillé à la \autoref{sec:echemdid})
 \end{itemize}
 
 \textbf{Ajout du système}\\
-Ceci est effectué avec une commande \lammps de lecture de données. Pour ce faire, il est nécessaire de convertir les données des positions des particules du système (détails à la \autoref{sec:systeme_modele}) en données \lammps (détails à l'\autoref{apdx:conversion_lammps}).
+Ceci est effectué avec une commande \lammps{} de lecture de données. Pour ce faire, il est nécessaire de convertir les données des positions des particules du système (détails à la \autoref{sec:systeme_modele}) en données \lammps{} (détails à l'\autoref{apdx:conversion_lammps}).
 
 \textbf{Minimisation}\\
-Cette étape est essentielle au démarrage d'une simulation : elle sert à s'assurer que la configuration de départ de la simulation est "correcte", et que le système n'explosera pas dès le lancement de la dynamique.
+Cette étape est essentielle au démarrage d'une simulation : elle sert à s'assurer que la configuration de départ de la simulation soit "correcte" et que le système soit stable.
 
 Elle consiste à déplacer les particules du système sans dynamique de manière à minimiser l'énergie potentielle et les forces totales du système. Cette procédure suit un algorithme de gradient conjugué avec pour fonction objectif l'énergie potentielle totale :
 \begin{equation*}
