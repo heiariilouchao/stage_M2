@@ -55,12 +55,12 @@
 
 
 % Presenting the results
-%% Comparing two water models
+%% Comparing two methods for the modeling of water
 %% Charge distribution
 %% Ions adsorption/displacement
 \section{Résultats et discussion}
 
-
+    \input{h2o.tex}
 \clearpage
 
 
@@ -73,18 +73,21 @@
 
 % Annexes
 \appendix
-\section{Construction des configurations initiales avec \packmol} \label{apdx:packmol}
+\pagenumbering{roman}
+\section{Construction des configurations initiales avec \packmol{}} \label{apdx:packmol}
 
     \input{packmol.tex}
 \clearpage
 
-\section{Conversion des fichiers de configurations initiales au format \lammps} \label{apdx:conversion_lammps}
+\section{Conversion des fichiers de configurations initiales au format \lammps{}} \label{apdx:conversion_lammps}
 
-    \input{conversion_lammps.tex}
+    \input{conversion_lammps_reaxff.tex}
+    \input{conversion_lammps_spce.tex}
 \clearpage
 
 
 % References
+\pagenumbering{gobble}
 \printbibliography
 
 \end{document}
