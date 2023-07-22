@@ -4,7 +4,7 @@
 # The minimal distance between the chemical entities is set to 
 # 2.5 Å.
 tolerance 2.5
-output ch-sc.xyz
+output test.xyz
 filetype xyz
 
 
@@ -12,45 +12,30 @@ filetype xyz
 # The molecules/ions/atoms are added from bottom to top starting with 
 # the lower electrolyte and ending with the upper electrolyte
 
-# -------------------- The lower electrolyte --------------------
-structure water.xyz
-	number 52
-	inside box 1.250 1.250 1.250 11.030 11.512 17.500
-end structure
-
-structure sodium.xyz
-	number 5
-	inside box 1.250 1.250 1.250 11.030 11.512 17.500
-end structure
-
-structure hydroxyde.xyz
-	number 5
-	inside box 1.250 1.250 1.250 11.030 11.512 17.500
-end structure
-
-
 # -------------------- The lower electrode --------------------
+# Shifted by 1.0 in z-direction for walls
 structure graphite.xyz
 	number 1
 	center
-	fixed 6.140 6.381 23.348 0.0 0.0 0.0
+	fixed 11.052 10.635 4.348 0.0 0.0 0.0
 end structure
 
 
-# -------------------- The middle electrolyte --------------------
-structure water.xyz
-	number 105
-	inside box 1.250 1.250 29.196 11.030 11.512 64.196
-end structure
-
+# -------------------- The electrolyte --------------------
 structure sodium.xyz
-	number 10
-	inside box 1.250 1.250 29.196 11.030 11.512 64.196
+	number 6
+	inside box 1.250 1.250 10.196 20.854 20.020 30.196
 end structure
 
 structure hydroxyde.xyz
-	number 10
-	inside box 1.250 1.250 29.196 11.030 11.512 64.196
+	number 6
+	inside box 1.250 1.250 10.196 20.854 20.020 30.196
+end structure
+
+
+structure water.xyz
+	number 314
+	inside box 1.250 1.250 10.196 20.854 20.020 30.196
 end structure
 
 
@@ -58,22 +43,5 @@ end structure
 structure graphite.xyz
 	number 1
 	center
-	fixed 6.140 6.381 70.044 0.0 0.0 0.0
-end structure
-
-
-# -------------------- The upper electrolyte --------------------
-structure water.xyz
-	number 53
-	inside box 1.250 1.250 75.892 11.030 11.512 92.142
-end structure
-
-structure sodium.xyz
-	number 5
-	inside box 1.250 1.250 75.892 11.030 11.512 92.142
-end structure
-
-structure hydroxyde.xyz
-	number 5
-	inside box 1.250 1.250 75.892 11.030 11.512 92.142
+	fixed 11.052 10.635 35.044 0.0 0.0 0.0
 end structure

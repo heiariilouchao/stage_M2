@@ -1,4 +1,3 @@
-log     	data/log.setup
 # -------------------- Description --------------------
 # The purpose is to simulate a charged super-capacitor using EChemDID and ReaxFF.
 # This simulation is just a test, thus there are only 8 ions in each solvant boxes.
@@ -7,8 +6,13 @@ log     	data/log.setup
 
 # -------------------- Defining some parameters --------------------
 units   	real
+timestep 	0.1
 atom_style 	charge
-boundary 	p p p
+neighbor 	2.0 bin
+neigh_modify 	every 2 delay 16 check yes
+variable 	init_T equal 1.0
+variable 	target_T equal 300.0
+variable 	target_P equal 1.0
 
 
 # -------------------- Adding the structure --------------------
@@ -28,7 +32,7 @@ group   	positive variable upper_carbons
 # -------------------- Defining the interactions --------------------
 pair_style 	reax/c NULL safezone 2.0 mincap 200 minhbonds 100
 pair_coeff 	* * ffield.reax.ch-sc H O Na C
-fix     	Qeq all qeq/shielded  1 10.0 1.0e-6 1000 reax/c
+fix     	QEq all qeq/shielded  1 10.0 1.0e-6 1000 reax/c
 
 
 # -------------------- Initializing some properties --------------------
@@ -40,46 +44,46 @@ set     	group all d_locpot 0.0
 
 log     	data/log.minimize
 # -------------------- Minimizing the energy and the forces --------------------
-thermo  	10
+thermo  	100
 thermo_style	custom step pe press
 
 minimize 	1.0e-05 1.0e-06 100 1000
 
 
-log     	data/log.relaxation
+log         	data/log.relaxation
 # -------------------- Running a relaxation --------------------
-timestep 	0.1
+velocity    	all create ${init_T} 98715
 
-velocity 	all create 300.0 98715
-
-fix     	relaxation_ensemble all npt temp 300.0 300.0 $(100*dt) aniso 0.0 0.0 $(1000*dt)
-
-dump    	relaxation_positions all custom 1000 data/relaxation.lammpstrj id element x y z
-dump_modify	relaxation_positions element H O Na C pbc yes
-
-thermo  	1000
+dump        	relaxation_positions all custom 1000 data/relaxation.lammpstrj id element x y z
+dump_modify 	relaxation_positions element H O Na C pbc yes
+thermo      	1000
 thermo_style 	custom step temp pe ke press vol density
 
-run     	100000
+fix         	relaxation_ensemble all npt temp ${init_T} ${target_T} $(100.0*dt) aniso $(press) ${target_P} $(1000.0*dt)
 
-undump  	relaxation_positions
-unfix   	relaxation_ensemble
+run         	100000
+
+unfix       	relaxation_ensemble
+fix 	    	relaxation_ensemble all npt temp $(temp) ${target_T} $(100.0*dt) aniso $(press) ${target_P} $(1000.0*dt)
+
+run         	100000
+
+undump      	relaxation_positions
+unfix       	relaxation_ensemble
 
 
-log     	data/log.ch-sc
+log         	data/log.ch-sc
 # -------------------- Running the main simulation --------------------
-timestep 	0.1
-fix     	potential electrodes echemdid 1 k 6.0 rc 2.0 norm 0.73 nelec 10 negative positive volt 4.0
+dump        	positions all custom 1000 data/ch-sc.lammpstrj id element x y z xu yu zu q
+dump_modify 	positions element H O Na C pbc yes
+thermo      	1000
+thermo_style 	custom step temp pe ke press
+
+fix         	potential carbons echemdid 1 k 6.0 rc 2.0 norm 0.73 nelec 10 negative positive volt 4.0
 			# k: effective diffusivity
 			# rc: critical sepration distance below which two atoms are considered as part of the same metallic cluster
 			# norm: normalization factor (if 0 the code will compute the norm for you) !! IT DON'T !!
 			# nelec: number of electronic steps between ionic steps
-fix     	ensemble all nvt temp 300.0 300.0 $(100*dt)
+fix         	ensemble all nvt temp ${target_T} ${target_T} $(100.0*dt)
 
-dump    	positions all custom 1000 data/ch-sc.lammpstrj id element x y z xu yu zu q
-dump_modify	positions element H O Na C pbc yes
-
-thermo  	1000
-thermo_style 	custom step temp pe ke press
-
-run     	6000000
+run         	10000000
