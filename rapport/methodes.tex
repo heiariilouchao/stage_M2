@@ -8,7 +8,7 @@
     \label{fig:interactions_energies_reaxff}
 \end{figure}
 
-\reaxff{}\cite{russo_atomistic-scale_2011}\cite{senftle_reaxff_2016} est un potentiel utilisant les ordres de liaison pour modéliser des interactions atomiques en prenant aussi en compte les réactions chimiques (\autoref{fig:interactions_energies_reaxff}).\\
+\reaxff{}\cite{russo_atomistic-scale_2011}\cite{senftle_reaxff_2016} est un potentiel qui utilise les ordres de liaison pour modéliser les réactions chimiques (\autoref{fig:interactions_energies_reaxff}), prend en compte les interaction non-liantes, et effectue  une équilibration de charges.\\
 Il a été conçu de façon à obtenir des résultats dont la précision se rapproche des méthodes quantiques, en mettant en jeu autant d'atomes que les méthodes classiques.\\
 Enfin, ce potentiel a été comparé à un modèle existant de la molécule d'eau à la \autoref{sec:h2o}.
 
@@ -35,16 +35,105 @@ où paramètres $p_{bo,1}, \dots, p_{bo,6}, r_o$ sont des pamramètres issus de 
 \begin{equation}
     \boxed%
     {
-    \frac{\partial E}{\partial q_i} = \chi_i + 2 q_i \eta_i + C \sum_{j = 1}^{n} \frac{q_j}{\left(r_{ij}^3 + (1 / \gamma_{ij})^3\right)^{1/3}}
+    \frac{\partial E}{\partial q_i} = \chi_i + 2 q_i H_i + C \sum_{j \neq i} \frac{q_j}{\left(r_{ij}^3 + (1 / \gamma_{ij})^3\right)^{1/3}}
     }
     \ \text{ et } \ 
     \boxed%
     {
-        \sum_{i = 1}^{n} q_i = 0
+        \sum_{i = 1}^{N_{atomes}} q_i = 0
     }
 \end{equation}
-où $q_i$ est la charge d'un atome $i$, $\chi_i$ son électronégativité, $\eta_i$ sa dureté, $r_{ij}$ est la distance entre un atome $i$ et un atome $j$ et $\gamma_{ij}$ est le paramètre de protection pour la paire $ij$.
+où $q_i$ est la charge d'un atome $i$, $\chi_i$ son électronégativité, $H_i$ sa dureté, $r_{ij}$ est la distance entre un atome $i$ et un atome $j$ et $\gamma_{ij}$ est le paramètre de protection pour la paire $ij$.
 
 
 % Presenting EChemDID
     \subsection{Présentation d'\echemdid{}} \label{sec:echemdid}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[height = 3 cm]{echemdid_methode.pdf}
+    \caption{Fonctionnement d'\echemdid{}}
+    \label{fig:echemdid_fonctionnement}
+\end{figure}
+
+\textbf{Application d'un potentiel électrochimique externe}\\
+Pour fonctionner, \echemdid{} assigne à chaque atome un potentiel électrochimique local $\Phi_i (t)$ et applique initialement un potentiel électrochimique externe à un groupe prédéfini d'atomes.
+
+\textbf{Propagation du voltage au sein des électrodes}\\
+Le but d'\echemdid{} étant de représenter les réactions électrochimiques, la progpagation du voltage au sein des électrodes se fait simplement selon la relation :
+\begin{equation}
+    \dot{\Phi} = k \Delta \Phi
+    \label{eq:echemdid_propagation}
+\end{equation}
+où $k$ est un coefficient de diffusion, et $\Delta$ est l'opérateur Laplacien. Pour résoudre cette équation, \echemdid{} suppose que chaque atome se situe dans un réseau de référence (ou grille).
+
+Pour résoudre cette équation, plusieurs points sont à prendre en compte :
+\begin{itemize}
+    \item si une différence de potentiel est appliquée entre deux électrodes, le voltage devra s'équilibrer en une durée dépendant du coefficient $k$
+    \item si un atome se détache d'une électrode, son électronégativité devra progressivement revenir à sa valeur atomique notée $\chi_i^0$
+\end{itemize}
+
+La solution numérique de cette équation peut alors être exprimée :
+\begin{equation}
+    \boxed%
+    {
+        \dot{\Phi}_i (t) = \sum_{j \neq i} \frac{\Phi_i (t) - \Phi_j (t)}{{R_{ij}}^2}w(R_{ij}) + \eta F(W_i) \Phi_i
+    }
+    \label{eq:echemdid_solution_numerique}
+\end{equation}
+où $R_{ij} = | \vec{r}_i - \vec{r}_j |$, $\vec{r}_i$ est la position de l'atome dans la grille, $w(R)$ est une fonction de poids, $\eta$ est un coefficient de relaxation, $F(W)$ est une fonction d'activation de la relaxation, et $W_i$ est la coordinance métallique totale de l'atome $i$.
+
+Le premier terme à droite de cette équation résout l'équation de la diffusion du voltage aux seins des électrodes, et la fonction de poids a pour expression :
+\begin{equation*}
+    w(R) = \left\{
+        \begin{aligned}
+            &\mathcal{N} \left[ 1 - \left(\frac{R}{R_c}\right)^2 \right]^2 &\text{si } R < R_c\\
+            &0 &\text{sinon}
+        \end{aligned}
+    \right.
+\end{equation*}
+où $R_c$ est la distance maximale à partir de laquelle deux atomes ne sont plus considérés comme faisant partie du même amas métallique, $\mathcal{N} = \frac{2 d N_{atomes}}{\sum_{i} W_i}$ est un coefficient de normalisation, $d$ est le nombre de dimensions du problème, et $W_i = \sum_{j \neq i} w(R_{ij})$ est la coordinance métallique totale de l'atome $i$ sur la grille.
+
+Quant au second terme à droite, il permet d'activer la relaxation de l'électronégativité, et la fonction d'activation a pour expression :
+\begin{equation*}
+    F(W) = \left\{
+        \begin{aligned}
+            &\left[ 1 - \left( \frac{W}{W_0}\right)^2\right]^2 &\text{si } W < W_0\\
+            &0 &\text{sinon}
+        \end{aligned}
+    \right.
+\end{equation*}
+où $W_0$ est la coordinance métallique minimale en dessous de laquelle l'électronégativité doit tendre vers sa valeur atomique, en général on prend $W_0 = w(\num{0.99}R_c)$.
+
+La \autoref{fig:echemdid_allures_w_f} montre l'allure des fonctions $w$ et $F$ pour un réseau cristallin de graphite de \num{540} atomes, en supposant que pour tous les atomes on a $W_i = \num{3}$ et en prenant $R_c = \qty{4}{\angstrom}$.
+
+\begin{figure}[h!]
+    \centering
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includegraphics[height = 6 cm]{echemdid_allure_w.pdf}
+        \caption{$w(R)$}
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includegraphics[height = 6 cm]{echemdid_allure_f.pdf}
+        \caption{$F(W)$}
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includegraphics[height = 6 cm]{echemdid_allures_w_f.pdf}
+        \caption{$w(R)$ et $F(R) \simeq F(w(R))$}
+    \end{subfigure}
+    \caption{Allures des fonctions d'\echemdid{}}
+    \label{fig:echemdid_allures_w_f}
+\end{figure}
+
+\textbf{Ajout du potentiel à l'électronégativité et équilibration des charges}\\
+Le potentiel $\Phi_i (t)$ obtenu après avoir calculé la solution (\ref{eq:echemdid_solution_numerique}) et intégré l'\autoref{eq:echemdid_propagation} est ensuite ajouté à l'électronégativité de l'atome $i$ :
+\begin{equation*}
+    \boxed%
+    {
+        \chi_i^* (t) = \chi_i^0 + \Phi_i (t)
+    }
+\end{equation*}
+pour effectuer le calcul d'équilibration des charges par la méthode \qeq{}.
