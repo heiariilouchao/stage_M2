@@ -1,3 +1,12 @@
+Pour cette étude, nous utilisons un certain nombre d'outils et de méthodes que nous présentons dans ci-après, d'autres méthodes et outils, comme le modèle \spce{}, sont présentés brièvement dans les sections où ils sont mentionnés.
+
+Nous effectuons d'abord des rappels de Dynamique Moléculaire car c'est le domaine de notre étude, puis nous présentons \reaxff{} le potentiel réactif que nous utilisons dans nos simulations, et enfin nous discutons d'\echemdid{}, la méthode utilisée pour appliquer la différence de potentiel entre les électrodes.
+
+% Prensenting Molecular Dynamics
+    \subsection{Rappels de Dynamique Moléculaire}
+
+
+
 % Presenting ReaxFF
     \subsection{Présentation de \reaxff{}} \label{sec:reaxff}
 
@@ -21,12 +30,12 @@ L'ordre d'une liaison entre un atome $i$ et un atome $j$ est donné par :
 où paramètres $p_{bo,1}, \dots, p_{bo,6}, r_o$ sont des pamramètres issus de calculs \textit{ab initio}, et dépendent de la nature des atomes mis en jeu, et du type de liaison considéré. Les ordres de liaisons sont ensuite corrigés pour être intégrés aux calculs des énergie de liaisons, d'angles et de torsions.
 
 \textbf{Interactions non-liantes}\\
-\reaxff{} inclue également les interactions de \vdw{} et \coulomb{} pour \emph{toutes} les paires d'atomes. Les interactions de \vdw{} se basent sur un potentiel de Morse, et ces deux types d'interactions sont protégées par un paramètre $\gamma$ pour éviter de trop grandes attractions et répulsions (\autoref{fig:reaxff_vdw_coulomb}).
+\reaxff{} inclue également les interactions de \vdw{} et \coulomb{} pour \emph{toutes} les paires d'atomes. Les interactions de \vdw{} se basent sur un potentiel de Morse, et ces deux types d'interactions sont écrantées par un paramètre $\gamma$ pour éviter de trop grandes attractions et répulsions (\autoref{fig:reaxff_vdw_coulomb}).
 
 \begin{figure}[h!]
     \centering
     \includegraphics[height = 5 cm]{reaxff_vdw_coulomb.png}
-    \caption{Allures des énergies des interactions de \vdw{} et \coulomb{} protégées {\tiny (tiré de \cite{russo_atomistic-scale_2011})}}
+    \caption{Allures des énergies des interactions de \vdw{} et \coulomb{} écrantées {\tiny (tiré de \cite{russo_atomistic-scale_2011})}}
     \label{fig:reaxff_vdw_coulomb}
 \end{figure}
 
@@ -111,20 +120,20 @@ La \autoref{fig:echemdid_allures_w_f} montre l'allure des fonctions $w$ et $F$ p
     \centering
     \begin{subfigure}{\textwidth}
         \centering
-        \includegraphics[height = 6 cm]{echemdid_allure_w.pdf}
-        \caption{$w(R)$}
+        \includegraphics[height = 6 cm]{echemdid_w.pdf}
+        \caption{$w(R)$ : {\footnotesize les poids augmentent avec la proximité, ainsi la propagation du voltage est d'autant plus forte que la distance entre deux atomes est petite, et elle s'estompe pour des distances plus grandes que $R_c$.}}
     \end{subfigure}
     \begin{subfigure}{\textwidth}
         \centering
-        \includegraphics[height = 6 cm]{echemdid_allure_f.pdf}
-        \caption{$F(W)$}
+        \includegraphics[height = 6 cm]{echemdid_F.pdf}
+        \caption{$F(W)$ : {\footnotesize lorsque la coordination métallique diminue, la relaxation s'effectue avec $F$ qui augmente.}}
     \end{subfigure}
     \begin{subfigure}{\textwidth}
         \centering
-        \includegraphics[height = 6 cm]{echemdid_allures_w_f.pdf}
-        \caption{$w(R)$ et $F(R) \simeq F(w(R))$}
+        \includegraphics[height = 6 cm]{echemdid_w_F.pdf}
+        \caption{$w(R)$ et $F(R) \simeq F(w(R))$ : {\footnotesize les termes ne coexistent quasimment jamais.}}
     \end{subfigure}
-    \caption{Allures des fonctions d'\echemdid{}}
+    \caption{Allures des fonctions d'\echemdid{}, {\footnotesize pour un réseau cristallin de graphite de \num{540} atomes, en supposant que pour tous les atomes $W = \num{3}$, et en prenant $R_c = \qty{4}{\angstrom}$.}}
     \label{fig:echemdid_allures_w_f}
 \end{figure}
 
