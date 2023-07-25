@@ -19,15 +19,15 @@ Le système modèle est composé d'électrodes en graphites immergées dans un �
         \hline
         Groupe &Caractéristique &Valeur &\\
         \hline
-        Système &Dimensions &$(22.104, 21.270, \sim 40)$ &\unit{\angstrom}\\
+        Système &Dimensions &$(22.104, 21.270, \sim 60)$ &\unit{\angstrom}\\
         &Particules &$\sim \num{3000}$ &\\
         \hline
         Électrodes &Séparation &$\sim \num{20}$ &\unit{\angstrom}\\
         &Atomes (par électrode) &\num{540} &\\
         \hline
-        Électrolyte &Molécules d'eau &\num{314} &\\
+        Électrolyte &Molécules d'eau &\num{628} &\\
         &Concentration &$\sim \num{1.0}$ &\unit{\mole \per \liter}\\
-        &Ions &\num{6} &\\
+        &Ions &\num{12} &\\
         \hline
     \end{tabular}
     \caption{Caractéristiques du système}
@@ -75,7 +75,7 @@ La structure de graphite de base a pu être étendue grâce à un logiciel tier\
         \hline
         Structure &X [Å] &Y [Å] &Z [Å]\\
         \hline
-        Graphite de base &\num{2.456} &\num{4.254} &\num{6.696}\\
+        Réseau initial &\num{2.456} &\num{4.254} &\num{6.696}\\
         Électrode de graphite &\num{22.104} &\num{21.270} &\num{6.696}\\
         \hline
     \end{tabular}
@@ -86,7 +86,7 @@ La structure de graphite de base a pu être étendue grâce à un logiciel tier\
 \begin{figure}[h!]
     \centering
     \includegraphics[height = 5 cm]{electrode.png}
-    \caption{Électrode obtenue après duplication du réseau de graphite}
+    \caption{Électrode obtenue après duplication du réseau de graphite : {\footnotesize les couches de graphènes sont séparées d'environ $\sim$\qty{3.5}{\angstrom}.}}
     \label{fig:electrode}
 \end{figure}
 
@@ -163,7 +163,13 @@ Elle consiste à déplacer les particules du système sans dynamique de manière
 \begin{equation*}
     E(r_1, \dots, r_N) = \sum_{i, j} E_{pair} (r_i, r_j) + \dots + \sum_{i, j} E_{fix} (r_i)
 \end{equation*}
-où sont prises en compte les énergies : des interactions de paires, des liaisons et angles si présents, des interactions \textit{improper} ou \textit{dihedral}, et des \lstinline!fix! imposés lors de la minimisation (ex : ajout de contraintes, de forces appliquées sur les atomes, etc.).
+où sont prises en compte les énergies :
+\begin{itemize}
+    \item des interactions de paires
+    \item des liaisons et angles si présents
+    \item des interactions \textit{improper} ou \textit{dihedral} : les interactions mettant en jeu \num{3} ou \num{4} atomes
+    \item des \lstinline!fix! imposés lors de la minimisation : des commandes \lammps{} visant à imposer des contraintes lors de la minimisation, par exemple la relaxation de la boîte pour atteindre une pression désirée, ou encore les forces désactivées pour un groupe d'atomes pour qu'ils ne subissent pas de modifications
+\end{itemize}
 
 \textbf{Relaxation et stabilisation}\\
 Ces étapes utilisent un thermostat et barostat de Nosé--Hoover pour atteindre les conditions physiques recherchées et les stabiliser.
