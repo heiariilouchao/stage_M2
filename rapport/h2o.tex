@@ -1,5 +1,5 @@
 % Comparing two methods for the modeling of water
-\subsection{Comparaison de deux méthodes pour la molécule d'eau} \label{sec:h2o}
+\subsection{Comparaison de deux méthodes pour modéliser la molécule d'eau} \label{sec:h2o}
 
 Puisque l'eau joue un rôle important dans le système que nous étudions, nous voulons explorer plusieurs approches pour la modélisation de la molécule d'eau :
 \begin{itemize}
@@ -103,15 +103,60 @@ LES RÉSULTATS !!
 \begin{figure}[h!]
     \centering
     \begin{subfigure}{.49\textwidth}
-        \includegraphics[width = \textwidth, draft]{h2o_rdf.pdf}
-        \caption{Comparaison des \emph{Radial Distribution Function}s}
-        \label{fig:h2o_rdf}
+        \includegraphics[width = \textwidth]{h2o_rdf_oo.pdf}
+        \caption{\emph{Radial Distribution Function}s de la paire \ce{OO}}
+        \label{fig:h2o_rdf_oo}
+    \end{subfigure}%
+    ~
+    \begin{subfigure}{.49\textwidth}
+        \includegraphics[width = \textwidth]{h2o_rdf_oh.pdf}
+        \caption{\emph{Radial Distribution Function}s de la paire \ce{OH}}
+        \label{fig:h2o_rdf_oh}
     \end{subfigure}
     \begin{subfigure}{.49\textwidth}
-        \includegraphics[width = \textwidth, draft]{h2o_msd.pdf}
-        \caption{Comparaison des \emph{Mean Squared Displacement}s}
-        \label{fig:h2o:msd}
+        \includegraphics[width = \textwidth]{h2o_msd.pdf}
+        \caption{\emph{Mean Squared Displacement}s}
+        \label{fig:h2o_msd}
     \end{subfigure}
     \caption{Comparaison des résultats obtenus}
     \label{fig:h2o_comparaison_resultats}
 \end{figure}
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{l | c c | c c | c c}
+        \hline
+        Données &1\textsuperscript{er} max. [\unit{\angstrom}] &$g$\textsubscript{\ce{OH}} &1\textsuperscript{er} min. [\unit{\angstrom}] &$g$\textsubscript{\ce{OH}} &2\textsuperscript{e} max. [\unit{\angstrom}] &$g$\textsubscript{\ce{OH}}\\
+        \hline
+        Expérimentale &\num{1.85} &\num{1.38} &\num{2.40} &\num{0.27} &\num{3.30} &\num{1.60}\\
+        \reaxff{} & & & & & &\\
+        \spce{} & & & & & &\\
+        \hline
+    \end{tabular}
+    \begin{tabular}{c c | c | c c}
+        \hline
+        1\textsuperscript{er} max. [\unit{\angstrom}] &$g$\textsubscript{\ce{OO}} &1\textsuperscript{er} min. [\unit{\angstrom}] &2\textsuperscript{e} max. [\unit{\angstrom}] &$g$\textsubscript{\ce{OO}}\\
+        \hline
+        \num{2.88} &\num{3.09} &\num{3.30} &\num{4.50} &\num{1.14}\\
+        & & & &\\
+        & & & &\\
+        \hline
+    \end{tabular}
+    \caption{Résultats pour les \emph{Radial Distribution Function}s}
+    \label{tab:h2o_rdf}
+\end{table}
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{l || c | c}
+        \hline
+        Données &Coefficient de diffusion (\unit{\square \meter \per \second}) &Erreur relative (\unit{\percent})\\
+        \hline
+        Expérimentale &\num{2.30e-9} &--\\
+        \reaxff{} &\num{2.45e-9} &\num{6.5}\\
+        \spce{} &\num{1.61e-9} &\num{30}\\
+        \hline
+    \end{tabular}
+    \caption{Résultats pour les coefficients de diffusion}
+    \label{tab:h2o_diffusion}
+\end{table}
