@@ -1,10 +1,10 @@
-# Packmol input script to generate the super-capacitor structure
+# Packmol input script to generate the model system's structure
 
 # -------------------- Essential parameters --------------------
 # The minimal distance between the chemical entities is set to 
 # 2.5 Å.
 tolerance 2.5
-output test.xyz
+output ch-sc.xyz
 filetype xyz
 
 
@@ -12,30 +12,46 @@ filetype xyz
 # The molecules/ions/atoms are added from bottom to top starting with 
 # the lower electrolyte and ending with the upper electrolyte
 
+
+# -------------------- The lower electrolyte --------------------
+structure sodium.xyz
+	number 3
+	inside box -9.802 -9.385 -30.446 9.802 9.385 -21.696
+end structure
+
+structure hydroxyde.xyz
+	number 3
+	inside box -9.802 -9.385 -30.446 9.802 9.385 -21.696
+end structure
+
+structure water.xyz
+	number 157
+	inside box -9.802 -9.385 -30.446 9.802 9.385 -21.696
+end structure
+
+
 # -------------------- The lower electrode --------------------
-# Shifted by 1.0 in z-direction for walls
 structure graphite.xyz
 	number 1
 	center
-	fixed 11.052 10.635 4.348 0.0 0.0 0.0
+	fixed 0.0 0.0 -15.848 0.0 0.0 0.0
 end structure
 
 
 # -------------------- The electrolyte --------------------
 structure sodium.xyz
 	number 6
-	inside box 1.250 1.250 10.196 20.854 20.020 30.196
+	inside box -9.802 -9.385 -10.0 9.802 9.385 10.0
 end structure
 
 structure hydroxyde.xyz
 	number 6
-	inside box 1.250 1.250 10.196 20.854 20.020 30.196
+	inside box -9.802 -9.385 -10.0 9.802 9.385 10.0
 end structure
-
 
 structure water.xyz
 	number 314
-	inside box 1.250 1.250 10.196 20.854 20.020 30.196
+	inside box -9.802 -9.385 -10.0 9.802 9.385 10.0
 end structure
 
 
@@ -43,5 +59,22 @@ end structure
 structure graphite.xyz
 	number 1
 	center
-	fixed 11.052 10.635 35.044 0.0 0.0 0.0
+	fixed 0.0 0.0 15.848 0.0 0.0 0.0
+end structure
+
+
+# -------------------- The upper electrolyte --------------------
+structure sodium.xyz
+	number 3
+	inside box -9.802 -9.385 21.696 9.802 9.385 30.446
+end structure
+
+structure hydroxyde.xyz
+	number 3
+	inside box -9.802 -9.385 21.696 9.802 9.385 30.446
+end structure
+
+structure water.xyz
+	number 157
+	inside box -9.802 -9.385 21.696 9.802 9.385 30.446
 end structure
