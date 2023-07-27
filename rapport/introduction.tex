@@ -4,7 +4,7 @@ En 2019, la consommation mondiale d'énergie finale a doublé par rapport à 197
 Les énergies renouvelables sont une des solutions pour répondre à cette demande croissante d'électricité tout en respectant l'environnement. Cependant, les périodes de production ne coïncidant pas nécessairement avec les périodes de consommation -- le cycle diurne étant un exemple -- il est nécessaire de pouvoir stocker efficacement l'énergie produite en attendant qu'elle soit consommée.
 
 %% Presenting the SCs
-Les supercondensateurs sont une bonne piste pour le stockage d'énergie. Ils sont composés d'électrodes poreuses séparées par une membrane perméable et plongées dans un électrolyte. Ceci permet le déplacement des charges d'une électrode à l'autre lorsque l'appareil est en charge ou en décharge (\autoref{fig:schema_supercondensateur}).\\
+Les supercondensateurs sont une bonne piste pour le stockage d'énergie. Ils sont composés d'électrodes de carbone poreuses séparées par une membrane perméable et plongées dans un électrolyte. Ceci permet le déplacement des charges d'une électrode à l'autre lorsque l'appareil est en charge ou en décharge (\autoref{fig:schema_supercondensateur}).\\
 Ils se situent entre les batteries et les condensateurs en termes de densité d'énergie et de puissance, ainsi leur utilisation est répandue pour les véhicules électriques, systèmes d'alimentation sans fil ou encore appareils portables.
 
 \begin{figure}[hb]
@@ -15,8 +15,7 @@ Ils se situent entre les batteries et les condensateurs en termes de densité d'
 \end{figure}
 
 % Presenting the state of the art
-% TODO: détailler les études citées
-Les supercondensateurs ont été le sujet d'un bon nombre d'études. En effet, des recherches se basant sur la Dynamique Moléculaire ont déjà été réalisées sur : les électrolytes\cite{zhong_review_2015}, les matériaux d'électrodes\cite{iro_brief_2016}, et leurs performances\cite{zhang_review_2018}.
+Plusieurs études ayant des sujets connexes ont déjà été réalisées : la densité relative d'ions de l'électrolyte et le potentiel peuvent être ciblés pour étudier la structure de la Double Couche Électrique (EDL)\cite{jiang_molecular_2016}, ou encore la densité d'ions et de charges pour étudier l'adsorption des ions à l'interface électrode/électrolyte\cite{cole_ion_2011}. Cependant, nous voulons adopter une approche légèrement différente : en utilisant un potentiel réactif pour les interactions entre les particules [\reaxff{}] plutôt que des modèles rigides (ex: SPC/E, TIP3P, etc.), mettre en place la polarisation du système en contrôlant directement le voltage entre les électrodes [\echemdid{}] plutôt qu'en modifiant manuellement les charges des atomes des électrodes, et en essayant d'ajouter des défauts aux électrodes (atome manquant, atome ajouté à la surface).
 
 % Presenting the problem
 Malgré son importance, la complexité de la structure de ces électrodes est trop grande pour l'étude que nous avons envisagée, notamment à cause de leur porosité, de la présence de réseaux de pores et de défauts\cite{bo_design_2018}. Ainsi, nous avons choisi d'étudier un système modèle pour nous concentrer sur l'observation des mécanismes de base de ces appareils, comme l'adsorption des ions et la formation de la Double Couche Électrique (EDL). En faisant cela, nous espérons pouvoir mieux comprendre le fonctionnement des supercondensateurs.
