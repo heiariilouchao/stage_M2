@@ -4,23 +4,24 @@ En 2019, la consommation mondiale d'énergie finale a doublé par rapport à 197
 Les énergies renouvelables sont une des solutions pour répondre à cette demande croissante d'électricité tout en respectant l'environnement. Cependant, les périodes de production ne coïncidant pas nécessairement avec les périodes de consommation -- le cycle diurne étant un exemple -- il est nécessaire de pouvoir stocker efficacement l'énergie produite en attendant qu'elle soit consommée.
 
 %% Presenting the SCs
-Les supercondensateurs sont une bonne piste pour le stockage d'énergie. Ils sont composés d'électrodes de carbone poreuses séparées par une membrane perméable et plongées dans un électrolyte. Ceci permet le déplacement des charges d'une électrode à l'autre lorsque l'appareil est en charge ou en décharge (\autoref{fig:schema_supercondensateur}).\\
+Les supercondensateurs sont une bonne piste pour l'avenir du stockage d'énergie. Ils sont composés d'électrodes en carbone poreuses séparées par une membrane perméable et plongées dans un électrolyte. Ceci permet le déplacement des charges d'une électrode à l'autre lorsque l'appareil est en charge ou en décharge (\autoref{fig:schema_supercondensateur}).\\
 Ils se situent entre les batteries et les condensateurs en termes de densité d'énergie et de puissance, ainsi leur utilisation est répandue pour les véhicules électriques, systèmes d'alimentation sans fil ou encore appareils portables.
 
-\begin{figure}[hb]
+\begin{figure}[h!]
     \centering
-    \includegraphics[height=5cm]{supercondensateur.png}
+    \includegraphics[height = 6 cm]{supercondensateur.png}
     \caption{Schéma d'un supercondensateur}
     \label{fig:schema_supercondensateur}
 \end{figure}
 
 % Presenting the state of the art
-Plusieurs études ayant des sujets connexes ont déjà été réalisées : la densité relative d'ions de l'électrolyte et le potentiel peuvent être ciblés pour étudier la structure de la Double Couche Électrique (EDL)\cite{jiang_molecular_2016}, ou encore la densité d'ions et de charges pour étudier l'adsorption des ions à l'interface électrode/électrolyte\cite{cole_ion_2011}. Cependant, nous voulons adopter une approche légèrement différente : en utilisant un potentiel réactif pour les interactions entre les particules [\reaxff{}] plutôt que des modèles rigides (ex: SPC/E, TIP3P, etc.), mettre en place la polarisation du système en contrôlant directement le voltage entre les électrodes [\echemdid{}] plutôt qu'en modifiant manuellement les charges des atomes des électrodes, et en essayant d'ajouter des défauts aux électrodes (atome manquant, atome ajouté à la surface).
+Plusieurs études ayant des sujets connexes ont déjà été réalisées : la densité relative d'ions de l'électrolyte et le potentiel peuvent être ciblés pour étudier la structure de la Double Couche Électrique (\edl{})\cite{jiang_molecular_2016}, ou encore la densité d'ions et de charges pour étudier l'adsorption des ions à l'interface électrode/électrolyte\cite{cole_ion_2011}. Cependant, nous voulons adopter une approche légèrement différente : en utilisant un potentiel réactif pour les interactions entre les particules [\reaxff{}] plutôt que des modèles rigides (ex: SPC/E, TIP3P, etc.), et en contrôlant directement le voltage entre les électrodes [\echemdid{}] plutôt que de fixer manuellement les charges des atomes des électrodes.
 
 % Presenting the problem
-Malgré son importance, la complexité de la structure de ces électrodes est trop grande pour l'étude que nous avons envisagée, notamment à cause de leur porosité, de la présence de réseaux de pores et de défauts\cite{bo_design_2018}. Ainsi, nous avons choisi d'étudier un système modèle pour nous concentrer sur l'observation des mécanismes de base de ces appareils, comme l'adsorption des ions et la formation de la Double Couche Électrique (EDL). En faisant cela, nous espérons pouvoir mieux comprendre le fonctionnement des supercondensateurs.
+Par ailleurs, la structure des électrodes peut s'avérer très complexe\cite{bo_design_2018}\cite{iro_brief_2016}, en effet les matériaux les plus souvent utilisés pour fabriquer de tels composants sont très poreux : avec des surfaces spécifiques atteignant les \qty{3000}{\square \meter \per \gram} ; et possèdent une très large distribution de pores : pouvant comprendre des micropores ($< \qty{2}{\nano\meter}$), des mésopores (\qtyrange[range-units = single]{2}{50}{\nano \meter}) et des macropopres ($> \qty{50}{\nano \meter}$).
+Ainsi, nous avons préféré étudier un système modèle pour nous concentrer sur l'observation des mécanismes de base de ces composants, comme l'adsorption des ions et la formation de l'\edl{}, en espérant que cela nous permette de mieux les comprendre.
 
 % Presenting the plan
-Dans un premier temps, nous présentons ce système modèle : ses caractéristiques, sa construction et sa mise en place.
-Puis, nous discutons des outils que nous utilisons dans nos simulations, à savoir le potentiel réactif \reaxff{}\cite{van_duin_reaxff_2001}\cite{russo_atomistic-scale_2011}\cite{senftle_reaxff_2016}, la mise en place de la polarisation du système à l'aide d'\echemdid{}\cite{onofrio_voltage_2015}, et leur implémentation au sein de \lammps{}.
+Dans un premier temps, nous discutons des méthodes et outils que nous utilisons dans nos simulations, à savoir : le potentiel réactif \reaxff{}\cite{van_duin_reaxff_2001}\cite{russo_atomistic-scale_2011}\cite{senftle_reaxff_2016}, et la mise en place de la polarisation du système à l'aide d'\echemdid{}\cite{onofrio_voltage_2015}.
+Puis, nous présentons le système modèle : ses caractéristiques, sa construction et sa mise en place.
 Enfin, nous présentons les résultats obtenus et observations faites lors de cette étude, notamment par rapport à l'adsorption des ions à la surface des électrodes, l'influence de leurs défauts, et la répartition des charges en leur sein.
