@@ -123,22 +123,22 @@ Les résultats obtenus à l'issue des simulations sont comparées aux valeurs ex
 
 \begin{table}[h!]
     \centering
-    \begin{tabular}{l | c c | c c | c c}
+    \begin{tabular}{l | c c | c c}
         \hline
-        Données &1\textsuperscript{er} max. [\unit{\angstrom}] &$g$\textsubscript{\ce{OH}} &2\textsuperscript{e} max. [\unit{\angstrom}] &$g$\textsubscript{\ce{OH}} &2\textsuperscript{e} min. [\unit{\angstrom}] &$g$\textsubscript{\ce{OH}}\\
+        Données &1\textsuperscript{er} max. [\unit{\angstrom}] &$g$\textsubscript{\ce{OH}} &2\textsuperscript{e} max. [\unit{\angstrom}] &$g$\textsubscript{\ce{OH}}\\
         \hline
-        Expérimentale\cite{soper_radial_2000} &\num{0.93} &\num{11.66} &\num{1.80} &\num{1.15} &\num{2.47} &\num{0.21}\\
-        \reaxff{} &\num{0.94} &\num{22.18} &\num{1.84} &\num{1.35} &\num{2.47} &\num{0.19}\\
-        \spce{} &\num{1.00} &\num{23.99} &\num{1.72} &\num{1.71} &\num{2.36} &\num{0.14}\\
+        Expérimentale\cite{soper_radial_2000} &\num{0.93} &\num{11.66} &\num{1.80} &\num{1.15}\\
+        \reaxff{} &\num{0.94} &\num{22.18} &\num{1.84} &\num{1.35}\\
+        \spce{} &\num{1.00} &\num{23.99} &\num{1.72} &\num{1.71}\\
         \hline
     \end{tabular}
-    \begin{tabular}{c c || c c | c c | c c}
+    \begin{tabular}{c c | c c}
         \hline
-        3\textsuperscript{e} max. [\unit{\angstrom}] &$g$\textsubscript{\ce{OH}} &1\textsuperscript{er} max. [\unit{\angstrom}] &$g$\textsubscript{\ce{OO}} &1\textsuperscript{er} min. [\unit{\angstrom}] &$g$\textsubscript{\ce{OO}} &2\textsuperscript{e} max. [\unit{\angstrom}] &$g$\textsubscript{\ce{OO}}\\
+        1\textsuperscript{er} max. [\unit{\angstrom}] &$g$\textsubscript{\ce{OO}} &2\textsuperscript{e} max. [\unit{\angstrom}] &$g$\textsubscript{\ce{OO}}\\
         \hline
-        \num{3.26} &\num{1.50} &\num{2.74} &\num{2.94} &\num{3.30} &\num{0.80} &\num{4.45} &\num{1.18}\\
-        \num{3.28} &\num{1.44} &\num{2.83} &\num{2.78} &\num{3.46} &\num{0.60} &\num{4.45} &\num{1.20}\\
-        \num{3.24} &\num{1.54} &\num{2.76} &\num{3.14} &\num{3.24} &\num{0.71} &\num{4.44} &\num{1.16}\\
+        \num{2.74} &\num{2.94} &\num{4.45} &\num{1.18}\\
+        \num{2.83} &\num{2.78} &\num{4.45} &\num{1.20}\\
+        \num{2.76} &\num{3.14} &\num{4.44} &\num{1.16}\\
         \hline
     \end{tabular}
     \caption{Résultats pour les \emph{Radial Distribution Function}s}
@@ -160,28 +160,44 @@ Les résultats obtenus à l'issue des simulations sont comparées aux valeurs ex
     \label{tab:h2o_diffusion}
 \end{table}
 
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width = \textwidth]{h2o_msd.pdf}
-    \caption{Compparaison des \emph{Mean Squared Displacement}s}
-    \label{fig:h2o_msd}
-\end{figure}
+Pour les \emph{Radial Distribution Function}s, nous comparons les pics que nous jugeons les plus importants, c'est-à-dire :
+\begin{itemize}
+    \item l'abscisse du premier maximum de $g_{\ce{OH}}$ donnant des indications sur la longueur de la liaison \ce{OH} ; L'intensité des pics n'est pas prise en compte car elle trop sensible à la valeur de la largeur $\mathrm{d}r$ et à la précision du calcul de la $g_{\ce{OH}}$
+    \item le second maximum de la $g_{\ce{OH}}$, caractéristique des liaisons hydrogène de la molécule d'eau
+    \item le premier maximum de la $g_{\ce{OO}}$, indicateur des distances intermoléculaires (notamment pour \spce{})
+    \item le second maximum de la $g_{\ce{OO}}$
+\end{itemize}
+
+\reaxff{} a de meilleurs résultats que le modèle \spce{} pour l'abscisse du premier pic de la $g_{\ce{OH}}$ [\qty{1.1}{\percent} contre \qty{7.5}{\percent}], pour le second pic de la $g_{\ce{OH}}$ [\qty{2.2}{\percent} contre \qty{4.4}{\percent} en absicce ; \qty{17.4}{\percent} contre \qty{48.7}{\percent} en intensité], pour l'intensité du premier pic de la $g_{\ce{OO}}$ [\qty{5.4}{\percent} contre \qty{6.8}{\percent}], et pour l'abscisse du second pic de la $g_{\ce{OO}}$ où il correspond exactement à la valeur expérimentale.
+
+De l'autre côté, le modèle \spce{} a de meilleurs résultats que \reaxff{} pour l'abscisse du premier pic de la $g_{\ce{OO}}$ [\qty{0.7}{\percent} contre \qty{3.3}{\percent}].
+
+Enfin, les modèles ont la même erreur pour l'intensité du second pic de la $g_{\ce{OO}}$ [\qty{1.7}{\percent}].
 
 \begin{figure}[h!]
     \centering
-    \begin{subfigure}{\textwidth}
-        \centering
-        \includegraphics[width = \textwidth]{h2o_rdf_oo.pdf}
-        \caption{Pour la paire \ce{OO}}
-        \label{fig:h2o_rdf_oo}
-    \end{subfigure}
-
     \begin{subfigure}{\textwidth}
         \centering
         \includegraphics[width = \textwidth]{h2o_rdf_oh.pdf}
-        \caption{Pour la paire \ce{OH}}
+        \caption{Pour la paire \ce{OH} : \reaxff{} a de meilleurs résultats que \spce{} sur tous les points, cependant les deux modèles présentent de grandes erreurs pour l'intensité du second pic}
         \label{fig:h2o_rdf_oh}
     \end{subfigure}
-    \caption{Comparaison des \emph{Radial Distribution Function}s}
+
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includegraphics[width = \textwidth]{h2o_rdf_oo.pdf}
+        \caption{Pour la paire \ce{OO} : \spce{} représente mieux l'abscisse du premier pic mais \reaxff{} a une erreur moindre quant à son intensité ; Les deux modèles ont de bons résultats pour le second pic}
+        \label{fig:h2o_rdf_oo}
+    \end{subfigure}
+    \caption{Comparaison des \emph{Radial Distribution Function}s : même si les erreurs relatives restent globalement correctes, \reaxff{} a plus souvent de meilleurs résultats par rapport aux points comparés}
     \label{fig:h2o_comparaison_resultats}
 \end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width = \textwidth]{h2o_msd.pdf}
+    \caption{Comparaison des \emph{Mean Squared Displacement}s : les coefficients de diffusion sont calculés avec les pentes de ces courbes ; Pour les deux courbes on a $R = 0.99$}
+    \label{fig:h2o_msd}
+\end{figure}
+
+Pour les \emph{Mean Squared Displacement}s, \reaxff{} modélise mieux la diffusion que le modèle \spce{} [\qty{6.5}{\percent} contre \qty{30}{\percent}]. Nous pouvons supposer que cette grande différence est due au fait que le modèle \spce{} n'a pas été pensé pour représenter la diffusion de la molécule mais sa polarité.
