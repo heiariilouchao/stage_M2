@@ -9,7 +9,7 @@ units   	real
 timestep 	0.1
 atom_style 	charge
 neighbor 	2.0 bin
-neigh_modify 	every 2 delay 14 check yes
+neigh_modify 	every 2 delay 10 check yes
 variable 	init_T equal 1.0
 variable 	target_T equal 300.0
 variable 	target_P equal 1.0
@@ -42,8 +42,8 @@ compute 	property all property/atom d_locpot d_lap
 
 log     	data/log.minimize
 # -------------------- Minimizing the energy and the forces --------------------
-thermo  	100
-thermo_style	custom step pe press
+thermo  	10
+thermo_style	custom step pe press vol density
 
 minimize 	1.0e-05 1.0e-06 100 1000
 
@@ -57,7 +57,7 @@ dump_modify 	relaxation_positions element H O Na C pbc yes
 thermo      	1000
 thermo_style 	custom step temp pe ke press vol density
 
-fix         	relaxation_ensemble all npt temp ${init_T} ${target_T} $(100.0*dt) aniso $(press) ${target_P} $(1000.0*dt)
+fix         	relaxation_ensemble all npt temp ${init_T} ${target_T} $(100.0*dt) aniso ${target_P} ${target_P} $(1000.0*dt)
 
 run         	100000
 
