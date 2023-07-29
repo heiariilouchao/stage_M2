@@ -362,7 +362,8 @@ int compute_density_histograms(int N_conf, int *N_selection, Atom **atoms, doubl
 		}
 
 		for (int b = 0 ; b < N_bins ; b++)
-			(*densities)[c][b] /= (bounds[c][1] - bounds[c][0]) * (bounds[c][3] - bounds[c][2]) * delta;
+			// (*densities)[c][b] /= (bounds[c][1] - bounds[c][0]) * (bounds[c][3] - bounds[c][2]) * delta;
+			(*densities)[c][b] /= N_selection[c];
 	}
 
 
@@ -530,7 +531,7 @@ int compute_samples(int N_conf, int *N_selection, Atom **atoms, int N_groups, At
 }
 
 
-error_t write_samples(char *file_name, int N_conf, int *timestep, int N_groups, Atom **samples)
+int write_samples(char *file_name, int N_conf, int *timestep, int N_groups, Atom **samples)
 {
 	printf("Writing the samples...\n");
 
@@ -681,6 +682,7 @@ int main(int argc, char **argv)
 	double **bounds_sodium;
 
 	arguments.labels = "Na";
+	arguments.elements = realloc(arguments.elements, sizeof(char *));
 	arguments.elements[0] = "Na";
 	if ((errno = read_trajectory(&arguments, &N_conf_sodium, &steps_sodium, &N_sodium, &bounds_sodium, &sodium)) != 0)
 		goto SAMPLES;
@@ -688,7 +690,7 @@ int main(int argc, char **argv)
 
 	/* Computing the densities */
 	double **z, **densities;
-	int N_bins = 50;
+	int N_bins = 20;
 	if ((errno = compute_density_histograms(N_conf_sodium, N_sodium, sodium, bounds_sodium, &z, &densities, N_bins)) != 0)
 		goto READ_SODIUM;
 	
