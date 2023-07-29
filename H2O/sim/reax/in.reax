@@ -4,9 +4,6 @@ units       	real
 atom_style  	charge
 timestep    	0.1
 
-## -------------------- Parametrization --------------------
-## Initial state is: T = 1.0 K, P = 1.0 atm (but depends on minimization)
-## The target state is: P = 1.0 atm, T = 300.0 K
 variable    	init_T equal 1.0
 variable    	target_T equal 300.0
 variable    	target_P equal 1.0
@@ -19,37 +16,28 @@ pair_style  	reax/c NULL safezone 1.6 mincap 100 minhbonds 50
 pair_coeff  	* * ffield.reax.reax H O
 fix         	Qeq all qeq/reax 1 0.0 10.0 1e-06 reax/c
 
-delete_atoms    overlap 0.1 all all
-
 
 log         	data/log.minimize
 # -------------------- Minimize --------------------
 ## We want to minimize the system towards the target state
-# fix         	relax all box/relax aniso ${target_P}
-# This fix causes an "Error: non-numeric value for pressure - simulation unstable" apparently
-
 thermo      	100
 thermo_style 	custom step pe press vol density
 
 minimize    	1.0e-03 1.0e-05 1000 10000
-
-# unfix       	relax
 
 
 log         	data/log.relaxation
 # -------------------- Relaxation --------------------
 velocity    	all create ${init_T} 98715
 
-## -------------------- First relaxation --------------------
-## To reach the state we want we make the system melt slowly
-fix         	relaxation_ensemble all npt temp ${init_T} ${target_T} $(100.0*dt) aniso $(press) ${target_P} $(1000.0*dt)
+fix         	relaxation_ensemble all npt temp ${init_T} ${target_T} $(100.0*dt) aniso ${target_P} ${target_P} $(1000.0*dt)
 
 dump        	relaxation_positions all custom 1000 data/relaxation.lammpstrj id element x y z
 dump_modify 	relaxation_positions element H O pbc yes
 thermo      	1000
 thermo_style 	custom step temp pe ke press vol density
 
-run         	50000
+run         	100000
 
 ## -------------------- Second relaxation --------------------
 ## To make sure the system is equilibrated at the target state
@@ -71,4 +59,4 @@ dump_modify		positions element H O pbc yes
 thermo      	1000
 thermo_style 	custom step temp pe ke press
 
-run         	1000000
+run         	10000000

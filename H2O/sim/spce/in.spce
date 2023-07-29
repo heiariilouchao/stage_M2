@@ -4,9 +4,6 @@ units       	real
 atom_style  	full
 timestep    	0.1
 
-## -------------------- Parametrization --------------------
-## Initial state is: T = 1.0 K, P = 1.0 atm (but depends on minimization)
-## The target state is: P = 1.0 atm, T = 300.0 K
 variable    	init_T equal 1.0
 variable    	target_T equal 300.0
 variable    	target_P equal 1.0
@@ -31,33 +28,25 @@ angle_coeff 	1 harmonic 75.0 109.47
 log         	data/log.minimize
 # -------------------- Minimize --------------------
 ## We want to minimize the system towards the target state
-fix         	relax all box/relax aniso ${target_P}
-
 thermo      	100
 thermo_style 	custom step pe press vol density
 
 minimize    	1.0e-03 1.0e-05 1000 10000
-
-unfix       	relax
 
 
 log         	data/log.relaxation
 # -------------------- Relaxation --------------------
 velocity    	all create ${init_T} 98715
 
-## -------------------- First relaxation --------------------
-## To reach the state we want we make the system melt slowly
-fix         	relaxation_ensemble all npt temp ${init_T} ${target_T} $(100.0*dt) aniso $(press) ${target_P} $(1000.0*dt)
+fix         	relaxation_ensemble all npt temp ${init_T} ${target_T} $(100.0*dt) aniso ${target_P} ${target_P} $(1000.0*dt)
 
 dump        	relaxation_positions all custom 1000 data/relaxation.lammpstrj id element x y z
 dump_modify 	relaxation_positions element H O pbc yes
 thermo      	1000
 thermo_style 	custom step temp pe ke press vol density
 
-run         	50000
+run         	100000
 
-## -------------------- Second relaxation --------------------
-## To make sure the system is equilibrated at the target state
 unfix       	relaxation_ensemble
 fix         	relaxation_ensemble all npt temp $(temp) ${target_T} $(100.0*dt) aniso $(press) ${target_P} $(1000.0*dt)
 
@@ -76,4 +65,4 @@ dump_modify 	positions element H O pbc yes
 thermo      	1000
 thermo_style 	custom step temp pe ke press
 
-run         	1000000
+run         	10000000
