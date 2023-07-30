@@ -3,7 +3,7 @@
 # include <string.h>
 # include <errno.h>
 
-# include "../utils.h"
+# include "../utils/utils.h"
 # include "../parse/parse.h"
 # include "read.h"
 
@@ -177,7 +177,7 @@ int read_elements(Arguments **args)
 }
 
 
-int read_trajectory(Arguments *arguments, int *N_conf, int **steps, int **N_selection, double ***bounds, Atom ***atoms)
+int read_trajectory(Arguments *arguments, int *N_conf, int **steps, int **N_selection, Box **box, Atom ***atoms)
 {
 	printf("Reading configuration file...\n");
 
@@ -192,23 +192,7 @@ int read_trajectory(Arguments *arguments, int *N_conf, int **steps, int **N_sele
 
 
 	/* Reading */
-	if (arguments->labels == NULL || arguments->elements == NULL)
-	{
-		switch (read_elements(&arguments))
-		{
-			case ENOMEM:
-				goto NOMEM;
-				break;
-			case EIO:
-				goto IO;
-				break;
-		}
-	}
-
 	int timestep = arguments->start;
-	char *labels = arguments->labels;
-	char **elements = arguments->elements;
-	int N_elements = arguments->N_elements;
 
 	// Initializing
 	char str[STR_BUFF_LIMIT];
@@ -228,9 +212,9 @@ int read_trajectory(Arguments *arguments, int *N_conf, int **steps, int **N_sele
 		goto NOMEM;
 	}
 
-	if ((*bounds = malloc(INITIAL_CONF * sizeof(double *))) == NULL)
+	if ((*box = malloc(INITIAL_CONF * sizeof(Box))) == NULL)
 	{
-		perror("Allocating an array (bounds)");
+		perror("Allocating an array (box)");
 		goto NOMEM;
 	}
 
@@ -295,24 +279,23 @@ int read_trajectory(Arguments *arguments, int *N_conf, int **steps, int **N_sele
 		else if (strcmp(str, "ITEM: BOX BOUNDS pp pp pp\n") == 0)
 		{
 			if (*N_conf > arrays_size)
-				if ((*bounds = realloc(*bounds, (arrays_size + INCREMENT_CONF) * sizeof(double *))) == NULL)
+				if ((*box = realloc(*box, (arrays_size + INCREMENT_CONF) * sizeof(Box))) == NULL)
 				{
 					perror("Resizing an array (bounds)");
 					goto NOMEM;
 				}
 
-			if (((*bounds)[*N_conf - 1] = malloc(6 * sizeof(double))) == NULL)
+			if (fscanf(input, "%lf %lf %lf %lf %lf %lf\n",
+							  &((*box)[*N_conf - 1].x_min),
+			                  &((*box)[*N_conf - 1].x_max),
+			                  &((*box)[*N_conf - 1].y_min),
+			                  &((*box)[*N_conf - 1].y_max),
+			                  &((*box)[*N_conf - 1].z_min),
+			                  &((*box)[*N_conf - 1].z_max)) != 6)
 			{
-				perror("Allocating an array slot (bounds[])");
-				goto NOMEM;
+				perror("Reading the box bounds");
+				goto IO;
 			}
-
-			for (int d = 0 ; d < 3 ; d++)
-				if (fscanf(input, "%lf %lf\n", (*bounds)[*N_conf - 1] + 2 * d, (*bounds)[*N_conf - 1] + 2 * d + 1) != 2)
-				{
-					perror("Reading the box bounds");
-					goto IO;
-				}
 		}
 		else if (strcmp(str, "ITEM: ATOMS id element x y z xu yu zu q\n") == 0)
 		{
@@ -344,7 +327,7 @@ int read_trajectory(Arguments *arguments, int *N_conf, int **steps, int **N_sele
 			for (int a = 0 ; a < N_atoms ; a++)
 			{
 				int index;
-                char element[STR_BUFF_LIMIT];
+                char element[STR_ELEMENT_LIMIT];
 				
 				if (fscanf(input, "%d %s", &index, element) != 2)
 				{
@@ -352,23 +335,14 @@ int read_trajectory(Arguments *arguments, int *N_conf, int **steps, int **N_sele
 					goto IO;
 				}
 				
-				switch (select_atom(input, labels, element))
-				{
-					case 1:
-						continue;
-					case -1:
-						goto IO;
-				}
-
 				(*N_selection)[*N_conf - 1]++;
                 (*atoms)[*N_conf - 1][(*N_selection)[*N_conf - 1] - 1].serial = index;
-
-				for (int e = 0 ; e < N_elements ; e++)
-					if (strcmp(element, elements[e]) == 0)
-					{
-						(*atoms)[*N_conf - 1][(*N_selection)[*N_conf - 1] - 1].element_ID = e;
-						break;
-					}
+				if (strcpy((*atoms)[*N_conf - 1][(*N_selection)[*N_conf - 1] - 1].element,
+				        element) == NULL)
+				{
+					perror("Copying a string (atoms[][].element, element)");
+					goto NOMEM;
+				}
 
 				if (fscanf(input, "%lf %lf %lf %lf %lf %lf %lf\n",
                     &((*atoms)[*N_conf - 1][(*N_selection)[*N_conf - 1] - 1].x),

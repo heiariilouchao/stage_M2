@@ -4,7 +4,7 @@
 
 # include <stdio.h>
 
-# include "../utils.h"
+# include "../utils/utils.h"
 
 
 # define STR_BUFF_LIMIT 256
@@ -14,7 +14,7 @@
 
 int read_elements(Arguments **args);
 
-int read_trajectory(Arguments *arguments, int *N_conf, int **steps, int **N_selection, double ***bounds, Atom ***atoms);
+int read_trajectory(Arguments *arguments, int *N_conf, int **steps, int **N_selection, Box **box, Atom ***atoms);
 
 int select_atom(FILE *file, char *labels, char *element);
 
