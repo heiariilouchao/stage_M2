@@ -4,9 +4,10 @@
 
 
 # include "bonds.h"
+# include "../utils/utils.h"
 
 
-int compute_cutoff_bonds(int N_conf, int *N_selection, double **bounds, Atom ***atoms, const double R)
+int compute_cutoff_bonds(int N_conf, int *N_selection, Box *box, Atom ***atoms, const double R)
 {
 	printf("Computing the bonds with cutoff...\n");
     printf("\tR = %lf\n", R);
@@ -17,7 +18,7 @@ int compute_cutoff_bonds(int N_conf, int *N_selection, double **bounds, Atom ***
 		for (int a = 0 ; a < N_selection[c] ; a++)
 		{
 			(*atoms)[c][a].N_bonds = 0;
-			if (((*atoms)[c][a].bonded = malloc(4 * sizeof(int))) == NULL)
+			if (((*atoms)[c][a].bonded = malloc(MAXIMUM_N_BONDS * sizeof(int))) == NULL)
 			{
 				perror("Allocating an array (atoms[][].bonded)");
 				return ENOMEM;
@@ -35,7 +36,7 @@ int compute_cutoff_bonds(int N_conf, int *N_selection, double **bounds, Atom ***
 				double r2 = 0.;
 				double length, diff;
 
-				length = bounds[c][1] - bounds[c][0];
+				length = box[c].x_max - box[c].x_min;
 				diff = (*atoms)[c][j].x - (*atoms)[c][i].x;
 				if (diff < - length / 2.)
 					diff += length;
@@ -43,7 +44,7 @@ int compute_cutoff_bonds(int N_conf, int *N_selection, double **bounds, Atom ***
 					diff -= length;
 				r2 += diff * diff;
 
-				length = bounds[c][3] - bounds[c][2];
+				length = box[c].y_max - box[c].y_min;
 				diff = (*atoms)[c][j].y - (*atoms)[c][i].y;
 				if (diff < - length / 2.)
 					diff += length;
@@ -51,7 +52,7 @@ int compute_cutoff_bonds(int N_conf, int *N_selection, double **bounds, Atom ***
 					diff -= length;
 				r2 += diff * diff;
 
-				length = bounds[c][5] - bounds[c][4];
+				length = box[c].z_max - box[c].z_min;
 				diff = (*atoms)[c][j].z - (*atoms)[c][i].z;
 				if (diff < - length / 2.)
 					diff += length;
@@ -70,7 +71,6 @@ int compute_cutoff_bonds(int N_conf, int *N_selection, double **bounds, Atom ***
 			}
 
 			// Resizing the array to the actual number of bonds
-			// if (((*bonds)[c][i] = realloc((*bonds)[c][i], (*N_bonds)[c][i] * sizeof(int))) == NULL)
 			if (((*atoms)[c][i].bonded = realloc((*atoms)[c][i].bonded, (*atoms)[c][i].N_bonds * sizeof(int))) == NULL)
 			{
 				perror("Resizing an array slot (atoms[][].bonded)");
