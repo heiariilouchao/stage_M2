@@ -3,7 +3,7 @@
 # include <errno.h>
 # include <omp.h>
 
-# include "../utils.h"
+# include "../utils/utils.h"
 # include "../parse/parse.h"
 # include "../read/read.h"
 
