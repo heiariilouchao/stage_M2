@@ -4,19 +4,22 @@ BIN_DIR = bin
 BUILD_DIR = build
 
 
-rdf: parse.o read.o rdf.o
+rdf: utils.o parse.o read.o rdf.o
 	$(CC) $(OPT) -o $(BIN_DIR)/rdf $(addprefix $(BUILD_DIR)/,$?) -lm
 
-msd: parse.o read.o msd.o
+msd: utils.o parse.o read.o msd.o
 	$(CC) $(OPT) -o $(BIN_DIR)/msd $(addprefix $(BUILD_DIR)/,$?) -lm -fopenmp
 
-graphite: parse.o read.o bonds.o graphite.o
+graphite: utils.o parse.o read.o bonds.o graphite.o
 	$(CC) $(OPT) -o $(BIN_DIR)/graphite $(addprefix $(BUILD_DIR)/,$?) -lm
 
 # %.o: %/%.c
 # 	$(CC) $(OPT) -o $(BUILD_DIR)/$@ -c $<
 
 # Is equivalent to all these
+utils.o: utils/utils.c
+	$(CC) $(OPT) -o $(BUILD_DIR)/utils.o -c utils/utils.c
+
 parse.o: parse/parse.c
 	$(CC) $(OPT) -o $(BUILD_DIR)/parse.o -c parse/parse.c
 
