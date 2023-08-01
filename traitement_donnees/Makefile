@@ -13,6 +13,9 @@ msd: utils.o parse.o read.o msd.o
 graphite: utils.o parse.o read.o bonds.o graphite.o
 	$(CC) $(OPT) -o $(BIN_DIR)/graphite $(addprefix $(BUILD_DIR)/,$?) -lm
 
+graphite-rdf: utils.o parse.o read.o bonds.o rdf.o graphite-rdf.o
+	$(CC) $(OPT) -o $(BIN_DIR)/graphite-rdf $(addprefix $(BUILD_DIR)/,$?) -lm
+
 # %.o: %/%.c
 # 	$(CC) $(OPT) -o $(BUILD_DIR)/$@ -c $<
 
@@ -37,7 +40,9 @@ bonds.o: bonds/bonds.c
 
 graphite.o: graphite/graphite.c
 	$(CC) $(OPT) -o $(BUILD_DIR)/graphite.o -c graphite/graphite.c
-	
+
+graphite-rdf.o: graphite/rdf.c
+	$(CC) $(OPT) -o $(BUILD_DIR)/graphite-rdf.o -c graphite/rdf.c
 
 reset: clean
 	rm $(BIN_DIR)/*

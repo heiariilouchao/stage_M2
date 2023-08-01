@@ -308,13 +308,6 @@ int compute_density_histograms(int N_conf, int *N_selection, Atom **atoms, Box *
 
 
 	/* Allocating the array */
-	// int *N;
-	// if ((N = calloc(N_conf, sizeof(int))) == NULL)
-	// {
-	// 	perror("Allocating an array (N)");
-	// 	return ENOMEM;
-	// }
-
 	if ((*z = malloc(N_conf * sizeof(double *))) == NULL)
 	{
 		perror("Allocating an array (z)");
@@ -582,11 +575,6 @@ int main(int argc, char **argv)
 
 	// Options' default values
 	set_default_options(&arguments);
-	arguments.labels = "C";
-	arguments.elements = malloc(sizeof(char *));
-	arguments.elements[0] = "C";
-	arguments.N_elements = 1;
-
 
 	// Actually parsing
 	if (argp_parse(&parser, argc, argv, 0, 0, &arguments) != 0)
@@ -637,11 +625,10 @@ int main(int argc, char **argv)
 
 
 	/* Computing the charges histogram */
-	// The electrodes parameter
-	const double limits[2] = {26.0, 35.0};
-
-	// Declaring the array
 	bool **electrodes;
+
+	// The electrodes parameter: indicating the z-coordinates of the negative electrode
+	const double limits[2] = {26.0, 35.0};
 
 	// Computing the electrodes
 	if ((errno = compute_electrodes(N_configurations, N_carbons, carbons, &electrodes, limits)) != 0)
@@ -710,13 +697,38 @@ int main(int argc, char **argv)
 
 
 	/* Error handling */
-	DENSITIES: free(densities), free(z);
-	SELECT_SODIUM: free(sodium), free(N_sodium);
-	SAMPLES: free(samples);
-	GROUPS: free(group_descriptions), free(groups);
-	ELECTRODES: free(electrodes);
-	LAYERS: free(layers);
-	SELECT_CARBONS: free(carbons), free(N_carbons);
-	READ: free(box), free(atoms), free(N_atoms), free(steps);
+	DENSITIES:
+		for (int c = 0 ; c < N_configurations ; c++)
+			free(densities[c]), free(z[c]);
+		free(densities), free(z);
+	SELECT_SODIUM:
+		for (int c = 0 ; c < N_configurations ; c++)
+			free(sodium[c]);
+		free(sodium), free(N_sodium);
+	SAMPLES:
+		for (int c = 0 ; c < N_configurations ; c++)
+			free(samples[c]);
+		free(samples);
+	GROUPS:
+		for (int c = 0 ; c < N_groups ; c++)
+			free(group_descriptions[c]), free(groups[c]);
+		free(group_descriptions), free(groups);
+	ELECTRODES:
+		for (int c = 0 ; c < N_configurations ; c++)
+			free(electrodes[c]);
+		free(electrodes);
+	LAYERS:
+		for (int c = 0 ; c < N_configurations ; c++)
+			free(layers[c]);
+		free(layers);
+	SELECT_CARBONS:
+		for (int c = 0 ; c < N_configurations ; c++)
+			free(carbons[c]);
+		free(carbons), free(N_carbons);
+	READ:
+		for (int c = 0 ; c < N_configurations ; c++)
+			free(atoms[c]);
+		free(atoms);
+		free(box), free(N_atoms), free(steps);
 	ERROR: exit(EXIT_FAILURE);
 }

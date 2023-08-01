@@ -145,8 +145,7 @@ int read_elements(Arguments **args)
 		}
 	}
 
-	(*args)->N_pairs = (*args)->N_elements * ((*args)->N_elements + 1) / 2;
-
+	/* Prompting the informations */
 	printf("Elements informations:\n\tlabels: %s\n\telements: %d", (*args)->labels, (*args)->N_elements);
 	for (int e = 0 ; e < (*args)->N_elements ; e++)
 		printf(" %s", (*args)->elements[e]);
