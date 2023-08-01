@@ -40,6 +40,30 @@ typedef struct Group
 } Group;
 
 
+typedef enum ComparisonOperator
+{
+    Greater,
+    GreaterEqual,
+    Equal,
+    LowerEqual,
+    Lower
+} ComparisonOperator;
+
+
+typedef enum Coordinate
+{
+    X,
+    Y,
+    Z
+} Coordinate;
+
+
 int select_elements(int N_configurations, int *N_atoms, char *labels, Atom **all, int **N_selected, Atom ***selected);
+
+
+int select_valency(int N_configurations, int *N_atoms, ComparisonOperator operator, int valency, Atom **all, int **N_selected, Atom ***selected);
+
+
+int select_coordinate(int N_configurations, int *N_atoms, ComparisonOperator operator, Coordinate coordinate, double value, Atom **all, int **N_selected, Atom ***selected);
 
 # endif
