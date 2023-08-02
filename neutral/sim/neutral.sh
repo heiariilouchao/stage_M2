@@ -2,7 +2,7 @@
 
 #SBATCH --job-name="neutral"
 #SBATCH --partition=umformation
-#SBATCH -n 48
+#SBATCH -n 24
 #SBATCH --output="output.out"
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user="heiarii.lou-chao@etu.umontpellier.fr"
@@ -18,4 +18,4 @@ module load intel/mpi/64/2017.1.132
 
 
 # ---------- Running the simulations ----------
-mpirun -np 48 ~/scratch/lmp -log data/log.setup -in in.neutral
+mpirun -np 24 ~/scratch/lmp -log data/log.setup -log data/log.setup -in in.neutral
