@@ -19,12 +19,12 @@ structure water.xyz
 end structure
 
 structure sodium.xyz
-	number 5
+	number 2
 	inside box 1.250 1.250 1.250 11.030 11.512 17.500
 end structure
 
 structure hydroxyde.xyz
-	number 5
+	number 2
 	inside box 1.250 1.250 1.250 11.030 11.512 17.500
 end structure
 
@@ -44,12 +44,12 @@ structure water.xyz
 end structure
 
 structure sodium.xyz
-	number 10
+	number 3
 	inside box 1.250 1.250 29.196 11.030 11.512 64.196
 end structure
 
 structure hydroxyde.xyz
-	number 10
+	number 3
 	inside box 1.250 1.250 29.196 11.030 11.512 64.196
 end structure
 
@@ -69,11 +69,11 @@ structure water.xyz
 end structure
 
 structure sodium.xyz
-	number 5
+	number 1
 	inside box 1.250 1.250 75.892 11.030 11.512 92.142
 end structure
 
 structure hydroxyde.xyz
-	number 5
+	number 1
 	inside box 1.250 1.250 75.892 11.030 11.512 92.142
 end structure
