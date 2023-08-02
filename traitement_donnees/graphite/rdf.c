@@ -47,6 +47,14 @@ int main(int argc, char **argv)
 	Atom **carbons;
 	if ((errno = select_elements(N_configurations, N_atoms, "C", atoms, &N_carbons, &carbons)) != 0)
 		goto READ;
+	
+
+	/* Selecting the upper electrode */
+	int *N_upper;
+	Atom **upper;
+	if ((errno = select_coordinate(N_configurations, N_carbons, Greater, Z, (box[0].z_max - box[0].z_min) / 2., carbons, &N_upper, &upper)) != 0)
+		goto SELECT_CARBONS;
+
 
 
     /* Computing the bonds */
@@ -54,58 +62,8 @@ int main(int argc, char **argv)
 		goto SELECT_CARBONS;
     
 
-    /* Selecting the hydroxyde */
-	int *N_OH;
-	Atom **OH;
-	if ((errno = select_elements(N_configurations, N_atoms, "O,H", atoms, &N_OH, &OH)) != 0)
-		goto SELECT_CARBONS;
-	
-	if ((errno = compute_cutoff_bonds(N_configurations, N_OH, box, &OH, 1.33)) != 0)
-		goto SELECT_OH;
-	
-	int *N_OH1;
-	Atom **OH1;
-	if ((errno = select_valency(N_configurations, N_OH, Equal, 1, OH, &N_OH1, &OH1)) != 0)
-		goto SELECT_OH;
-	
-	int *N_hydroxyde;
-	Atom **hydroxyde;
-	if ((errno = select_elements(N_configurations, N_OH1, "O", OH1, &N_hydroxyde, &hydroxyde)) != 0)
-		goto SELECT_OH1;
+    /* Separating the electrodes */
 
-    /* Selecting the SP carbons */
-	int *N_sp;
-	Atom **sp_carbons;
-
-	// Selecting the SP carbons
-	if ((errno = select_valency(N_configurations, N_carbons, Equal, 2, carbons, &N_sp, &sp_carbons)) != 0)
-		goto SELECT_HYDROXYDE;
-	
-	// Computing the RDF between sodiums and SP carbons
-	int N_rdf_bins = 100;
-	double *r, *rdf;
-	bool are_identical = false;
-	if ((errno = compute_rdf(N_configurations, box, N_rdf_bins, are_identical, N_hydroxyde, hydroxyde, N_sp, sp_carbons, &r, &rdf)) != 0)
-		goto SELECT_SP;
-	
-	if ((errno = write_rdf("output/rdf_OH-SP.dat", "OH,SP", N_rdf_bins, r, rdf)) != 0)
-		goto RDF;
-	
-	free(r), free(rdf);
-	for (int c = 0 ; c < N_configurations ; c++)
-		free(sp_carbons[c]);
-	free(sp_carbons), free(N_sp);
-
-	// Selecting the SP2 carbons
-	if ((errno = select_valency(N_configurations, N_carbons, Equal, 3, carbons, &N_sp, &sp_carbons)) != 0)
-		goto SELECT_HYDROXYDE;
-
-	// Computing the RDFs between sodiums and SP2 carbons
-	if ((errno = compute_rdf(N_configurations, box, N_rdf_bins, are_identical, N_hydroxyde, hydroxyde, N_sp, sp_carbons, &r, &rdf)) != 0)
-		goto SELECT_SP;
-	
-	if ((errno = write_rdf("output/rdf_OH-SP2.dat", "OH,SP2", N_rdf_bins, r, rdf)) != 0)
-		goto RDF;
     
 
     /* Exiting normally */
