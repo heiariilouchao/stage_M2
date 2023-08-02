@@ -15,17 +15,17 @@ filetype xyz
 # -------------------- The lower electrolyte --------------------
 structure water.xyz
 	number 52
-	inside box 1.250 1.250 1.250 11.030 11.512 17.500
+	inside box 1.250 1.250 1.250 11.030 11.512 11.25
 end structure
 
 structure sodium.xyz
-	number 2
-	inside box 1.250 1.250 1.250 11.030 11.512 17.500
+	number 1
+	inside box 1.250 1.250 1.250 11.030 11.512 11.25
 end structure
 
 structure hydroxyde.xyz
-	number 2
-	inside box 1.250 1.250 1.250 11.030 11.512 17.500
+	number 1
+	inside box 1.250 1.250 1.250 11.030 11.512 11.25
 end structure
 
 
@@ -33,24 +33,24 @@ end structure
 structure graphite.xyz
 	number 1
 	center
-	fixed 6.140 6.381 23.348 0.0 0.0 0.0
+	fixed 6.140 6.381 17.098 0.0 0.0 0.0
 end structure
 
 
 # -------------------- The middle electrolyte --------------------
 structure water.xyz
 	number 105
-	inside box 1.250 1.250 29.196 11.030 11.512 64.196
+	inside box 1.250 1.250 22.946 11.030 11.512 42.946
 end structure
 
 structure sodium.xyz
-	number 3
-	inside box 1.250 1.250 29.196 11.030 11.512 64.196
+	number 2
+	inside box 1.250 1.250 22.946 11.030 11.512 42.946
 end structure
 
 structure hydroxyde.xyz
-	number 3
-	inside box 1.250 1.250 29.196 11.030 11.512 64.196
+	number 2
+	inside box 1.250 1.250 22.946 11.030 11.512 42.946
 end structure
 
 
@@ -58,22 +58,22 @@ end structure
 structure graphite.xyz
 	number 1
 	center
-	fixed 6.140 6.381 70.044 0.0 0.0 0.0
+	fixed 6.140 6.381 48.794 0.0 0.0 0.0
 end structure
 
 
 # -------------------- The upper electrolyte --------------------
 structure water.xyz
 	number 53
-	inside box 1.250 1.250 75.892 11.030 11.512 92.142
+	inside box 1.250 1.250 54.642 11.030 11.512 64.642
 end structure
 
 structure sodium.xyz
 	number 1
-	inside box 1.250 1.250 75.892 11.030 11.512 92.142
+	inside box 1.250 1.250 54.642 11.030 11.512 64.642
 end structure
 
 structure hydroxyde.xyz
 	number 1
-	inside box 1.250 1.250 75.892 11.030 11.512 92.142
+	inside box 1.250 1.250 54.642 11.030 11.512 64.642
 end structure
