@@ -111,8 +111,10 @@ int compute_rdf(int N_configurations, Box *box, int N_bins, bool are_identical, 
 	
 
 	/* Incrementing the histogram */
+	printf("Incrementing the histogram...\n");
 	for (int c = 0 ; c < N_configurations ; c++)
 	{
+		printf("conf: %d / %d\r", c, N_configurations);
 		for (int i = 0 ; i < N1[c] ; i++)
 			for (int j = 0 ; j < N2[c] ; j++)
 			{
@@ -154,7 +156,7 @@ int compute_rdf(int N_configurations, Box *box, int N_bins, bool are_identical, 
 
 	/* Computing the RDF */
 	// Prompting
-	printf("Computing the RDFs...\n");
+	printf("Computing the RDF...\n");
 
 	// Computing the parameters
 	double V = (box[0].x_max - box[0].x_min) * (box[0].y_max - box[0].y_min) * (box[0].z_max - box[0].z_min);
