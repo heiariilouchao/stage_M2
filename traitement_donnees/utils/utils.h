@@ -35,8 +35,8 @@ typedef struct Group
 {
     char description[STR_GROUP_DESCRIPTION_LIMIT];
 
-    int N;
-    double average;
+    int *N;
+    double *average;
 } Group;
 
 
@@ -65,5 +65,11 @@ int select_valency(int N_configurations, int *N_atoms, ComparisonOperator operat
 
 
 int select_coordinate(int N_configurations, int *N_atoms, ComparisonOperator operator, Coordinate coordinate, double value, Atom **all, int **N_selected, Atom ***selected);
+
+
+int average_charge(int N_configurations, int *N_atoms, Atom **atoms, Group *group, char *description);
+
+
+int write_average(char *file_name, int N_configurations, int *steps, Group group);
 
 # endif

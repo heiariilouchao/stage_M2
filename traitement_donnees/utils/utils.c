@@ -17,7 +17,7 @@ int select_elements(int N_configurations, int *N_atoms, char *labels, Atom **all
     if ((*N_selected = calloc(N_configurations, sizeof(int))) == NULL)
     {
         perror("Allocaitng an array (N_selected)");
-        return ENOMEM;
+        goto NOMEM;
     }
 
     if ((*selected = malloc(N_configurations * sizeof(Atom *))) == NULL)
@@ -36,7 +36,7 @@ int select_elements(int N_configurations, int *N_atoms, char *labels, Atom **all
         if (((*selected)[c] = malloc((*N_selected)[c] * sizeof(Atom))) == NULL)
         {
             perror("Allocating an array slot (selected[])");
-            goto NOMEM;
+            goto SELECTED;
         }
     }
 
@@ -54,7 +54,7 @@ int select_elements(int N_configurations, int *N_atoms, char *labels, Atom **all
             if (memcpy(&((*selected)[c][N_selected_local]), &(all[c][a]), sizeof(Atom)) == NULL)
             {
                 perror("Copying memory (selected[][], all[][])");
-                goto NOMEM;
+                goto SELECTED_CONF;
             }
 
             N_selected_local++;
@@ -71,22 +71,28 @@ int select_elements(int N_configurations, int *N_atoms, char *labels, Atom **all
 
 
     /* Errors */
-    N_SELECTED: free(N_selected);
-    NOMEM: free(selected);
-    return ENOMEM;
+    SELECTED_CONF:
+        for (int c = 0 ; c < N_configurations ; c++)
+            free(selected[c]);
+    SELECTED:
+        free(selected);
+    N_SELECTED:
+        free(N_selected);
+    NOMEM:
+        return ENOMEM;
 }
 
 
 int select_valency(int N_configurations, int *N_atoms, ComparisonOperator operator, int valency, Atom **all, int **N_selected, Atom ***selected)
 {
-    printf("Selecting the elements...\n");
+    printf("Selecting the valency...\n");
 
 
     /* Allocating the array */
     if ((*N_selected = calloc(N_configurations, sizeof(int))) == NULL)
     {
         perror("Allocaitng an array (N_selected)");
-        return ENOMEM;
+        goto NOMEM;
     }
 
     if ((*selected = malloc(N_configurations * sizeof(Atom *))) == NULL)
@@ -191,7 +197,7 @@ int select_valency(int N_configurations, int *N_atoms, ComparisonOperator operat
             operator_char = "<=";
             break;
         case Lower:
-            operator_char = "<=";
+            operator_char = "<";
             break;
     }
     printf("Selection informations:\n\tSelection: valency %s %d\n\tN_selected: %d\n", operator_char, valency, (*N_selected)[0]);
@@ -201,12 +207,10 @@ int select_valency(int N_configurations, int *N_atoms, ComparisonOperator operat
 
 
     /* Errors */
-    SELECTED:
-        for (int c = 0 ; c < N_configurations ; c++) free(selected[c]);
-        free(selected);
     N_SELECTED:
         free(N_selected);
-    return ENOMEM;
+    NOMEM:
+        return ENOMEM;
 }
 
 
@@ -279,7 +283,7 @@ int select_coordinate(int N_configurations, int *N_atoms, ComparisonOperator ope
         if (((*selected)[c] = malloc((*N_selected)[c] * sizeof(Atom))) == NULL)
         {
             perror("Allocating an array slot (selected[])");
-            goto N_SELECTED;
+            goto SELECTED;
         }
     }
 
@@ -358,7 +362,7 @@ int select_coordinate(int N_configurations, int *N_atoms, ComparisonOperator ope
             operator_char = "<=";
             break;
         case Lower:
-            operator_char = "<=";
+            operator_char = "<";
             break;
     }
     char *coordinate_char;
@@ -382,9 +386,89 @@ int select_coordinate(int N_configurations, int *N_atoms, ComparisonOperator ope
 
     /* Errors */
     SELECTED:
-        for (int c = 0 ; c < N_configurations ; c++) free(selected[c]);
         free(selected);
     N_SELECTED:
         free(N_selected);
     return ENOMEM;
+}
+
+
+int average_charge(int N_configurations, int *N_atoms, Atom **atoms, Group *group, char *description)
+{
+    printf("Computing the average charges...\n");
+
+
+    /* Allocating the arrays */
+    if (((*group).N = malloc(N_configurations * sizeof(double))) == NULL)
+    {
+        perror("Allocating an array (group.N)");
+        goto NOMEM;
+    }
+
+    if (((*group).average = malloc(N_configurations * sizeof(double))) == NULL)
+    {
+        perror("Allocating an array (group.average)");
+        goto N;
+    }
+
+
+    /* Computing the average charges */
+    for (int c = 0 ; c < N_configurations ; c++)
+    {
+        (*group).average[c] = 0.;
+        for (int a = 0 ; a < N_atoms[c] ; a++)
+            (*group).average[c] += atoms[c][a].q;
+        
+        (*group).average[c] /= N_atoms[c];
+        (*group).N[c] = N_atoms[c];
+    }
+
+
+    /* Copying the description */
+    strncpy((*group).description, description, STR_GROUP_DESCRIPTION_LIMIT - 1);
+
+
+    /* Success */
+    return 0;
+
+
+    /* Errors */
+    N:
+        free((*group).N);
+    NOMEM:
+        return ENOMEM;
+}
+
+
+int write_average(char *file_name, int N_configurations, int *steps, Group group)
+{
+    printf("Writing the average to '%s'...\n", file_name);
+
+
+    /* Opening the file */
+    FILE *output;
+    if ((output = fopen(file_name, "w")) == NULL)
+    {
+        perror("Opening the file (output)");
+        goto IO;
+    }
+
+
+    /* Writing the average */
+    fprintf(output, "# %s\n# N_0 = %d\n", group.description, group.N[0]);
+    fprintf(output, "# step average\n");
+    for (int c = 0 ; c < N_configurations ; c++)
+        fprintf(output, "  %d %lf\n", steps[c], group.average[c]);
+    
+
+    /* Success */
+    fclose(output);
+
+    // Exiting normally
+    return 0;
+
+
+    /* Errors */
+    IO:
+        return EIO;
 }
