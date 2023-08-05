@@ -52,10 +52,21 @@ typedef enum ComparisonOperator
 
 typedef enum Coordinate
 {
-    X,
-    Y,
-    Z
+    Coord_X,
+    Coord_Y,
+    Coord_Z
 } Coordinate;
+
+typedef enum AtomAttribute
+{
+    Atom_X,
+    Atom_Y,
+    Atom_Z,
+    XU,
+    YU,
+    ZU,
+    Q
+} AtomAttribute;
 
 
 int select_elements(int N_configurations, int *N_atoms, char *labels, Atom **all, int **N_selected, Atom ***selected);
@@ -67,9 +78,11 @@ int select_valency(int N_configurations, int *N_atoms, ComparisonOperator operat
 int select_coordinate(int N_configurations, int *N_atoms, ComparisonOperator operator, Coordinate coordinate, double value, Atom **all, int **N_selected, Atom ***selected);
 
 
-int average_charge(int N_configurations, int *N_atoms, Atom **atoms, Group *group, char *description);
+int compute_average(int N_configurations, int *N_atoms, Atom **atoms, AtomAttribute attribute, Group *group, char *description);
 
 
 int write_average(char *file_name, int N_configurations, int *steps, Group group);
+
+void group_diff(int N_configurations, Group *g1, Group g2);
 
 # endif
