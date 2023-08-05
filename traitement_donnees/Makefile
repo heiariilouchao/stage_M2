@@ -1,5 +1,5 @@
 CC = gcc
-OPT = -O3 -Wall
+OPT = -g -O3 -Wall -Werror
 BIN_DIR = bin
 BUILD_DIR = build
 

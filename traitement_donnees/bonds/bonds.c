@@ -71,11 +71,16 @@ int compute_cutoff_bonds(int N_conf, int *N_selection, Box *box, Atom ***atoms, 
 			}
 
 			// Resizing the array to the actual number of bonds
-			if (((*atoms)[c][i].bonded = realloc((*atoms)[c][i].bonded, (*atoms)[c][i].N_bonds * sizeof(int))) == NULL)
+			if ((*atoms)[c][i].N_bonds != 0)
 			{
-				perror("Resizing an array slot (atoms[][].bonded)");
-				goto BONDS;
+				if (((*atoms)[c][i].bonded = realloc((*atoms)[c][i].bonded, (*atoms)[c][i].N_bonds * sizeof(int))) == NULL)
+				{
+					perror("Resizing an array slot (atoms[][].bonded)");
+					goto BONDS;
+				}
 			}
+			else
+				free((*atoms)[c][i].bonded);
 		}
 	}
 
