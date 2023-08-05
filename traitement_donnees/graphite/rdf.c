@@ -53,7 +53,7 @@ int main(int argc, char **argv)
 	// The lower electrode is the negative one
 	int *N_lower;
 	Atom **lower;
-	if ((errno = select_coordinate(N_configurations, N_carbons, Lower, Z, box[0].z_min + (box[0].z_max - box[0].z_min) / 2., carbons, &N_lower, &lower)) != 0)
+	if ((errno = select_coordinate(N_configurations, N_carbons, Lower, Coord_Z, box[0].z_min + (box[0].z_max - box[0].z_min) / 2., carbons, &N_lower, &lower)) != 0)
 		goto SELECT_CARBONS;
 
 
@@ -67,7 +67,7 @@ int main(int argc, char **argv)
 	/* Selecting the upper carbons */
 	int *N_upper;
 	Atom **upper;
-	if ((errno = select_coordinate(N_configurations, N_carbons, Greater, Z, box[0].z_min + (box[0].z_max - box[0].z_min) / 2., carbons, &N_upper, &upper)) != 0)
+	if ((errno = select_coordinate(N_configurations, N_carbons, Greater, Coord_Z, box[0].z_min + (box[0].z_max - box[0].z_min) / 2., carbons, &N_upper, &upper)) != 0)
 		goto RDF;
 	
 
