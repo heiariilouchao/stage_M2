@@ -1,0 +1,59 @@
+# -------------------- Simulation setup --------------------
+## -------------------- Initialization --------------------
+units       	real
+atom_style  	charge
+timestep    	0.1
+
+variable    	init_T equal 1.0
+variable    	target_T equal 300.0
+
+## -------------------- System definition --------------------
+read_data   	data.reax_single
+
+## -------------------- Settings --------------------
+pair_style  	reax/c NULL
+pair_coeff  	* * ffield.reax.reax_single H O
+fix         	Qeq all qeq/reax 1 0.0 10.0 1e-06 reax/c
+
+
+log         	data/log.minimize
+# -------------------- Minimize --------------------
+## We want to minimize the system towards the target state
+thermo      	100
+thermo_style 	custom step pe press
+
+minimize    	1.0e-03 1.0e-05 1000 10000
+
+
+log             data/log.relaxation
+# -------------------- Relaxation --------------------
+velocity    	all create ${init_T} 98715
+
+fix         	relaxation_ensemble all nvt temp ${init_T} ${target_T} $(100.0*dt)
+
+dump        	relaxation_positions all custom 1000 data/reax_single.lammpstrj id element x y z q
+dump_modify		relaxation_positions element H O pbc yes
+thermo      	1000
+thermo_style 	custom step temp pe ke
+
+run         	500000
+
+unfix           relaxation_ensemble
+fix         	relaxation_ensemble all nvt temp $(temp) ${target_T} $(100.0*dt)
+
+run         	500000
+
+unfix           relaxation_ensemble
+undump          relaxation_positions
+
+
+log         	data/log.reax_single
+# -------------------- Main simulation --------------------
+fix         	ensemble all nvt temp ${target_T} ${target_T} $(100.0*dt)
+
+dump        	positions all custom 1000 data/reax_single.lammpstrj id element x y z xu yu zu q
+dump_modify		positions element H O pbc yes
+thermo      	1000
+thermo_style 	custom step temp pe ke
+
+run         	10000000
