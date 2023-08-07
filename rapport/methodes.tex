@@ -1,11 +1,46 @@
 Pour cette étude, nous utilisons un certain nombre d'outils et de méthodes que nous présentons dans ci-après, d'autres méthodes et outils, comme le modèle \spce{}, sont présentés brièvement dans les sections où ils sont mentionnés.
 
-Nous effectuons d'abord des rappels de Dynamique Moléculaire car c'est le domaine de notre étude, puis nous présentons \reaxff{} le potentiel réactif que nous utilisons dans nos simulations, et enfin nous discutons d'\echemdid{}, la méthode utilisée pour appliquer la différence de potentiel entre les électrodes.
+Nous effectuons d'abord une brève introduction à la Dynamique Moléculaire, puis nous présentons \reaxff{} le potentiel réactif que nous utilisons dans nos simulations, et enfin nous discutons d'\echemdid{}, la méthode utilisée pour appliquer la différence de potentiel entre les électrodes.
 
 % Prensenting Molecular Dynamics
-    \subsection{Rappels de Dynamique Moléculaire}
+    \subsection{Dynamique Moléculaire}
 
+La dynamique moléculaire est une méthode puissante de simulation informatique utilisée pour étudier le mouvement et les interactions des atomes et des molécules dans des systèmes chimiques. Elle repose sur les principes de la mécanique classique et permet de prédire le comportement des systèmes à l'échelle atomique sur une échelle de temps donnée.
 
+Notre étude se place dans ce domaine afin d'observer et de comprendre les phénomènes étudiés à l'échelle des atomes et molécules, c'est-à-dire à une échelle intermédiaire entre l'échelle quantique et celle des simulations à gros grains.
+
+\textbf{Concepts fondamentaux}\\
+Certains des concepts fondamentaux sur lesquels la Dynamique Moléculaire s'appuie sont :
+\begin{itemize}
+    \item Le potentiel énergétique : pour décrire les interactions entre les atomes et molécules, ce peuvent être des interactions covalentes, électrostatiques, ou même de van der Waals
+    \item L'intégration numérique : l'échelle de temps est discrétisée et les trajectoires atomiques sont calculées en intégrant les équations du mouvement de chaque atome
+    \item Équations du mouvement : les équations régissant le mouvement des atomes, reliant les forces s'exerçant sur les atomes, à leurs vitesses et positions
+\end{itemize}
+
+\textbf{Méthodes numérques}\\
+Les méthodes numériques liées à la Dynamique Moléculaire incluent les algorithmes d'intégration, les stratégies d'optimisation, et de la parallélisation des calculs. Ces méthodes sont essentielles pour la modélisation de systèmes à grands nombres de particules (\numrange{10}{10000}).
+
+Les algorithmes d'intégration sont essentiels pour calculer les trajectoires atomiques, ils permettent de déterminer comment les positions et les vitesses des atomes évoluent dans le temps en fonction des forces qui agissent sur eux. Un des algorithmes d'intégration les plus connus est l'algorithme de \emph{Velocity Verlet} :
+\begin{equation}
+    \left\{ \begin{aligned}
+        \vec{r}_{n + 1} &= \vec{r}_n + \vec{v}_n \Delta t + \frac{1}{2} \vec{a}_n\\
+        \vec{a}_{n + 1} &= \vec{\nabla} V(\vec{r})\\
+        \vec{v}_{n + 1} &= \vec{v}_n + \frac{\vec{a}_n + \vec{a}_{n + 1}}{2} \Delta t
+    \end{aligned} \right.
+    \label{eq:velocity_verlet}
+\end{equation}
+
+Pour les mêmes raisons, la mise en place de stratégies d'optimisation peut être très avantageuse en terme de coût (et de temps) de calcul.\\
+Parmi ces stratégies, il y a les listes de voisins (ou listes de \emph{Verlet}) : pour des interactions tronquées à une distance (radiale) $r_c$, les atomes contenus dans la coquille $r_c + r_s$ sont placés dans une liste de voisins qui est actualisée régulièrement pendant la simulation. Les listes de voisins permettent d'ignorer les interactions avec les atomes absents de la liste et ainsi de gagner en temps de calculs.\\
+Lorsque possible, l'application de la troisième loi de Newton peut également grandement réduire les temps de calculs.
+
+Enfin, les schémas de parallélisme en dynamique moléculaire sont des techniques utilisées pour répartir efficacement la charge de calcul et accélérer les simulations en utilisant plusieurs processeurs ou cœurs de calcul. Ces schémas permettent d'exploiter les ressources informatiques de manière optimale.\\
+Parmi eux, on peut distinguer les décompositions :
+\begin{itemize}
+    \item Atomique : où chaque processeur est responsable d'un groupe d'atomes
+    \item Spatiale : où chaque processeur est responsable d'un domaine spatial défini du domaine de simulation
+\end{itemize}
+Où dans chacune la communication entre les processeurs est un facteur important pour l'efficacité du parallélisme.
 
 % Presenting ReaxFF
     \subsection{Présentation de \reaxff{}} \label{sec:reaxff}
