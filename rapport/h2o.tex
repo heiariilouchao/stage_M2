@@ -54,6 +54,10 @@ et mettent en jeu \num{267} molécules d'eau initialement dans une boîte cubiqu
 
 Les différentes quantités thermodynamiques relevées au cours de ces simulations sont présentées aux \autoref{fig:h2o_relaxation} et \ref{fig:h2o_main}.
 
+Pendant la relaxation et la stabilisation, nous pouvons voir que la température du système augmente progressivement durant les \num{10} premières \unit{\pico \second} avant de se stabiliser à la valeur cible. Quant à l'énergie potentielle, elle diminue abruptement avant de lentement atteindre un plateau.
+
+Pour la simulations principale, il semble que les grandeurs soient équilibrées car elle ne fluctuent plus autant que lors de la relaxation et stabilisation.
+
 \begin{figure}[h!]
     \centering
     \begin{subfigure}{.49\textwidth}
@@ -66,6 +70,11 @@ Les différentes quantités thermodynamiques relevées au cours de ces simulatio
         \caption{Pressions}
     \end{subfigure}
     \begin{subfigure}{.49\textwidth}
+        \includegraphics[width = \textwidth]{h2o_relaxation_epot.pdf}
+        \caption{Énergies potentielles par molécule}
+    \end{subfigure}%
+    ~
+    \begin{subfigure}{.49\textwidth}
         \includegraphics[width = \textwidth]{h2o_relaxation_density.pdf}
         \caption{Densités}
     \end{subfigure}
@@ -76,13 +85,17 @@ Les différentes quantités thermodynamiques relevées au cours de ces simulatio
 \begin{figure}[h!]
     \centering
     \begin{subfigure}{.49\textwidth}
-        \includegraphics[width = \textwidth]{h2o_main_press.pdf}
-        \caption{Pressions}
+        \includegraphics[width = \textwidth]{h2o_main_temp.pdf}
+        \caption{Températures}
     \end{subfigure}%
     ~
     \begin{subfigure}{.49\textwidth}
+        \includegraphics[width = \textwidth]{h2o_main_press.pdf}
+        \caption{Pressions}
+    \end{subfigure}
+    \begin{subfigure}{.49\textwidth}
         \includegraphics[width = \textwidth]{h2o_main_epot.pdf}
-        \caption{Énergies potentielles totales}
+        \caption{Énergies potentielles par molécule}
     \end{subfigure}
     \caption{Quantités thermodynamiques lors de la simulation}
     \label{fig:h2o_main}
