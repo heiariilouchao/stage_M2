@@ -35,10 +35,14 @@ plot 'reax_relaxation.log' every relaxation_period using 1:7 with lines linestyl
      'spce_relaxation.log' every relaxation_period using 1:7 with lines linestyle 2 title "SPC/E"
 
 # ---------- Potential Energy ----------
-set ylabel "Énergie Potentielle (par molécule) [kcal.mol^{-1}]"
+set ylabel "Énergie Potentielle [kcal.mol^{-1}.N_{H_2O}^{-1}]"
 
 N_h2o = 267
 stats 'reax_single.log' using 1:3
+
+set output 'h2o_relaxation_epot.pdf'
+plot 'reax_relaxation.log' every relaxation_period using 1:($3 / N_h2o - STATS_mean_y) with lines linestyle 1 title "ReaxFF", \
+     'spce_relaxation.log' every relaxation_period using 1:($3 / N_h2o) with lines linestyle 2 title "SPC/E"
 
 set output 'h2o_main_epot.pdf'
 plot 'reax.log' every main_period using 1:($3 / N_h2o - STATS_mean_y) with lines linestyle 1 title "ReaxFF", \
