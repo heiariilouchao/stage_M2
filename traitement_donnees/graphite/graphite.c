@@ -722,7 +722,7 @@ int main(int argc, char **argv)
 		goto DENSITIES;
 
 	/* Exiting normally */
-	exit(EXIT_SUCCESS);
+    exit(EXIT_SUCCESS);
 
 	/* Error handling */
 DENSITIES:
