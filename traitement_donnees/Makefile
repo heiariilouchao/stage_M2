@@ -16,9 +16,6 @@ graphite: utils.o parse.o read.o bonds.o graphite.o
 graphite-rdf: utils.o parse.o read.o bonds.o rdf.o graphite-rdf.o
 	$(CC) $(OPT) -o $(BIN_DIR)/graphite-rdf $(addprefix $(BUILD_DIR)/,$?) -lm
 
-# %.o: %/%.c
-# 	$(CC) $(OPT) -o $(BUILD_DIR)/$@ -c $<
-
 # Is equivalent to all these
 utils.o: utils/utils.c
 	$(CC) $(OPT) -o $(BUILD_DIR)/utils.o -c utils/utils.c
