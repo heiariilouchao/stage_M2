@@ -1,0 +1,7 @@
+
+For the relaxation, the temperature is ramping up to 300 K and the pressure stabilizes from 100.000 iterations (<=> .01 ns) as implemented by the thermostat/barostat.
+
+For the main simulation, the pressure is the only reliable indicator of equilibrium because: the temperature is controlled by the thermostat, and the total potential energy is infuenced by the ions displacements or interactions with the electrodes.
+From the pressure plot, we can safely assume that the system has reached equilibrium after 4.000.000 iterations (<=> .4 ns).
+
+    => Discussion: the simulation workflow could have been better by starting the system polarization after it had reached equilibrium.
