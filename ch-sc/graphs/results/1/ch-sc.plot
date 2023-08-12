@@ -17,8 +17,8 @@ set ylabel "<q> [e]"
 
 set output 'ch-sc_q.pdf'
 plot 'q_outer-negative.dat' every period2 using 1:2 with lines linestyle 1 title "ext-", \
-     'q_inner-negative.dat' every period2 using 1:2 with lines linestyle 2 title "int-", \
-     'q_outer-positive.dat' every period2 using 1:2 with lines linestyle 4 title "ext+", \
+     'q_inner-negative.dat' every period2 using 1:2 with lines linestyle 4 title "int-", \
+     'q_outer-positive.dat' every period2 using 1:2 with lines linestyle 2 title "ext+", \
      'q_inner-positive.dat' every period2 using 1:2 with lines linestyle 5 title "int+"
 
 # ---------- Sodium density ----------

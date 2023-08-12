@@ -1,0 +1,9 @@
+
+The dz plots are slightly shifted:
+ - for the positive electrode the shift is of +3.0e-04 Å
+ - for the negative one the shift is of -4.0e-04 Å
+The reason for this is unknown though:
+It could be caused by the ploarization of the system, but this is not likely to be the case since the periodic boundary conditions have been used ;
+Also, by construction of the system, the two electrodes are initially identical and this cannot be the cause of this observation.
+
+For the average charges, the plots are 
