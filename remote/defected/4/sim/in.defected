@@ -1,4 +1,3 @@
-log     	data/log.setup
 # -------------------- Description --------------------
 # The purpose is to simulate a charged super-capacitor using EChemDID and ReaxFF.
 # This simulation is just a test, thus there are only 8 ions in each solvant boxes.
@@ -41,7 +40,7 @@ set     	group all d_locpot 0.0
 
 log     	data/log.minimize
 # -------------------- Minimizing the energy and the forces --------------------
-thermo  	10
+thermo  	100
 thermo_style	custom step pe press
 
 minimize 	1.0e-05 1.0e-06 100 1000
