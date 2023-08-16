@@ -102,7 +102,7 @@ int main(int argc, char **argv)
 	if ((errno = compute_rdf(N_configurations, box, 100, false, N_lower, lower, N_sodium, sodium, &r, &rdf)) != 0)
 		goto SELECT_SODIUM;
 
-	if ((errno = write_rdf("output/rdf_lower-Na.dat", "lower,Na", 100, r, rdf)) != 0)
+	if ((errno = write_rdf("output/graphite-rdf/rdf_lower-Na.dat", "lower,Na", 100, r, rdf)) != 0)
 		goto RDF;
 
 	free(r), free(rdf);
@@ -111,7 +111,7 @@ int main(int argc, char **argv)
 	if ((errno = compute_rdf(N_configurations, box, 100, false, N_lower, lower, N_hydroxide, hydroxide, &r, &rdf)) != 0)
 		goto SELECT_SODIUM;
 
-	if ((errno = write_rdf("output/rdf_lower-OH.dat", "lower,OH", 100, r, rdf)) != 0)
+	if ((errno = write_rdf("output/graphite-rdf/rdf_lower-OH.dat", "lower,OH", 100, r, rdf)) != 0)
 		goto RDF;
 
 	free(r), free(rdf);
@@ -120,7 +120,7 @@ int main(int argc, char **argv)
 	if ((errno = compute_rdf(N_configurations, box, 100, false, N_upper, upper, N_sodium, sodium, &r, &rdf)) != 0)
 		goto SELECT_HYDROXIDE;
 	
-	if ((errno = write_rdf("output/rdf_upper-Na.dat", "upper,Na", 100, r, rdf)) != 0)
+	if ((errno = write_rdf("output/graphite-rdf/rdf_upper-Na.dat", "upper,Na", 100, r, rdf)) != 0)
 		goto SELECT_HYDROXIDE;
 	
 	free(r), free(rdf);
@@ -129,7 +129,7 @@ int main(int argc, char **argv)
 	if ((errno = compute_rdf(N_configurations, box, 100, false, N_upper, upper, N_hydroxide, hydroxide, &r, &rdf)) != 0)
 		goto SELECT_HYDROXIDE;
 	
-	if ((errno = write_rdf("output/rdf_upper-OH.dat", "upper,OH", 100, r, rdf)) != 0)
+	if ((errno = write_rdf("output/graphite-rdf/rdf_upper-OH.dat", "upper,OH", 100, r, rdf)) != 0)
 		goto SELECT_HYDROXIDE;
 
 
