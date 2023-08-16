@@ -14,8 +14,8 @@ typedef enum Layer
 
 typedef enum Electrode
 {
-	Negative,
-	Positive
+	LowerElectrode,
+	UpperElectrode
 } Electrode;
 
 

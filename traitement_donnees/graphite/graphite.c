@@ -570,139 +570,139 @@ int main(int argc, char **argv)
 	compute_layers(N_configurations, box, N_carbons, &carbons, sep);
 
 	/* Computing the charges histogram */
-	// The electrodes parameter: indicating the z-coordinates of the negative electrode
+	// The electrodes parameter: indicating the z-coordinates of the lower electrode
 	const double limits[2] = {box[0].z_min, box[0].z_min + (box[0].z_max - box[0].z_min) / 2.};
-	Electrode electrodes[2] = {Negative, Positive};
+	Electrode electrodes[2] = {LowerElectrode, UpperElectrode};
 
 	// Computing the electrodes
 	compute_electrodes(N_configurations, N_carbons, &carbons, limits, electrodes);
 
 	/* Grouping the different carbons */
-	// Selecting the negative electrode
-	int *N_negative;
-	Carbon **negative;
-	if ((errno = select_electrode(N_configurations, N_carbons, carbons, Negative, &N_negative, &negative)) != 0)
+	// Selecting the lower electrode
+	int *N_lower;
+	Carbon **lower;
+	if ((errno = select_electrode(N_configurations, N_carbons, carbons, LowerElectrode, &N_lower, &lower)) != 0)
 		goto EXTRACT_CARBONS;
 
 	// Selecting the inner layer
-	int *N_negative_inner;
-	Carbon **negative_inner;
-	if ((errno = select_layer(N_configurations, N_negative, negative, Inner, &N_negative_inner, &negative_inner)) != 0)
-		goto SELECT_NEGATIVE;
+	int *N_lower_inner;
+	Carbon **lower_inner;
+	if ((errno = select_layer(N_configurations, N_lower, lower, Inner, &N_lower_inner, &lower_inner)) != 0)
+		goto SELECT_LOWER;
 
 	// Selecting the outer layer
-	int *N_negative_outer;
-	Carbon **negative_outer;
-	if ((errno = select_layer(N_configurations, N_negative, negative, Outer, &N_negative_outer, &negative_outer)) != 0)
-		goto SELECT_NEGATIVE_INNER;
+	int *N_lower_outer;
+	Carbon **lower_outer;
+	if ((errno = select_layer(N_configurations, N_lower, lower, Outer, &N_lower_outer, &lower_outer)) != 0)
+		goto SELECT_LOWER_INNER;
 
-	// Selecting the positive electrode
-	int *N_positive;
-	Carbon **positive;
-	if ((errno = select_electrode(N_configurations, N_carbons, carbons, Positive, &N_positive, &positive)) != 0)
-		goto SELECT_NEGATIVE_OUTER;
+	// Selecting the upper electrode
+	int *N_upper;
+	Carbon **upper;
+	if ((errno = select_electrode(N_configurations, N_carbons, carbons, UpperElectrode, &N_upper, &upper)) != 0)
+		goto SELECT_LOWER_OUTER;
 
 	// Selecting the inner layer
-	int *N_positive_inner;
-	Carbon **positive_inner;
-	if ((errno = select_layer(N_configurations, N_positive, positive, Inner, &N_positive_inner, &positive_inner)) != 0)
-		goto SELECT_POSITIVE;
+	int *N_upper_inner;
+	Carbon **upper_inner;
+	if ((errno = select_layer(N_configurations, N_upper, upper, Inner, &N_upper_inner, &upper_inner)) != 0)
+		goto SELECT_UPPER;
 
 	// Selecting the outer layer
-	int *N_positive_outer;
-	Carbon **positive_outer;
-	if ((errno = select_layer(N_configurations, N_positive, positive, Outer, &N_positive_outer, &positive_outer)) != 0)
-		goto SELECT_POSITIVE_INNER;
+	int *N_upper_outer;
+	Carbon **upper_outer;
+	if ((errno = select_layer(N_configurations, N_upper, upper, Outer, &N_upper_outer, &upper_outer)) != 0)
+		goto SELECT_UPPER_INNER;
 
 	/* Computing the charges averages */
 	// Computing the group
 	Group group;
 
-	// The negative electrode average
-	if ((errno = average_carbons(N_configurations, N_negative, negative, Q, &group, "The negative electrode")) != 0)
-		goto SELECT_POSITIVE_OUTER;
+	// The lower electrode average
+	if ((errno = average_carbons(N_configurations, N_lower, lower, Q, &group, "The lower electrode")) != 0)
+		goto SELECT_UPPER_OUTER;
 
-	if ((errno = write_average("output/graphite/q_negative.dat", N_configurations, steps, group)) != 0)
+	if ((errno = write_average("output/graphite/q_lower.dat", N_configurations, steps, group)) != 0)
 		goto AVERAGE_CHARGE;
 
 	free(group.average);
 	free(group.N);
 
-	// The inner layer of the negative electrode average
-	if ((errno = average_carbons(N_configurations, N_negative_inner, negative_inner, Q, &group, "The inner layer of the negative electrode")) != 0)
-		goto SELECT_POSITIVE_OUTER;
+	// The inner layer of the lower electrode average
+	if ((errno = average_carbons(N_configurations, N_lower_inner, lower_inner, Q, &group, "The inner layer of the lower electrode")) != 0)
+		goto SELECT_UPPER_OUTER;
 
-	if ((errno = write_average("output/graphite/q_inner-negative.dat", N_configurations, steps, group)) != 0)
+	if ((errno = write_average("output/graphite/q_inner-lower.dat", N_configurations, steps, group)) != 0)
 		goto AVERAGE_CHARGE;
 
 	free(group.average);
 	free(group.N);
 
-	// The outer layer of the negative electrode average
-	if ((errno = average_carbons(N_configurations, N_negative_outer, negative_outer, Q, &group, "The outer layer of the negative electrode")) != 0)
-		goto SELECT_POSITIVE_OUTER;
+	// The outer layer of the lower electrode average
+	if ((errno = average_carbons(N_configurations, N_lower_outer, lower_outer, Q, &group, "The outer layer of the lower electrode")) != 0)
+		goto SELECT_UPPER_OUTER;
 
-	if ((errno = write_average("output/graphite/q_outer-negative.dat", N_configurations, steps, group)) != 0)
+	if ((errno = write_average("output/graphite/q_outer-lower.dat", N_configurations, steps, group)) != 0)
 		goto AVERAGE_CHARGE;
 
 	free(group.average);
 	free(group.N);
 
-	// The positive electrode average
-	if ((errno = average_carbons(N_configurations, N_positive, positive, Q, &group, "The positive electrode")) != 0)
-		goto SELECT_POSITIVE_OUTER;
+	// The upper electrode average
+	if ((errno = average_carbons(N_configurations, N_upper, upper, Q, &group, "The upper electrode")) != 0)
+		goto SELECT_UPPER_OUTER;
 
-	if ((errno = write_average("output/graphite/q_positive.dat", N_configurations, steps, group)) != 0)
+	if ((errno = write_average("output/graphite/q_upper.dat", N_configurations, steps, group)) != 0)
 		goto AVERAGE_CHARGE;
 
 	free(group.average);
 	free(group.N);
 
-	// The inner layer of the positive electrode average
-	if ((errno = average_carbons(N_configurations, N_positive_inner, positive_inner, Q, &group, "The inner layer of the positive electrode")) != 0)
-		goto SELECT_POSITIVE_OUTER;
+	// The inner layer of the upper electrode average
+	if ((errno = average_carbons(N_configurations, N_upper_inner, upper_inner, Q, &group, "The inner layer of the upper electrode")) != 0)
+		goto SELECT_UPPER_OUTER;
 
-	if ((errno = write_average("output/graphite/q_inner-positive.dat", N_configurations, steps, group)) != 0)
+	if ((errno = write_average("output/graphite/q_inner-upper.dat", N_configurations, steps, group)) != 0)
 		goto AVERAGE_CHARGE;
 
 	free(group.average);
 	free(group.N);
 
-	// The outer layer of the positive electrode average
-	if ((errno = average_carbons(N_configurations, N_positive_outer, positive_outer, Q, &group, "The outer layer of the positive electrode")) != 0)
-		goto SELECT_POSITIVE_OUTER;
+	// The outer layer of the upper electrode average
+	if ((errno = average_carbons(N_configurations, N_upper_outer, upper_outer, Q, &group, "The outer layer of the upper electrode")) != 0)
+		goto SELECT_UPPER_OUTER;
 
-	if ((errno = write_average("output/graphite/q_outer-positive.dat", N_configurations, steps, group)) != 0)
+	if ((errno = write_average("output/graphite/q_outer-upper.dat", N_configurations, steps, group)) != 0)
 		goto AVERAGE_CHARGE;
 	
 	/* Computing the average distance between the electrodes' layers' centers of mass */
 	Group g1, g2;
 
-	// On the positive electrode
-	if ((errno = average_carbons(N_configurations, N_positive_outer, positive_outer, Atom_Z, &g1, "The z-difference between inner and outer layers")) != 0)
+	// On the upper electrode
+	if ((errno = average_carbons(N_configurations, N_upper_outer, upper_outer, Atom_Z, &g1, "The z-difference between inner and outer layers")) != 0)
 		goto AVERAGE_CHARGE;
 	
-	if ((errno = average_carbons(N_configurations, N_positive_inner, positive_inner, Atom_Z, &g2, "The average z of the inner layer of the positive electrode")) != 0)
+	if ((errno = average_carbons(N_configurations, N_upper_inner, upper_inner, Atom_Z, &g2, "The average z of the inner layer of the upper electrode")) != 0)
 		goto AVERAGE_Z1;
 	
 	group_diff(N_configurations, &g1, g2);
 
-	if ((errno = write_average("output/graphite/dz_positive.dat", N_configurations, steps, g1)) != 0)
+	if ((errno = write_average("output/graphite/dz_upper.dat", N_configurations, steps, g1)) != 0)
 		goto AVERAGE_Z2;
 	
 	free(g1.average), free(g2.average);
 	free(g1.N), free(g2.N);
 
-	// On the negative electrode
-	if ((errno = average_carbons(N_configurations, N_negative_outer, negative_outer, Atom_Z, &g1, "The z-difference between inner and outer layers")) != 0)
+	// On the lower electrode
+	if ((errno = average_carbons(N_configurations, N_lower_outer, lower_outer, Atom_Z, &g1, "The z-difference between inner and outer layers")) != 0)
 		goto AVERAGE_CHARGE;
 	
-	if ((errno = average_carbons(N_configurations, N_negative_inner, negative_inner, Atom_Z, &g2, "The average z of the inner layer of the positive electrode")) != 0)
+	if ((errno = average_carbons(N_configurations, N_lower_inner, lower_inner, Atom_Z, &g2, "The average z of the inner layer of the upper electrode")) != 0)
 		goto AVERAGE_Z1;
 	
 	group_diff(N_configurations, &g1, g2);
 
-	if ((errno = write_average("output/graphite/dz_negative.dat", N_configurations, steps, g1)) != 0)
+	if ((errno = write_average("output/graphite/dz_lower.dat", N_configurations, steps, g1)) != 0)
 		goto AVERAGE_Z2;
 
 	/* Selecting the sodium */
@@ -739,30 +739,30 @@ AVERAGE_Z1:
 	free(g1.average), free(g1.N);
 AVERAGE_CHARGE:
 	free(group.average), free(group.N);
-SELECT_POSITIVE_OUTER:
+SELECT_UPPER_OUTER:
 	for (int c = 0; c < N_configurations; c++)
-		free(positive_outer[c]);
-	free(positive_outer), free(N_positive_outer);
-SELECT_POSITIVE_INNER:
+		free(upper_outer[c]);
+	free(upper_outer), free(N_upper_outer);
+SELECT_UPPER_INNER:
 	for (int c = 0; c < N_configurations; c++)
-		free(positive_inner[c]);
-	free(positive_inner), free(N_positive_inner);
-SELECT_POSITIVE:
+		free(upper_inner[c]);
+	free(upper_inner), free(N_upper_inner);
+SELECT_UPPER:
 	for (int c = 0; c < N_configurations; c++)
-		free(positive[c]);
-	free(positive), free(N_positive);
-SELECT_NEGATIVE_OUTER:
+		free(upper[c]);
+	free(upper), free(N_upper);
+SELECT_LOWER_OUTER:
 	for (int c = 0; c < N_configurations; c++)
-		free(negative_outer[c]);
-	free(negative_outer), free(N_negative_outer);
-SELECT_NEGATIVE_INNER:
+		free(lower_outer[c]);
+	free(lower_outer), free(N_lower_outer);
+SELECT_LOWER_INNER:
 	for (int c = 0; c < N_configurations; c++)
-		free(negative_inner[c]);
-	free(negative_inner), free(N_negative_inner);
-SELECT_NEGATIVE:
+		free(lower_inner[c]);
+	free(lower_inner), free(N_lower_inner);
+SELECT_LOWER:
 	for (int c = 0; c < N_configurations; c++)
-		free(negative[c]);
-	free(negative), free(N_negative);
+		free(lower[c]);
+	free(lower), free(N_lower);
 EXTRACT_CARBONS:
 	for (int c = 0; c < N_configurations; c++)
 		free(carbons[c]);
