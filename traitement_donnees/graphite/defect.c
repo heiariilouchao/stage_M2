@@ -45,10 +45,7 @@ int main(int argc, char **argv)
 		goto READ;
 
 	/* Computing the layers */
-	// The plates separation parameters
 	const double sep = 3.5;
-
-	// Computing the layers
 	compute_layers(N_configurations, box, N_carbons, &carbons, sep);
 
 	/* Computing the charges histogram */
@@ -84,11 +81,21 @@ int main(int argc, char **argv)
     
     if ((errno = write_rdf("output/graphite-defect/rdf_sp-Na.dat", "sp,Na", 100, r, rdf)) != 0)
         goto COMPUTE_RDF;
+    
+    // Computing the charges near the defect
+    Group group;
+    if ((errno = compute_average(N_configurations, N_sp, sp, Q, &group, "Average charge of the defect's neighbors")) != 0)
+        goto COMPUTE_RDF;
+    
+    if ((errno = write_average("output/graphite-defect/q_defect.dat", N_configurations, steps, group)) != 0)
+        goto COMPUTE_AVERAGE;
 
     /* Success */
     exit(EXIT_SUCCESS);
 
     /* Errors */
+    COMPUTE_AVERAGE:
+        free(group.N), free(group.average);
     COMPUTE_RDF:
         free(rdf), free(r);
     SELECT_SODIUM:

@@ -11,6 +11,7 @@ inner-lower [positive]: -0.0052
 inner-upper [negative]: 0.0135
 outer-lower [positive]: 0.0200
 outer-upper [negative]: -0.0519
+defect: -0.0522
 
 ### 2
 lower [positive]: -0.0277
@@ -19,3 +20,4 @@ inner-lower [positive]: 0.0117
 inner-upper [negative]: -0.0051
 outer-lower [positive]: -0.0478
 outer-upper [negative]: 0.0219
+defect: -0.0863

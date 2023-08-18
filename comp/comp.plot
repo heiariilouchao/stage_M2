@@ -69,7 +69,7 @@ plot '../ch-sc/output/1/q_inner-lower.dat' every period1 using 1:2 with lines li
      '../neutral/output/1/q_inner-upper.dat' every period1 using 1:2 with lines linestyle 4 title "neutre+", \
      '../neutral/output/1/q_inner-lower.dat' every period1 using 1:2 with lines linestyle 5 title "neutre-"
 
-## The charged and neutral
+## The charged and defected
 set output 'q_ch-sc-defected.pdf'
 plot '../ch-sc/output/1/q_lower.dat' every period1 using 1:2 with lines linestyle 1 title "chargé-", \
      '../ch-sc/output/1/q_upper.dat' every period1 using 1:2 with lines linestyle 2 title "chargé+", \
@@ -80,7 +80,8 @@ set output 'q_ch-sc-defected-out.pdf'
 plot '../ch-sc/output/1/q_outer-lower.dat' every period1 using 1:2 with lines linestyle 1 title "chargé-", \
      '../ch-sc/output/1/q_outer-upper.dat' every period1 using 1:2 with lines linestyle 2 title "chargé+", \
      '../defected/output/1/q_outer-upper.dat' every period1 using 1:2 with lines linestyle 4 title "défectueux-", \
-     '../defected/output/1/q_outer-lower.dat' every period1 using 1:2 with lines linestyle 5 title "défectueux+"
+     '../defected/output/1/q_outer-lower.dat' every period1 using 1:2 with lines linestyle 5 title "défectueux+", \
+     '../defected/output/1/q_defect.dat' every period1 using 1:2 with lines linestyle 3 title "C^{sp}"
 
 set output 'q_ch-sc-defected-inn.pdf'
 plot '../ch-sc/output/1/q_inner-lower.dat' every period1 using 1:2 with lines linestyle 1 title "chargé-", \

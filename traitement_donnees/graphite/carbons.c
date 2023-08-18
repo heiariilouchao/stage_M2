@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #include <errno.h>
 
 #include "../utils/utils.h"
@@ -263,4 +264,80 @@ int convert_carbons(int N_configurations, int *N_carbons, Carbon **carbons, Atom
 		free(atoms);
 	NOMEM:
 		return ENOMEM;
+}
+
+int average_carbons(int N_configurations, int *N_carbons, Carbon **carbons, AtomAttribute attribute, Group *group, char *description)
+{
+	/* Transforming the data into atoms */
+	// Allocating the array
+	Atom **atoms;
+	if ((atoms = malloc(N_configurations * sizeof(Atom *))) == NULL)
+	{
+		perror("Allocating an array (atoms)");
+		goto NOMEM;
+	}
+
+	// Transfering the data
+	for (int c = 0; c < N_configurations; c++)
+	{
+		if ((atoms[c] = malloc(N_carbons[c] * sizeof(Atom))) == NULL)
+		{
+			perror("Allocating an array slot (atoms[])");
+			goto ATOMS;
+		}
+		for (int a = 0; a < N_carbons[c]; a++)
+			atoms[c][a] = carbons[c][a].atom;
+	}
+
+	/* Computing the average */
+	// Computing the local group
+	Group group_local;
+	if (compute_average(N_configurations, N_carbons, atoms, attribute, &group_local, description) != 0)
+	{
+		perror("Computing the group");
+		goto ATOMS_CONF;
+	}
+
+	// Allocating the arrays for the group
+	if (((*group).N = malloc(N_configurations * sizeof(int))) == NULL)
+	{
+		perror("Allocating an array (group.N)");
+		goto GROUP_LOCAL;
+	}
+
+	if (((*group).average = malloc(N_configurations * sizeof(double))) == NULL)
+	{
+		perror("Allocating an array (group.average)");
+		goto GROUP_N;
+	}
+
+	// Transfering the data
+	strncpy((*group).description, description, STR_GROUP_DESCRIPTION_LIMIT - 1);
+	(*group).description[STR_GROUP_DESCRIPTION_LIMIT - 1] = '\0';
+	for (int c = 0; c < N_configurations; c++)
+	{
+		(*group).N[c] = group_local.N[c];
+		(*group).average[c] = group_local.average[c];
+	}
+
+	/* Success */
+	// Freeing the temporary variables
+	free(group_local.average), free(group_local.N);
+	for (int c = 0; c < N_configurations; c++)
+		free(atoms[c]);
+	free(atoms);
+	return 0;
+
+	/* Errors */
+GROUP_N:
+	free((*group).N);
+GROUP_LOCAL:
+	free(group_local.average), free(group_local.N);
+ATOMS_CONF:
+	for (int c = 0; c < N_configurations; c++)
+		free(atoms[c]);
+ATOMS:
+	free(atoms);
+NOMEM:
+	return ENOMEM;
 }

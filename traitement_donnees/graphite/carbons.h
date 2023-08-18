@@ -36,4 +36,6 @@ int select_layer(int N_configurations, int *N_carbons, Carbon **carbons, Layer l
 
 int convert_carbons(int N_configurations, int *N_carbons, Carbon **carbons, Atom ***atoms);
 
+int average_carbons(int N_configurations, int *N_carbons, Carbon **carbons, AtomAttribute attribute, Group *group, char *description);
+
 # endif
