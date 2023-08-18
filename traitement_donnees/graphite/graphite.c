@@ -218,6 +218,46 @@ Z:
 	return ENOMEM;
 }
 
+int compute_average_density(int N_configurations, int N_bins, double **z, double **densities, double **average_z, double **average_density)
+{
+	/* Allocating the arrays */
+	if ((*average_z = calloc(N_bins, sizeof(double))) == NULL)
+	{
+		perror("Allocating an array (average_z)");
+		goto NOMEM;
+	}
+
+	if ((*average_density = calloc(N_bins, sizeof(double))) == NULL)
+	{
+		perror("Allocating an array (average_density)");
+		goto Z;
+	}
+
+	for (int c = 0 ; c < N_configurations ; c++)
+	{
+		for (int b = 0 ; b < N_bins ; b++)
+		{
+			(*average_z)[b] += z[c][b];
+			(*average_density)[b] += densities[c][b];
+		}
+	}
+
+	for (int b = 0 ; b < N_bins ; b++)
+	{
+		(*average_z)[b] /= N_configurations;
+		(*average_density)[b] /= N_configurations;
+	}
+
+	/* Success */
+	return 0;
+
+	/* Errors */
+	Z:
+		free(*average_density);
+	NOMEM:
+		return ENOMEM;
+}
+
 int write_densities_hist(char *file_name, int N_conf, int N_bins, int *timestep, double **z, double **densities)
 {
 	printf("Writing the densities histograms...\n");
@@ -243,6 +283,33 @@ int write_densities_hist(char *file_name, int N_conf, int N_bins, int *timestep,
 			fprintf(output, "  %d %lf %lf\n", timestep[c], z[c][b], densities[c][b]);
 		fprintf(output, "\n\n");
 	}
+
+	/* Success */
+	// Closing the file
+	fclose(output);
+
+	// Exiting normally
+	return 0;
+}
+
+int write_average_density(char *file_name, int N_bins, double *z, double *density)
+{
+	/* Opening the file */
+	FILE *output;
+
+	if ((output = fopen(file_name, "w")) == NULL)
+	{
+		perror("Opening a file (output)");
+		return EIO;
+	}
+
+	/* Writing the output */
+	// Header
+	fprintf(output, "# step z density\n");
+
+	// Data
+	for (int b = 0; b < N_bins; b++)
+		fprintf(output, "  %lf %lf\n", z[b], density[b]);
 
 	/* Success */
 	// Closing the file
@@ -499,7 +566,7 @@ int main(int argc, char **argv)
 
 	/* Computing the densities */
 	double **z, **densities;
-	int N_bins = 20;
+	int N_bins = 100;
 	if ((errno = compute_density_histograms(N_configurations, N_sodium, sodium, box, &z, &densities, N_bins)) != 0)
 		goto SELECT_SODIUM;
 
@@ -507,10 +574,19 @@ int main(int argc, char **argv)
 	if ((errno = write_densities_hist("output/graphite/density_sodium.hist", N_configurations, N_bins, steps, z, densities)) != 0)
 		goto DENSITIES;
 
+	double *average_z, *average_density;
+	if ((errno = compute_average_density(N_configurations, N_bins, z, densities, &average_z, &average_density)) != 0)
+		goto DENSITIES;
+	
+	if ((errno = write_average_density("output/graphite/average_density_sodium.dat", N_bins, average_z, average_density)) != 0)
+		goto AVERAGE_DENSITIES;
+
 	/* Exiting normally */
     exit(EXIT_SUCCESS);
 
 	/* Error handling */
+	AVERAGE_DENSITIES:
+		free(average_density), free(average_z);
 DENSITIES:
 	for (int c = 0; c < N_configurations; c++)
 		free(densities[c]), free(z[c]);
