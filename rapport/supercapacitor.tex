@@ -9,8 +9,7 @@ Pour chacun d'eux, deux simulations ont été effectuées : pour un nombre arbit
 Chacune de ces simulations a suivi le déroulement de la \autoref{sec:deroulement_simulations}, c'est-à-dire :
 \begin{itemize}
     \item une minimisation à \qty{0}{\kelvin}
-    \item une relaxation de \qty{0.01}{\nano \second} à \qty{300}{\kelvin} et \qty{1}{\atm}
-    \item une stabilisation de \qty{0.01}{\nano \second} à \qty{300}{\kelvin} et \qty{1}{\atm}
+    \item une relaxation à \qty{300}{\kelvin} et \qty{1}{\atm} en deux étapes de \qty{0.01}{\nano \second}
     \item la simulation principale à \qty{300}{\kelvin} et \qty{1}{\atm} pour \qty{1}{\nano \second}
 \end{itemize}
 
@@ -180,13 +179,14 @@ Pour le système neutre (\autoref{fig:charges_groupes_neutral}, et \autoref{tab:
 
 En comparant les systèmes chargés (\autoref{fig:comparaison_ch-sc-defected}, et \autoref{tab:comparaison_charges}), nous voyons que les charges des deux systèmes sont quasimment les mêmes pour les deux électrodes et leurs couches séparément.
 
-En comparant les systèmes chargés au système non chargé (\autoref{fig:comparaison_ch-sc-neutral}, et \autoref{tab:comparaison_charges}), nous pouvons voir que pour les systèmes chargés l'écart de charges entre les couches intérieures et extérieures est plus grand pour l'électrode négative que pour l'électrode positive (\qtyrange[range-units = single]{125}{135}{\percent}) par rapport aux valeurs du système non chargé.
+En comparant les systèmes chargés au système non chargé (\autoref{fig:comparaison_ch-sc-neutral}, et \autoref{tab:comparaison_charges}), nous pouvons voir que pour les charges des électrodes des systèmes chargés sont presque à écarts égaux des charges du système non chargé. Cependant, l'écart de charges entre les couches intérieures et extérieures est plus grand pour l'électrode négative que pour l'électrode positive (\qtyrange[range-units = single]{125}{135}{\percent}).
 
 \textbf{Interprétations}\\
-La différence de charges entre les couches extérieures et intérieures peut avoir deux raisons :
+La différence de charges entre les couches extérieures et intérieures peut avoir trois raisons :
 \begin{itemize}
     \item La polarisation du système a pour conséquence d'attirer les charges d'une électrode vers l'autre ; Puisque le système est périodique selon la direction orthogonale aux surfaces des électrodes (selon la direction $[Oz)$), les charges d'une électrode sont attirées vers l'électrode opposée et son image périodique, c'est-à-dire vers les couches extérieures
     \item Au commencement de l'analyse des données (à partir de \qty{0.4}{\nano \second}), la double couche électrochimique (\edl{}) est déjà formée et les charges de chaque électrode sont concentrées à leurs interfaces avec l'électrolyte
+    \item Les environnements des atomes de carbones influencent leurs propriétés (notamment leur charge) ; De plus, dans une approximation métallique les charges tendent à se diffuser vers la surface du métal
 \end{itemize}
 
 Quant au décalage de charges entre les couches du système non chargé, puisqu'il n'existe pas de différence de potentiel entre les électrodes il est possible que ce phénomène ne soit qu'une conséquence de l'interface entre l'électrode et l'électrolyte.
