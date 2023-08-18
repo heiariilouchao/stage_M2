@@ -114,12 +114,12 @@ plot '../ch-sc/output/1/rdf_lower-Na.dat' using 1:2 with lines linestyle 1 title
      '../neutral/output/1/rdf_lower-Na.dat' using 1:2 with lines linestyle 4 title "neutre/Na-négative", \
      '../neutral/output/1/rdf_upper-OH.dat' using 1:2 with lines linestyle 5 title "neutre/OH-positive"
 
-## The defected and neutral
+## The charges and defected
 set output 'rdf_ch-sc-defected-Na.pdf'
 plot '../ch-sc/output/1/rdf_lower-Na.dat' using 1:2 with lines linestyle 1 title "chargé/négative", \
      '../ch-sc/output/1/rdf_upper-Na.dat' using 1:2 with lines linestyle 2 title "chargé/positive", \
      '../defected/output/1/rdf_upper-Na.dat' using 1:2 with lines linestyle 4 title "défectueux/négative", \
-     '../defected/output/1/rdf_lower-Na.dat' using 1:2 with lines linestyle 5 title "défectueux/upper"
+     '../defected/output/1/rdf_lower-Na.dat' using 1:2 with lines linestyle 5 title "défectueux/positive"
 
 set output 'rdf_ch-sc-defected-OH.pdf'
 plot '../ch-sc/output/1/rdf_lower-OH.dat' using 1:2 with lines linestyle 1 title "chargé/négative", \
@@ -132,6 +132,10 @@ plot '../ch-sc/output/1/rdf_lower-Na.dat' using 1:2 with lines linestyle 1 title
      '../ch-sc/output/1/rdf_upper-OH.dat' using 1:2 with lines linestyle 2 title "chargé/OH-positive", \
      '../defected/output/1/rdf_upper-Na.dat' using 1:2 with lines linestyle 4 title "défectueux/Na-négative", \
      '../defected/output/1/rdf_lower-OH.dat' using 1:2 with lines linestyle 5 title "défectueux/OH-positive"
+
+set output 'rdf_ch-sc-defected-sp.pdf'
+plot '../ch-sc/output/1/rdf_lower-Na.dat' using 1:2 with lines linestyle 1 title "chargé/négative", \
+     '../defected/output/1/rdf_sp-Na.dat' using 1:2 with lines linestyle 3 title "C^{sp}"
 
 # ---------- Density comparison ----------
 set key top right
@@ -150,3 +154,12 @@ stats '../defected/output/1/density_sodium.hist' using 1:2 name 'DEFECTED' noout
 set output 'density_defected-neutral.pdf'
 plot '../defected/output/1/density_sodium.hist' index DEFECTED_blocks-2 using ($2-DEFECTED_min_y):3 with lines linestyle 3 title "défectueux", \
      '../neutral/output/1/density_sodium.hist' index NEUTRAL_blocks-2 using ($2-NEUTRAL_min_y):3 with lines linestyle 2 title "neutre"
+
+stats '../ch-sc/output/1/average_density_sodium.dat' using 1:2 name 'CHARGED' nooutput
+stats '../neutral/output/1/average_density_sodium.dat' using 1:2 name 'NEUTRAL' nooutput
+stats '../defected/output/1/average_density_sodium.dat' using 1:2 name 'DEFECTED' nooutput
+
+set output 'densities.pdf'
+plot '../ch-sc/output/1/average_density_sodium.dat' using ($1-CHARGED_min_x):2 with lines linestyle 1 title "chargé", \
+     '../neutral/output/1/average_density_sodium.dat' using ($1-NEUTRAL_min_x):2 with lines linestyle 2 title "neutre", \
+     '../defected/output/1/average_density_sodium.dat' using ($1-DEFECTED_min_x):2 with lines linestyle 3 title "défectueux"

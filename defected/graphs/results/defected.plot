@@ -42,3 +42,18 @@ stats '../../output/1/density_sodium.hist' using 1:2
 set output 'defected_density.pdf'
 plot '../../output/1/density_sodium.hist' index 0 using ($2-STATS_min_y):3 with lines linestyle 1 title "départ", \
      '../../output/1/density_sodium.hist' index STATS_blocks-2 using ($2-STATS_min_y):3 with lines linestyle 2 title "fin"
+
+stats '../../output/1/average_density_sodium.dat' using 1:2
+
+set output 'defected_average_density.pdf'
+plot '../../output/1/average_density_sodium.dat' using ($1-STATS_min_x):2 with lines linestyle 3 notitle
+
+# ---------- RDF ----------
+set key outside bottom center
+set xlabel "r [Å]"
+set ylabel "RDF"
+
+set output 'rdf_defected.pdf'
+plot '../../output/1/rdf_upper-Na.dat' using 1:2 with lines linestyle 4 title "défectueux/négative", \
+     '../../output/1/rdf_sp-Na.dat' using 1:2 with lines linestyle 3 title "C^{sp}"
+     
