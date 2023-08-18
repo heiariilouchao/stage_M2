@@ -9,40 +9,36 @@ set xlabel "step"
 set ylabel "<dz> [Å]"
 
 set output '1/defected_dz.pdf'
-plot '../../output/1/dz_negative.dat' every period using 1:2 with lines linestyle 1 title "négative", \
-     '../../output/1/dz_positive.dat' every period using 1:2 with lines linestyle 2 title "positive"
+plot '../../output/1/dz_upper.dat' every period using 1:2 with lines linestyle 1 title "négative", \
+     '../../output/1/dz_lower.dat' every period using 1:2 with lines linestyle 2 title "positive"
 
 set output '2/defected_dz.pdf'
-plot '../../output/2/dz_negative.dat' every period using 1:2 with lines linestyle 1 title "négative", \
-     '../../output/2/dz_positive.dat' every period using 1:2 with lines linestyle 2 title "positive"
+plot '../../output/2/dz_upper.dat' every period using 1:2 with lines linestyle 1 title "négative", \
+     '../../output/2/dz_lower.dat' every period using 1:2 with lines linestyle 2 title "positive"
 
 # ---------- Charges ----------
 set ylabel "<q> [e]"
 
-set output '1/defected_q.pdf'
-plot '../../output/1/q_outer-negative.dat' every period2 using 1:2 with lines linestyle 1 title "ext-", \
-     '../../output/1/q_inner-negative.dat' every period2 using 1:2 with lines linestyle 4 title "int-", \
-     '../../output/1/q_outer-positive.dat' every period2 using 1:2 with lines linestyle 2 title "ext+", \
-     '../../output/1/q_inner-positive.dat' every period2 using 1:2 with lines linestyle 5 title "int+"
+set output '1/defected_q-1.pdf'
+plot '../../output/1/q_outer-upper.dat' every period2 using 1:2 with lines linestyle 1 title "ext-", \
+     '../../output/1/q_inner-upper.dat' every period2 using 1:2 with lines linestyle 4 title "int-", \
+     '../../output/1/q_outer-lower.dat' every period2 using 1:2 with lines linestyle 2 title "ext+", \
+     '../../output/1/q_inner-lower.dat' every period2 using 1:2 with lines linestyle 5 title "int+"
 
-set output '2/defected_q.pdf'
-plot '../../output/2/q_outer-negative.dat' every period2 using 1:2 with lines linestyle 1 title "ext-", \
-     '../../output/2/q_inner-negative.dat' every period2 using 1:2 with lines linestyle 4 title "int-", \
-     '../../output/2/q_outer-positive.dat' every period2 using 1:2 with lines linestyle 2 title "ext+", \
-     '../../output/2/q_inner-positive.dat' every period2 using 1:2 with lines linestyle 5 title "int+"
+set output '2/defected_q-2.pdf'
+plot '../../output/2/q_outer-upper.dat' every period2 using 1:2 with lines linestyle 1 title "ext-", \
+     '../../output/2/q_inner-upper.dat' every period2 using 1:2 with lines linestyle 4 title "int-", \
+     '../../output/2/q_outer-lower.dat' every period2 using 1:2 with lines linestyle 2 title "ext+", \
+     '../../output/2/q_inner-lower.dat' every period2 using 1:2 with lines linestyle 5 title "int+"
 
 # ---------- Sodium density ----------
+unset xtics
+set xtics
 set xlabel "z [Å]"
 set ylabel "densité [Å^{-3}]"
 
 stats '../../output/1/density_sodium.hist' using 1:2
 
-set output '1/defected_sodium-density.pdf'
-plot '../../output/1/density_sodium.hist' index 0 using 2:3 with lines linestyle 1 title "départ", \
-     '../../output/1/density_sodium.hist' index STATS_blocks-2 using 2:3 with lines linestyle 2 title "fin"
-
-stats '../../output/2/density_sodium.hist' using 1:2
-
-set output '2/defected_sodium-density.pdf'
-plot '../../output/2/density_sodium.hist' index 0 using 2:3 with lines linestyle 1 title "départ", \
-     '../../output/2/density_sodium.hist' index STATS_blocks-2 using 2:3 with lines linestyle 2 title "fin"
+set output 'defected_density.pdf'
+plot '../../output/1/density_sodium.hist' index 0 using ($2-STATS_min_y):3 with lines linestyle 1 title "départ", \
+     '../../output/1/density_sodium.hist' index STATS_blocks-2 using ($2-STATS_min_y):3 with lines linestyle 2 title "fin"

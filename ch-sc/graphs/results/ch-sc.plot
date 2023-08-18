@@ -32,17 +32,13 @@ plot '../../output/2/q_outer-lower.dat' every period2 using 1:2 with lines lines
      '../../output/2/q_inner-upper.dat' every period2 using 1:2 with lines linestyle 5 title "int+"
 
 # ---------- Sodium density ----------
+unset xtics
+set xtics
 set xlabel "z [Å]"
 set ylabel "densité [Å^{-3}]"
 
 stats '../../output/1/density_sodium.hist' using 1:2
 
-set output '1/ch-sc_sodium-density-1.pdf'
-plot '../../output/1/density_sodium.hist' index 0 using 2:3 with lines linestyle 1 title "départ", \
-     '../../output/1/density_sodium.hist' index STATS_blocks-2 using 2:3 with lines linestyle 2 title "fin"
-
-stats '../../output/2/density_sodium.hist' using 1:2
-
-set output '2/ch-sc_sodium-density-2.pdf'
-plot '../../output/2/density_sodium.hist' index 0 using 2:3 with lines linestyle 1 title "départ", \
-     '../../output/2/density_sodium.hist' index STATS_blocks-2 using 2:3 with lines linestyle 2 title "fin"
+set output 'ch-sc_density.pdf'
+plot '../../output/1/density_sodium.hist' index 0 using ($2-STATS_min_y):3 with lines linestyle 1 title "départ", \
+     '../../output/1/density_sodium.hist' index STATS_blocks-2 using ($2-STATS_min_y):3 with lines linestyle 2 title "fin"
