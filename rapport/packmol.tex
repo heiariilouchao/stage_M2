@@ -1,0 +1,20 @@
+
+Nous préparons les systèmes avec un outil libre nommé \packmol{}. Il permet de dupliquer, d'ajouter et d'agencer des molécules pour des sytèmes relativement complexes. Pour un système composé uniquement de molécules d'eau des solutions \qty{100}{\percent} \lammps{} existent mais il est beaucoup plus simple et rapide d'utiliser \packmol{}.
+
+Pour montrer notre utilisation de cet outil, nous présentons un exemple pour la préparation d'un système composé uniquement de molécules d'eau.
+
+Soit une boîte de simulation cubique de côté : $X = Y = Z = \qty{20.0}{\angstrom}$. En prenant $\rho_{\ce{H2O}} = $\qty{1000}{\kilo \gram \per \cubic \meter}, $V = \qty{8.0e-27}{\cubic \meter}$, $\mathcal{N}_A = $\qty{6.022e+23}{\per \mole}, et $M_{\ce{H2O}} = $\qty{1.801e-02}{\kilo \gram \per \mole}, nous trouvons le nombre de molécules d'eau à répartir dans la boîte de simulation : $N \approx \num{267}$.
+
+Pour des molécules d'eau, nous prendrons une tolérance de $\mathtt{tol} = \qty{2.5}{\angstrom}$ pour s'assurer que les molécules d'eau ne se chevauchent pas. Et pour anticiper l'application des conditions aux limites périodiques, nous réduisons la région où répartir les molécules à : $X^m = Y^m = Z^m = \qty{1.25}{\angstrom}$ et $X^M = Y^M = Z^M = \qty{18.75}{\angstrom}$, pour qu'elles ne se chevauchent pas même à travers les conditions aux limites périodiques.
+
+Une fois toutes ces informations calculées nous pouvons écrire le script qui sera donné à \packmol{} :
+\begin{lstlisting}[caption={Répartition des molécules d'eau}, label={lst:packmol_example}]
+tolerance 2.5
+output output.xyz
+filetype xyz
+structure water.xyz
+    number 267
+    inside box 1.25 1.25 1.25 18.75 18.75 18.75
+end structure
+\end{lstlisting}
+où \lstinline!water.xyz! est un fichier comprenant les positions des atomes composant une molécule d'eau.

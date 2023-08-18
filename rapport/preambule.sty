@@ -7,6 +7,9 @@
 \usepackage[hmargin = 3cm, vmargin = 3cm]{geometry}
 \usepackage[skip = 2ex]{parskip}
 
+\usepackage[algoruled, lined, linesnumbered, longend, french, frenchkw]{algorithm2e}
+\DontPrintSemicolon
+\SetNlSty{tiny texttt}{}{}
 \usepackage{amsmath}
 \usepackage{graphicx}
 \graphicspath{{src/} {src/supercapacitor}}
@@ -73,6 +76,7 @@
 \newcommand{\coulomb}{\emph{Coulombiennes}}
 \newcommand{\eem}{\emph{EEM}}
 \newcommand{\qeq}{\emph{QEq}}
+\newcommand{\rdf}{\emph{RDF}}
 \counterwithin{figure}{section}
 \counterwithin{table}{section}
 \AtBeginDocument{\counterwithin{lstlisting}{section}}
