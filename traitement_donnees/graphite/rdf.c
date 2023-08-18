@@ -10,6 +10,7 @@
 # include "../read/read.h"
 # include "../bonds/bonds.h"
 # include "../rdf/rdf.h"
+#include "carbons.h"
 
 char doc[] = "Processing and extracting the graphite RDF-related informations.";
 
@@ -44,17 +45,30 @@ int main(int argc, char **argv)
 	
 	/* Selecting the atoms */
 	int *N_carbons;
-	Atom **carbons;
-	if ((errno = select_elements(N_configurations, N_atoms, "C", atoms, &N_carbons, &carbons)) != 0)
+	Carbon **carbons;
+	if ((errno = extract_carbons(N_configurations, N_atoms, atoms, box, &N_carbons, &carbons)) != 0)
 		goto READ;
 	
+	// Computing the layers
+	const double sep = 3.5;
+	compute_layers(N_configurations, box, N_carbons, &carbons, sep);
+	
+	// Selecting the outer layers
+	int *N_outer;
+	Carbon **outer;
+	if ((errno = select_layer(N_configurations, N_carbons, carbons, Outer, &N_outer, &outer)) != 0)
+		goto EXTRACT_CARBONS;
+	
+	// Converting the outer Carbons to Atoms
+	Atom **outer_atoms;
+	if ((errno = convert_carbons(N_configurations, N_outer, outer, &outer_atoms)) != 0)
+		goto SELECT_OUTER;
 
-	/* Selecting the lower electrode */
-	// The lower electrode is the negative one
+	// Selecting the lower electrode
 	int *N_lower;
 	Atom **lower;
-	if ((errno = select_coordinate(N_configurations, N_carbons, Lower, Coord_Z, box[0].z_min + (box[0].z_max - box[0].z_min) / 2., carbons, &N_lower, &lower)) != 0)
-		goto SELECT_CARBONS;
+	if ((errno = select_coordinate(N_configurations, N_outer, Lower, Coord_Z, box[0].z_min + (box[0].z_max - box[0].z_min) / 2., outer_atoms, &N_lower, &lower)) != 0)
+		goto CONVERT_OUTER;
 
 
 	/* Selecting the sodium ions */
@@ -67,7 +81,7 @@ int main(int argc, char **argv)
 	/* Selecting the upper carbons */
 	int *N_upper;
 	Atom **upper;
-	if ((errno = select_coordinate(N_configurations, N_carbons, Greater, Coord_Z, box[0].z_min + (box[0].z_max - box[0].z_min) / 2., carbons, &N_upper, &upper)) != 0)
+	if ((errno = select_coordinate(N_configurations, N_outer, Greater, Coord_Z, box[0].z_min + (box[0].z_max - box[0].z_min) / 2., outer_atoms, &N_upper, &upper)) != 0)
 		goto RDF;
 	
 
@@ -131,11 +145,6 @@ int main(int argc, char **argv)
 	
 	if ((errno = write_rdf("output/graphite-rdf/rdf_upper-OH.dat", "upper,OH", 100, r, rdf)) != 0)
 		goto SELECT_HYDROXIDE;
-
-
-    /* Computing the bonds */
-	// if ((errno = compute_cutoff_bonds(N_configurations, N_carbons, box, &carbons, 1.7)) != 0)
-	// 	goto SELECT_CARBONS;
     
 
     /* Exiting normally */
@@ -145,19 +154,39 @@ int main(int argc, char **argv)
     /* Error handling */
 	SELECT_HYDROXIDE:
 		for (int c = 0 ; c < N_configurations ; c++)
+		{
+			for (int a = 0; a < N_hydroxide[c]; a++)
+				free(hydroxide[c][a].bonded);
+			
 			free(hydroxide[c]);
+		}
 		free(hydroxide), free(N_hydroxide);
 	SELECT_O:
 		for (int c = 0 ; c < N_configurations ; c++)
+		{
+			for (int a = 0; a < N_O[c]; a++)
+				free(O[c][a].bonded);
+			
 			free(O[c]);
+		}
 		free(O), free(N_O);
 	SELECT_HO:
 		for (int c = 0 ; c < N_configurations ; c++)
+		{
+			for (int a = 0; a < N_HO[c]; a++)
+				free(HO[c][a].bonded);
+			
 			free(HO[c]);
+		}
 		free(HO), free(N_HO);
 	SELECT_UPPER:
 		for (int c = 0 ; c < N_configurations ; c++)
+		{
+			for (int a = 0; a < N_upper[c]; a++)
+				free(upper[c][a].bonded);
+			
 			free(upper[c]);
+		}
 		free(upper), free(N_upper);
 	RDF:
 		free(r), free(rdf);
@@ -167,11 +196,40 @@ int main(int argc, char **argv)
 		free(sodium), free(N_sodium);
 	SELECT_LOWER:
 		for (int c = 0 ; c < N_configurations ; c++)
+		{
+			for (int a = 0; a < N_lower[c]; a++)
+				free(lower[c][a].bonded);
+			
 			free(lower[c]);
+		}
 		free(lower), free(N_lower);
-	SELECT_CARBONS:
+	
+	CONVERT_OUTER:
+		for (int c = 0; c < N_configurations; c++)
+		{
+			for (int a = 0; a < N_outer[c] ; a++)
+				free(outer_atoms[c][a].bonded);
+			
+			free(outer_atoms[c]);
+		}
+		free(outer_atoms);
+	SELECT_OUTER:
 		for (int c = 0 ; c < N_configurations ; c++)
+		{
+			for (int a = 0 ; a < N_outer[c] ; a++)
+				free(outer[c][a].atom.bonded);
+			
+			free(outer[c]);
+		}
+		free(outer), free(N_outer);
+	EXTRACT_CARBONS:
+		for (int c = 0 ; c < N_configurations ; c++)
+		{
+			for (int a = 0 ; a < N_carbons[c] ; a++)
+				free(carbons[c][a].atom.bonded);
+			
 			free(carbons[c]);
+		}
 		free(carbons), free(N_carbons);
 	READ:
 		for (int c = 0 ; c < N_configurations ; c++)

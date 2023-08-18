@@ -10,11 +10,14 @@ rdf: utils.o parse.o read.o rdf.o
 msd: utils.o parse.o read.o msd.o
 	$(CC) $(OPT) -o $(BIN_DIR)/msd $(addprefix $(BUILD_DIR)/,$?) -lm -fopenmp
 
-graphite: utils.o parse.o read.o bonds.o graphite.o
+graphite: utils.o parse.o read.o bonds.o carbons.o graphite.o
 	$(CC) $(OPT) -o $(BIN_DIR)/graphite $(addprefix $(BUILD_DIR)/,$?) -lm
 
-graphite-rdf: utils.o parse.o read.o bonds.o rdf.o graphite-rdf.o
+graphite-rdf: utils.o parse.o read.o bonds.o rdf.o carbons.o graphite-rdf.o
 	$(CC) $(OPT) -o $(BIN_DIR)/graphite-rdf $(addprefix $(BUILD_DIR)/,$?) -lm
+
+defect: utils.o parse.o read.o rdf.o bonds.o carbons.o defect.o
+	$(CC) $(OPT) -o $(BIN_DIR)/defect $(addprefix $(BUILD_DIR)/,$?) -lm
 
 # Is equivalent to all these
 utils.o: utils/utils.c
@@ -35,11 +38,17 @@ msd.o: msd/msd.c
 bonds.o: bonds/bonds.c
 	$(CC) $(OPT) -o $(BUILD_DIR)/bonds.o -c bonds/bonds.c
 
+carbons.o: graphite/carbons.c
+	$(CC) $(OPT) -o $(BUILD_DIR)/carbons.o -c graphite/carbons.c
+
 graphite.o: graphite/graphite.c
 	$(CC) $(OPT) -o $(BUILD_DIR)/graphite.o -c graphite/graphite.c
 
 graphite-rdf.o: graphite/rdf.c
 	$(CC) $(OPT) -o $(BUILD_DIR)/graphite-rdf.o -c graphite/rdf.c
+
+defect.o: graphite/defect.c
+	$(CC) $(OPT) -o $(BUILD_DIR)/defect.o -c graphite/defect.c
 
 reset: clean
 	rm $(BIN_DIR)/*
@@ -48,5 +57,3 @@ reset: clean
 
 clean:
 	rm $(BUILD_DIR)/*.o
-
-rebuild: reset build
