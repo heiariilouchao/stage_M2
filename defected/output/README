@@ -1,0 +1,21 @@
+
+    The electrodes are swaped compared to the charged and neutral systems, i.e. the upper electrode is the negative one.
+    The defect is located on the negative electrode.
+
+## Average charges
+
+### 1
+lower [positive]: 0.0116
+upper [negative]: -0.0300
+inner-lower [positive]: -0.0052
+inner-upper [negative]: 0.0135
+outer-lower [positive]: 0.0200
+outer-upper [negative]: -0.0519
+
+### 2
+lower [positive]: -0.0277
+upper [negative]: 0.0129
+inner-lower [positive]: 0.0117
+inner-upper [negative]: -0.0051
+outer-lower [positive]: -0.0478
+outer-upper [negative]: 0.0219
