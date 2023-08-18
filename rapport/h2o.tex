@@ -12,7 +12,7 @@ C'est également un système suffisamment simple pour une prise en main de \lamm
 Nous faisons d'abord une brève comparaison des fonctionnements théoriques des deux méthodes, puis mettons en place des simulations d'un même système avec ces deux approches, et finalement comparons leurs résultats.
 
 \textbf{Comparaison des fonctionnements}\\
-Alors que le potentiel \reaxff{} est réactif et se base sur les ordres de liaison (voir \autoref{sec:reaxff}), le modèle \spce{} est rigide et les interactions intermoléculaires ne considèrent que les atomes d'oxygène avec un potentiel de Lennard--Jones (\autoref{fig:spce_lj} et \autoref{tab:comparaison_modeles}).
+Alors que le potentiel \reaxff{} est réactif et se base sur les ordres de liaison (voir \autoref{sec:reaxff}), le modèle \spce{} ne considère que les interactions intermoléculaires concernant les atomes d'oxygène avec un potentiel de Lennard--Jones (\autoref{fig:spce_lj} et \autoref{tab:comparaison_modeles}).
 
 \begin{figure}[h!]
     \centering
@@ -27,7 +27,7 @@ Alors que le potentiel \reaxff{} est réactif et se base sur les ordres de liais
         \hline
         Caractéristiques               & \reaxff{}         & \spce{}           \\
         \hline
-        Modèle de liaisons             & Ordres de liaison & Rigide/Harmonique \\
+        Modèle de liaisons             & Ordres de liaison & Harmonique \\
         Modèle d'angles                & Ordres de liaison & Rigide/Harmonique \\
         Modèle de molécules            & Aucun             & Rigide            \\
         Interactions intermoléculaires & \reaxff{}         & Lennard--Jones    \\
@@ -37,17 +37,16 @@ Alors que le potentiel \reaxff{} est réactif et se base sur les ordres de liais
     \label{tab:comparaison_modeles}
 \end{table}
 
-De fait, \reaxff{} est un potentiel objectivement plus flexible que le modèle \spce{} mais implique une charge de calcul beaucoup plus grande.
+De fait, \reaxff{} implique une charge de calcul beaucoup plus grande que le modèle \spce{}.
 
-Par ailleurs, puisque le modèle \spce{} fait appel à des molécules/liaisons/angles rigides, son utilisation avec \lammps{} nécessite l'utilisation d'un format de données de configuration initiale plus complet que \reaxff{}. La conversion des données dans ce format est détaillée à l'\autoref{apdx:conversion_spce}.
+Par ailleurs, puisque le modèle \spce{} fait appel à des molécules/liaisons/angles harmoniques, son utilisation avec \lammps{} nécessite l'utilisation d'un format de données de configuration initiale plus complet que \reaxff{}. La conversion des données dans ce format est détaillée à l'\autoref{apdx:conversion_spce}.
 
 \textbf{Mise en place des simulations}\\
 Pour faciliter la comparaison des résultats obtenus par simulations aux résultats expérimentaux, les conditions de simulations sont : $T = \qty{300}{\kelvin}, P = \qty{1}{\atm}$.\\
 De plus, les simulations suivent un déroulement similaire à celui présenté à la \autoref{sec:deroulement_simulations}, c'est-à-dire :
 \begin{itemize}
     \item Une minimisation à \qty{0}{\kelvin}
-    \item Une relaxation de \qtyrange{1}{300}{\kelvin} et à \qty{1}{\atm} en \qty{10}{\pico \second}
-    \item Une stabilisation de \qty{10}{\pico \second}
+    \item Une relaxation de \qtyrange{1}{300}{\kelvin} et à \qty{1}{\atm} en deux étapes de \qty{10}{\pico \second}
     \item La simulation principale pour \qty{1}{\nano \second}
 \end{itemize}
 et mettent en jeu \num{267} molécules d'eau initialement dans une boîte cubique de côté \qty{20}{\angstrom}.
@@ -56,7 +55,7 @@ Les différentes quantités thermodynamiques relevées au cours de ces simulatio
 
 Pendant la relaxation et la stabilisation, nous pouvons voir que la température du système augmente progressivement durant les \num{10} premières \unit{\pico \second} avant de se stabiliser à la valeur cible. Quant à l'énergie potentielle, elle diminue abruptement avant de lentement atteindre un plateau.
 
-Pour la simulations principale, il semble que les grandeurs soient équilibrées car elle ne fluctuent plus autant que lors de la relaxation et stabilisation.
+Pour la simulations principale, il semble que les grandeurs soient équilibrées car elle ne fluctuent plus autant que lors de la relaxation.
 
 \begin{figure}[h!]
     \centering
@@ -102,7 +101,7 @@ Pour la simulations principale, il semble que les grandeurs soient équilibrées
 \end{figure}
 
 \textbf{Proriétés comparées}\\
-Pour cette étude, nous comparons les propriétés structurales et de diffusion des deux modèles avec la \emph{Radial Distribution Function} et le \emph{Mean Squared Displacement}.
+Pour cette étude, nous comparons les propriétés structurales et de diffusion des deux modèles avec la \emph{Radial Distribution Function} et le \emph{Mean Squared Displacement} qui permettent de décrire respectivement l'aspect structurel et dynamique d'un système. Les code, scripts et algorithmes en pseudo-code de calculs sont disponibles en ligne (\autoref{apdx:traitement_donnees})
 
 En effet, pour rappel, la première des deux grandeurs nous informe sur la probabilité de trouver deux atomes à une distance donnée l'un de l'autre en comparaison à un gaz parfait :
 \begin{equation}

@@ -5,9 +5,9 @@ Nous effectuons d'abord une brève introduction à la Dynamique Moléculaire, pu
 % Prensenting Molecular Dynamics
     \subsection{Dynamique Moléculaire}
 
-La dynamique moléculaire est une méthode puissante de simulation informatique utilisée pour étudier le mouvement et les interactions des atomes et des molécules dans des systèmes chimiques. Elle repose sur les principes de la mécanique classique et permet de prédire le comportement des systèmes à l'échelle atomique sur une échelle de temps donnée.
+La dynamique moléculaire est une méthode de simulation informatique utilisée pour étudier le mouvement et les interactions des atomes et des molécules dans des systèmes chimiques. Elle repose sur les principes de la mécanique classique et permet de prédire le comportement des systèmes à l'échelle atomique sur une échelle de temps donnée.
 
-Notre étude se place dans ce domaine afin d'observer et de comprendre les phénomènes étudiés à l'échelle des atomes et molécules, c'est-à-dire à une échelle intermédiaire entre l'échelle quantique et celle des simulations à gros grains.
+Notre étude se place dans ce domaine afin d'observer et de comprendre les phénomènes étudiés à l'échelle des atomes et molécules.
 
 \textbf{Concepts fondamentaux}\\
 Certains des concepts fondamentaux sur lesquels la Dynamique Moléculaire s'appuie sont :
@@ -17,7 +17,7 @@ Certains des concepts fondamentaux sur lesquels la Dynamique Moléculaire s'appu
     \item Équations du mouvement : les équations régissant le mouvement des atomes, reliant les forces s'exerçant sur les atomes, à leurs vitesses et positions
 \end{itemize}
 
-\textbf{Méthodes numérques}\\
+\textbf{Méthodes numériques}\\
 Les méthodes numériques liées à la Dynamique Moléculaire incluent les algorithmes d'intégration, les stratégies d'optimisation, et de la parallélisation des calculs. Ces méthodes sont essentielles pour la modélisation de systèmes à grands nombres de particules (\numrange{10}{10000}).
 
 Les algorithmes d'intégration sont essentiels pour calculer les trajectoires atomiques, ils permettent de déterminer comment les positions et les vitesses des atomes évoluent dans le temps en fonction des forces qui agissent sur eux. Un des algorithmes d'intégration les plus connus est l'algorithme de \emph{Velocity Verlet} :
@@ -42,6 +42,8 @@ Parmi eux, on peut distinguer les décompositions :
 \end{itemize}
 Où dans chacune la communication entre les processeurs est un facteur important pour l'efficacité du parallélisme.
 
+Par exemple, \lammps{} utilise par défaut l'intégration de Verlet, la troisième loi de Newton et la décomposition spatiale.
+
 % Presenting ReaxFF
     \subsection{Présentation de \reaxff{}} \label{sec:reaxff}
 
@@ -52,17 +54,19 @@ Où dans chacune la communication entre les processeurs est un facteur important
     \label{fig:interactions_energies_reaxff}
 \end{figure}
 
-\reaxff{}\cite{russo_atomistic-scale_2011}\cite{senftle_reaxff_2016} est un potentiel qui utilise les ordres de liaison pour modéliser les réactions chimiques (\autoref{fig:interactions_energies_reaxff}), prend en compte les interaction non-liantes, et effectue  une équilibration de charges.\\
-Il a été conçu de façon à obtenir des résultats dont la précision se rapproche des méthodes quantiques, en mettant en jeu autant d'atomes que les méthodes classiques.\\
+\reaxff{}\cite{russo_atomistic-scale_2011}\cite{senftle_reaxff_2016} est un potentiel qui utilise les ordres de liaison pour modéliser les réactions chimiques (\autoref{fig:interactions_energies_reaxff}), prend en compte les interaction non-liantes, et effectue  une équilibration de charges par la méthode \qeq{}.\\
+Il a été conçu de façon à obtenir des résultats dont la précision se rapproche des méthodes quantiques.\\
 Enfin, ce potentiel a été comparé à un modèle existant de la molécule d'eau à la \autoref{sec:h2o}.
 
 \textbf{Ordres de liaisons}\\
+\reaxff{} implémente les ordres de liaisons entre les atomes pour déterminer les énergies des interactions liantes entre les atomes du système.
+
 L'ordre d'une liaison entre un atome $i$ et un atome $j$ est donné par :
 \begin{equation}
     BO_{ij}' = \exp \left[p_{bo, 1} \left(\frac{r_{ij}}{r_o}\right)^{p_{bo,2}}\right] + \exp \left[p_{bo,3} \left(\frac{r_{ij}^\pi}{r_o}\right)^{p_{bo,4}}\right] + \exp \left[p_{bo,5} \left(\frac{r_{ij}^{\pi\pi}}{r_o}\right)^{p_{bo,6}}\right]
     \label{eq:ordres_liaisons_reaxff}
 \end{equation}
-où paramètres $p_{bo,1}, \dots, p_{bo,6}, r_o$ sont des pamramètres issus de calculs \textit{ab initio}, et dépendent de la nature des atomes mis en jeu, et du type de liaison considéré. Les ordres de liaisons sont ensuite corrigés pour être intégrés aux calculs des énergie de liaisons, d'angles et de torsions.
+où paramètres $p_{bo,1}, \dots, p_{bo,6}, r_o$ sont des pamramètres issus de calculs \textit{ab initio}, et dépendent de la nature des atomes mis en jeu, et du type de liaison considéré. Les ordres de liaisons sont ensuite corrigés pour calculer les énergies de liaisons, d'angles et de torsions.
 
 \textbf{Interactions non-liantes}\\
 \reaxff{} inclue également les interactions de \vdw{} et \coulomb{} pour \emph{toutes} les paires d'atomes. Les interactions de \vdw{} se basent sur un potentiel de Morse, et ces deux types d'interactions sont écrantées par un paramètre $\gamma$ pour éviter de trop grandes attractions et répulsions (\autoref{fig:reaxff_vdw_coulomb}).
@@ -93,6 +97,8 @@ où $q_i$ est la charge d'un atome $i$, $\chi_i$ son électronégativité, $H_i$
 % Presenting EChemDID
     \subsection{Présentation d'\echemdid{}} \label{sec:echemdid}
 
+La méthode \echemdid{} permet d'appliquer une différence de potentiel entre deux groupes d'atomes (que nous appelons \emph{des électrodes}). Pour cela, un potentiel électrochimique externe est initialement appliqué, pour ensuite se propager au sein des électrodes, et finalement modifier l'électronégativité des atomes afin de calculer les charges par la méthode \qeq{}.
+    
 \begin{figure}[h!]
     \centering
     \includegraphics[height = 3 cm]{echemdid_methode.pdf}
@@ -104,7 +110,7 @@ où $q_i$ est la charge d'un atome $i$, $\chi_i$ son électronégativité, $H_i$
 Pour fonctionner, \echemdid{} assigne à chaque atome un potentiel électrochimique local $\Phi_i (t)$ et applique initialement un potentiel électrochimique externe à un groupe prédéfini d'atomes.
 
 \textbf{Propagation du voltage au sein des électrodes}\\
-Le but d'\echemdid{} étant de représenter les réactions électrochimiques, la progpagation du voltage au sein des électrodes se fait simplement selon la relation :
+Le but d'\echemdid{} étant de représenter les réactions électrochimiques, la mise en place de la différence de potentiel entre les électrodes se fait simplement selon la relation :
 \begin{equation}
     \dot{\Phi} = k \Delta \Phi
     \label{eq:echemdid_propagation}
@@ -113,7 +119,7 @@ où $k$ est un coefficient de diffusion, et $\Delta$ est l'opérateur Laplacien.
 
 Pour résoudre cette équation, plusieurs points sont à prendre en compte :
 \begin{itemize}
-    \item si une différence de potentiel est appliquée entre deux électrodes, le voltage devra s'équilibrer en une durée dépendant du coefficient $k$
+    \item si une différence de potentiel est appliquée entre deux électrodes, le voltage devra s'équilibrer en une durée dépendante du coefficient $k$
     \item si un atome se détache d'une électrode, son électronégativité devra progressivement revenir à sa valeur atomique notée $\chi_i^0$
 \end{itemize}
 

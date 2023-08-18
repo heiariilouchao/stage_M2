@@ -1,5 +1,5 @@
 % Interest of the model
-Comme mentionné précédemment, à cause de la complexité du système il est préférable pour cette étude de considérer un sytème modèle. Dans cette section, nous décrivons le modèle et ses caractéristiques, avant de détailler sa construction, et de discuter des simulations dans lesquelles il intervient.
+Comme mentionné précédemment, à cause de la complexité des électrodes poreuses il est préférable pour cette étude de considérer un sytème modèle. Dans cette section, nous décrivons le modèle et ses caractéristiques, avant de détailler sa construction, et de discuter des simulations que nous effectuons.
 
 % Description
     \subsection{Description du modèle}
@@ -44,7 +44,7 @@ Le système modèle est composé d'électrodes en graphites immergées dans un �
     \label{fig:construction_structure}
 \end{figure}
 
-Pour construire la structure du modèle, la démarche \autoref{fig:construction_structure} a été adoptée afin d'obtenir le système aux dimensions et caractéristiques désirées, avec une configuration initiale des particules convenable.
+Pour construire la structure du modèle, la démarche \autoref{fig:construction_structure} a été adoptée afin d'obtenir le système aux dimensions et caractéristiques désirées, avec une configuration initiale des particules.
 
 \textbf{Obtention des structures}\\
 Les données sur les structures des molécules ont été obtenues grâce à la \href{http://www.crystallography.net/cod/}{Crystallography Open Database} (COD) et celles-ci sont présentées à la \autoref{fig:molecules_initiales}.
@@ -93,7 +93,7 @@ La structure de graphite de base a pu être étendue grâce à un logiciel tier\
 \textbf{Agencement des particules}\\
 Les particules ont pu être disposées pour construire le modèle à l'aide de \packmol{}\cite{martinez_packmol_2009}, détails à l'\autoref{apdx:packmol}.
 
-Pour obtenir des configurations initiales suffisamment stables nous avons choisi de répartir les entités en les séparant d'au moins \qty{2.5}{\angstrom} : entre les molécules et ions de l'électrolyte, et entre les particules de l'électrolyte et les électrodes.\\
+Pour obtenir des configurations initiales suffisamment stables nous avons choisi de répartir les entités en les séparant d'au moins \qty{2.5}{\angstrom} : entre les molécules et ions de l'électrolyte, et entre les particules de l'électrolyte et les électrodes, de manière à ce que les molécules d'eau ne se chevauchent pas (\autoref{fig:h2o_rdf_oh} et \autoref{fig:h2o_rdf_oo}).\\
 Et pour respecter les conditions aux limites périodiques, cette séparation a également été appliquée aux bords du système : nous ajoutons un retrait égal à la moitité de cette séparation à chaque bord.
 
 Finalement, nous obtenons la configuration présentée à la figure \autoref{fig:structure_finale}.
@@ -117,18 +117,17 @@ Finalement, nous obtenons la configuration présentée à la figure \autoref{fig
         Toutes &\lstinline!timestep! &\num{0.1} &\unit{\femto \second}\\
         &potentiel &\reaxff{} &\\
         \hline
-        Minimisation &\lstinline!maxiter! &\num{1000} &\\
-        &\lstinline!maxeval! &\num{10000} &\\
-        &\lstinline!etol! &\num{e-05} &\\
+        Minimisation &\lstinline!maxiter! &\num{1000} &itérations\\
+        &\lstinline!maxeval! &\num{10000} &itérations\\
+        &\lstinline!etol! &\num{e-05} &--\\
         &\lstinline!ftol! &\num{e-06} &\unit{\kilo \cal \per \mole \per \angstrom}\\
         \hline
-        Relaxation et Stabilisation &durée &\num{200000} &\\
+        Relaxation et Stabilisation &durée &\num{200000} &itérations\\
         & &\num{20.0} &\unit{\pico \second}\\
         &\lstinline!T_target! &\num{300.0} &\unit{\kelvin}\\
         &\lstinline!P_target! &\num{1.0} &\unit{\atm}\\
         \hline
-        Simulation &durée &\num{10000000}\\
-        &polarisation &\echemdid{} &\\
+        Simulation &durée &\num{10000000} &itérations\\
         & &\num{1.0} &\unit{\nano \second}\\
         &\lstinline!T_target! &\num{300.0} &\unit{\kelvin}\\
         \hline
@@ -174,7 +173,7 @@ où sont prises en compte les énergies :
 \textbf{Relaxation et stabilisation}\\
 Ces étapes utilisent un thermostat et barostat de Nosé--Hoover pour atteindre les conditions physiques recherchées et les stabiliser.
 
-Les conditions de pression et de température recherchées sont $T = \qty{300}{\kelvin}$ et $P = \qty{1}{\atm}$, et les évolutions des quantités thermodynamiques lors de ces étapes sont typiquement celles des \autoref{fig:allures_thermostat_barostat}.
+Les conditions de pression et de température recherchées sont $T = \qty{300}{\kelvin}$ et $P = \qty{1}{\atm}$, à atteindre en \num{100000} itérations soit \qty{0.01}{\nano \second} et les évolutions des quantités thermodynamiques lors de ces étapes sont typiquement celles des \autoref{fig:allures_thermostat_barostat}.
 
 \begin{figure}[h!]
     \centering
